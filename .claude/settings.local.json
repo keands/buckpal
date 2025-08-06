@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:plaid.com)",
+      "Bash(jar:*)"
+    ],
+    "deny": []
+  }
+}

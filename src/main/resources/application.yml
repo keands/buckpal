@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: buckpal-backend
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/buckpal_db
+    username: ${DB_USERNAME:buckpal}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  security:
+    jwt:
+      secret: ${JWT_SECRET:mySecretKey}
+      expiration: 86400000 # 24 hours
+  
+  plaid:
+    client-id: ${PLAID_CLIENT_ID:your_client_id}
+    secret: ${PLAID_SECRET:your_secret}
+    environment: ${PLAID_ENVIRONMENT:sandbox} # sandbox, development, production
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.buckpal: DEBUG
+    org.springframework.security: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

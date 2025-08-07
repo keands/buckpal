@@ -5,7 +5,18 @@
       "Bash(chmod:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:plaid.com)",
-      "Bash(jar:*)"
+      "Bash(jar:*)",
+      "Bash(flutter:*)",
+      "Bash(export ANDROID_HOME=E:\\android-sdk)",
+      "Bash(export ANDROID_HOME=E:/android-sdk)",
+      "Bash(setx:*)",
+      "Bash(set ANDROID_HOME=E:android-sdk)",
+      "Bash(E:/android-sdk/platform-tools/adb.exe version:*)",
+      "Bash(set ANDROID_HOME=E:/android-sdk)",
+      "Bash(./gradlew:*)",
+      "Bash(set PATH=E:/android-sdk/platform-tools)",
+      "Bash(%PATH%)",
+      "Bash(export:*)"
     ],
     "deny": []
   }

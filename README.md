@@ -152,7 +152,7 @@ static const String baseUrl = 'http://localhost:8080/api';
 flutter run
 
 # For web
-flutter run -d web
+flutter run -d chrome
 
 # For specific platform
 flutter run -d android

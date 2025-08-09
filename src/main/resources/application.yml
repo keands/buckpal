@@ -19,7 +19,7 @@ spring:
   
   security:
     jwt:
-      secret: ${JWT_SECRET:mySecretKey}
+      secret: ${JWT_SECRET:oB8PJIGZ3TABdIfncM0pebJz6z3eDOettxrQk0LHXYUED1HTa+vvprLTkzxHUa4oIHqshUDu7B2ETJ1wBq522g==}
       expiration: 86400000 # 24 hours
   
   plaid:

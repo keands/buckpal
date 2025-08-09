@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -45,4 +46,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("type") TransactionType type,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
+    
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.transactionDate = :date AND t.amount = :amount AND t.description = :description")
+    Optional<Transaction> findByAccountIdAndTransactionDateAndAmountAndDescription(
+        @Param("accountId") Long accountId,
+        @Param("date") LocalDate date,
+        @Param("amount") BigDecimal amount,
+        @Param("description") String description);
 }

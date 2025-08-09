@@ -1,0 +1,518 @@
+Date de comptabilisation;Libelle simplifie;Libelle operation;Reference;Informations complementaires;Type operation;Categorie;Sous categorie;Debit;Credit;Date operation;Date de valeur;Pointage operation
+09/08/2025;Swile FR Montpellier;Swile FR Montpellier;A6NKPSX;080825 CB****3846-0,05EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;High-Tech/Electromenager;-0,05;;09/08/2025;09/08/2025;0
+08/08/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;A5013LI;070825 CB****3846-35,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-35,00;;08/08/2025;08/08/2025;0
+08/08/2025;BAGGA FR TOULOUSE;BAGGA FR TOULOUSE;A5013LH;070825 CB****3846-20,00EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Restauration rapide;-20,00;;08/08/2025;08/08/2025;0
+08/08/2025;ALIZE ALIZE LIFR GUYANCOURT;ALIZE ALIZE LIFR GUYANCOURT;A5013LG;070825 CB****3846-6,22EUR 1 EURO = 1,000000;Carte bancaire;A categoriser - sortie d'argent;Paiement CB - a categoriser;-6,22;;08/08/2025;08/08/2025;0
+08/08/2025;ALIZE ALIZE LIFR GUYANCOURT;ALIZE ALIZE LIFR GUYANCOURT;A5013LF;070825 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;A categoriser - sortie d'argent;Paiement CB - a categoriser;-4,00;;08/08/2025;08/08/2025;0
+08/08/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0016704;XCPCB200 2025080700016704000001-Commission CB   060825 TOPSTEP;Frais bancaires;Banque et assurances;Frais bancaires;-1,40;;07/08/2025;07/08/2025;0
+07/08/2025;TOPSTEP US 123-4567890;TOPSTEP US 123-4567890;A3CHRE7;060825 CB****3846-44,10USD 1 EURO = 1,152639;Carte bancaire;Education et famille;Soutien scolaire;-38,26;;07/08/2025;07/08/2025;0
+07/08/2025;ADEO BRICOMAN FR FENOUILLET;ADEO BRICOMAN FR FENOUILLET;A3CHRE6;060825 CB****3846-26,32EUR 1 EURO = 1,000000;Carte bancaire;Logement - maison;Travaux - Entretien;-26,32;;07/08/2025;07/08/2025;0
+07/08/2025;LE BIERGARTEN 31TOULOUSE;LE BIERGARTEN 31TOULOUSE;A2UL28Z;060825 CB****3846-;Carte bancaire;Alimentation;Restaurant;-32,00;;07/08/2025;07/08/2025;0
+07/08/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;A2UL28Y;060825 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-23,04;;07/08/2025;07/08/2025;0
+06/08/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;A1OYG3A;050825 CB****3846-10,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-10,00;;06/08/2025;06/08/2025;0
+05/08/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    418,15 ASS.    0,00E-     INT.    53,67 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;01/08/2025;01/08/2025;x
+05/08/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;01/08/2025;01/08/2025;x
+04/08/2025;BASIC FIT II;BASIC FIT II 59Villeneuve d ;9XW4E99;010825 CB****3846-;Carte bancaire;Loisirs et vacances;Sport, Gym et Equipement;-104,97;;04/08/2025;04/08/2025;x
+04/08/2025;CHARGEMAP STRASBOURG;CHARGEMAP 6700 STRASBOURG;9XW4E98;020825 CB****3846-;Carte bancaire;Transports;Trains, avions et ferrys;-23,16;;04/08/2025;04/08/2025;x
+04/08/2025;INTERMARCHE;INTER MAG SC FR TOULOUSE;9YDVDZ3;020825 CB****3846-27,44EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Hyper/supermarche;-27,44;;04/08/2025;04/08/2025;x
+04/08/2025;M A M B FR 31M A M B;M A M B FR 31M A M B;9YDVDZ2;010825 CB****3846-10,00EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Restauration rapide;-10,00;;04/08/2025;04/08/2025;x
+04/08/2025;DECATHLON;DECATHLON FENOU310218FENOUILL/;9XW30W4;020825 CB****3846-;Carte bancaire;Loisirs et vacances;Sport, Gym et Equipement;-81,40;;04/08/2025;04/08/2025;x
+04/08/2025;AUCHAN DAC 259 31FENOUILLET;AUCHAN DAC 259 31FENOUILLET;9XW30W3;020825 CB****3846-;Carte bancaire;Transports;Carburant;-73,00;;04/08/2025;04/08/2025;x
+04/08/2025;COFIDIS;COFIDIS AMAZON 59VILLENEUVE D;9XW30W2;020825 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-30,68;;04/08/2025;04/08/2025;x
+04/08/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;9XW30W1;020825 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,50;;04/08/2025;04/08/2025;x
+04/08/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;9XW30W0;020825 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,50;;04/08/2025;04/08/2025;x
+04/08/2025;Wyll;VIR Wyll;9RCSZ3M;07/2025 DE SOUZAK-WYL.20250731.M127.7D1.9513DF;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1657,69;01/08/2025;01/08/2025;x
+02/08/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;9V2THGG;010825 CB****3846-40,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-40,00;;02/08/2025;02/08/2025;0
+02/08/2025;MISOK FR TOULOUSE;MISOK FR TOULOUSE;9V2THGF;010825 CB****3846-32,40EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Alimentation - autre;-32,40;;02/08/2025;02/08/2025;x
+02/08/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;9V2THGE;010825 CB****3846-20,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-20,00;;02/08/2025;02/08/2025;x
+02/08/2025;ALIZE ALIZE LIFR GUYANCOURT;ALIZE ALIZE LIFR GUYANCOURT;9V2THGD;010825 CB****3846-12,00EUR 1 EURO = 1,000000;Carte bancaire;A categoriser - sortie d'argent;Paiement CB - a categoriser;-12,00;;02/08/2025;02/08/2025;x
+02/08/2025;APPLE.COM/BILL IE 0805540003;APPLE.COM/BILL IE 0805540003;9V2THGC;010825 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;02/08/2025;02/08/2025;x
+02/08/2025;SPORTING FORM;SPORTING FORM 31TOULOUSE;9UKW0LK;010825 CB****3846-;Carte bancaire;Loisirs et vacances;Sport, Gym et Equipement;-124,00;;02/08/2025;02/08/2025;x
+02/08/2025;PAYPAL;PAYPAL ADD TO LULUXEMBOURG;9UKW0LJ;010825 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-80,77;;02/08/2025;02/08/2025;x
+02/08/2025;PAYPAL;PAYPAL GOOGLE LULUXEMBOURG;9UKW0LI;010825 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-39,99;;02/08/2025;02/08/2025;x
+02/08/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;9UKW0LH;010825 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,00;;02/08/2025;02/08/2025;x
+31/07/2025;SPAR 31TOULOUSE;SPAR 31TOULOUSE;9R9TJ2D;300725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-2,26;;31/07/2025;31/07/2025;x
+30/07/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;9Q46RDQ;290725 CB****3846-10,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-10,00;;30/07/2025;30/07/2025;x
+30/07/2025;FEUILLETTE TOULFR TOULOUSE;FEUILLETTE TOULFR TOULOUSE;9Q46RDP;290725 CB****3846-3,00EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Restauration rapide;-3,00;;30/07/2025;30/07/2025;x
+30/07/2025;LE FOURNIL DE B31L'UNION;LE FOURNIL DE B31L'UNION;9PMA978;290725 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-1,90;;30/07/2025;30/07/2025;x
+30/07/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FR03MH;1043765133972/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-5,41;;29/07/2025;29/07/2025;x
+28/07/2025;SMARTLOC 08 PARIS 8;SMARTLOC 08 PARIS 8;9HCIWSI;240725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;;+19,50;25/07/2025;25/07/2025;x
+28/07/2025;SMARTLOC 08 PARIS 8;SMARTLOC 08 PARIS 8;9HCIWSK;240725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;;+19,50;25/07/2025;25/07/2025;x
+28/07/2025;SMARTLOC 08 PARIS 8;SMARTLOC 08 PARIS 8;9HCIWSJ;240725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;;+19,50;25/07/2025;25/07/2025;x
+28/07/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FQC2B1;1043696973207/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-39,89;;24/07/2025;24/07/2025;x
+26/07/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0016098;XCPCB200 2025072500016098000001-Commission CB   240725 CLAUDE.AI;Frais bancaires;Banque et assurances;Frais bancaires;-0,92;;25/07/2025;25/07/2025;x
+25/07/2025;CLAUDE.AI SUBSCUS ANTHROPIC.CO;CLAUDE.AI SUBSCUS ANTHROPIC.CO;9HUI0J3;240725 CB****3846-21,60EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;High-Tech/Electromenager;-21,60;;25/07/2025;25/07/2025;x
+25/07/2025;Action FR Toulouse - L;Action 4253 FR Toulouse - L;9HUI0J2;240725 CB****3846-10,86EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-10,86;;25/07/2025;25/07/2025;x
+25/07/2025;MARIE BLACHERE FR TOULOUSE 701;MARIE BLACHERE FR TOULOUSE 701;9HUI0J1;240725 CB****3846-5,90EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Alimentation - autre;-5,90;;25/07/2025;25/07/2025;x
+25/07/2025;ABONNEMENT CLA3490 JUVIGNAC;ABONNEMENT CLA3490 JUVIGNAC;9HCLHD4;240725 CB****3846-;Carte bancaire;Loisirs et vacances;Sport, Gym et Equipement;-10,00;;25/07/2025;25/07/2025;x
+25/07/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;9HCLHD3;240725 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,00;;25/07/2025;25/07/2025;x
+25/07/2025;COTISATIONS BANCAIRES;COTIS SECURIPLUS ABP;0098707;XCASD800 2025072400098707000001-Contrat n       ASD0003483151;Frais bancaires;Banque et assurances;Frais bancaires;-31,50;;24/07/2025;24/07/2025;x
+25/07/2025;FRAIS BANCAIRES;FRAIS COM INTERVENTION;0098705;XCEBR400 2025072400098705000001-6/5*PRLV SPORTING FORM      *69?;Frais bancaires;Banque et assurances;Frais bancaires;-0,50;;09/05/2025;24/07/2025;x
+25/07/2025;FRAIS BANCAIRES;FRAIS COM INTERVENTION;0098704;XCEBR400 2025072400098704000001-7/5*PRLV BASIC FIT FRANCE*34,99?;Frais bancaires;Banque et assurances;Frais bancaires;-4,00;;09/05/2025;24/07/2025;x
+25/07/2025;FRAIS BANCAIRES;FRAIS PRELEVEMENT IMPAYE;0098703;XCEBR021 2025072400098703000001-7/5*PRLV BASIC FIT FRANCE*34,99?;Frais bancaires;Banque et assurances;Frais bancaires;-6,00;;09/05/2025;24/07/2025;x
+25/07/2025;FRAIS BANCAIRES;FRAIS PRELEVEMENT IMPAYE;0098702;XCEBR021 2025072400098702000001-6/5*PRLV SPORTING FORM      *69?;Frais bancaires;Banque et assurances;Frais bancaires;-6,00;;09/05/2025;24/07/2025;x
+24/07/2025;Kean De Souza;VIR INST Kean De Souza;WLEN981;Envoye depuis Revolut-NOTPROVIDED;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+50,00;24/07/2025;24/07/2025;x
+24/07/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0015413;XCCNV105 2025072300015413000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/07/2025;23/07/2025;x
+24/07/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FPW6AJ;1043639527478/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-12,00;;22/07/2025;22/07/2025;x
+23/07/2025;MC DONALD'S;MAC DONALD'S FR TOULOUSE;9EJF98Q;210725 CB****3846-3,95EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Restauration rapide;-3,95;;23/07/2025;23/07/2025;x
+22/07/2025;LIDL;LIDL 3284 FR 313284TOULOU;9CVVQGW;210725 CB****3846-6,79EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Hyper/supermarche;-6,79;;22/07/2025;22/07/2025;x
+22/07/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;9CE20N8;210725 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,20;;22/07/2025;22/07/2025;x
+22/07/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0016685;XCPCB200 2025072100016685000001-Commission CB   200725 APEX TRAD;Frais bancaires;Banque et assurances;Frais bancaires;-0,66;;21/07/2025;21/07/2025;x
+21/07/2025;APEX TRADER FUNUS 855-2739873;APEX TRADER FUNUS 855-2739873;9B8G37V;200725 CB****3846-14,70USD 1 EURO = 1,158392;Carte bancaire;Shopping et services;Shopping et services - autre;-12,69;;21/07/2025;21/07/2025;x
+21/07/2025;DYAN FR 31SAINT-GENI;DYAN FR 31SAINT-GENI;9B8G37U;200725 CB****3846-4,28EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Petit commercant;-4,28;;21/07/2025;21/07/2025;x
+21/07/2025;RETRAIT D'ESPECES TOULOUSE BASSO CAMBO EXT;RET DAB TOULOUSE BASSO CAMBO EXT;QZ50001;CARTE ******3846-RETRAIT LE 21/07/2025 A 12:10;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-20,00;;21/07/2025;21/07/2025;x
+21/07/2025;Klarna ChrisschFR Paris;Klarna ChrisschFR Paris;9B8C9WJ;200725 CB****3846-40,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-40,00;;21/07/2025;21/07/2025;x
+21/07/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;947840A;Acompte sur salaire - Kean DE SOUZA-babc06a268bf473f9c98750292e83815;Virement recu;Revenus et rentrees d'argent;Salaires;;+300,00;18/07/2025;18/07/2025;x
+20/07/2025;RETRAIT D'ESPECES TLSE BARR.DE LOMBEZ EXT;RET DAB TLSE BARR.DE LOMBEZ EXT;QB21124;CARTE ******3846-RETRAIT LE 20/07/2025 A 17:39;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-20,00;;20/07/2025;20/07/2025;x
+19/07/2025;BRICOMARCHE;SAS LAUVIER FR 31 LAUNAGUET;97XAC7Q;180725 CB****3846-44,90EUR 1 EURO = 1,000000;Carte bancaire;Logement - maison;Travaux - Entretien;-44,90;;19/07/2025;19/07/2025;x
+19/07/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;97XAC7P;180725 CB****3846-20,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-20,00;;19/07/2025;19/07/2025;x
+19/07/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;97XAC7R;180725 CB****3846-60,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-60,00;;19/07/2025;19/07/2025;x
+18/07/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;969QNH6;170725 CB****3846-30,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-30,00;;18/07/2025;18/07/2025;x
+18/07/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;95RU5PL;170725 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,50;;18/07/2025;18/07/2025;x
+17/07/2025;ADEO LEROY MERLFR COLOMIERS;ADEO LEROY MERLFR COLOMIERS;94M7BEU;160725 CB****3846-36,88EUR 1 EURO = 1,000000;Carte bancaire;Logement - maison;Travaux - Entretien;-36,88;;17/07/2025;17/07/2025;x
+17/07/2025;C.P.A.M. TOULOUSE;VIR C.P.A.M. TOULOUSE;90W5ITL;251960006373-251960006373;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+7,50;16/07/2025;16/07/2025;x
+16/07/2025;DGFIP;PRLV SEPA DIRECTION GENERALE DES;0FNWTDA;PRELEVEMENT A LA SOURCE REVENUS-NNFR46ZZZ0050023J22I6F350225PAS1;Prelevement;Impots et taxes;Impots et taxes - autre;-110,00;;15/07/2025;15/07/2025;x
+15/07/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;91B8EML;120725 CB****3846-500,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-500,00;;15/07/2025;15/07/2025;x
+15/07/2025;PAYPAL;PAYPAL HPFRANCLULUXEMBOURG;90TEHWF;140725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-5,49;;15/07/2025;15/07/2025;x
+15/07/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;90TEHWE;130725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,08;;15/07/2025;15/07/2025;x
+15/07/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WLD687A;Remboursement sante-NOTPROVIDED;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+7,50;15/07/2025;15/07/2025;x
+15/07/2025;RETRAIT D'ESPECES;RET DAB LCL CASTELGINEST;907PVE3;RETRAIT DU 12072025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-80,00;;12/07/2025;12/07/2025;x
+15/07/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FO9STV;1043415878548/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-15,06;;11/07/2025;11/07/2025;x
+11/07/2025;RETRAIT D'ESPECES;RET DAB BALMA;8TLKHBF;RETRAIT DU 10072025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-160,00;;10/07/2025;10/07/2025;x
+10/07/2025;BPCE Vie;PRLV SEPA BPCE Vie;0FLTC7R;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;09/07/2025;09/07/2025;x
+10/07/2025;AllSecur;PRLV SEPA AllSecur;0FNOFLG;AllSecur Luko by Allianz Direct-MD001AMS5ED24Z;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;09/07/2025;09/07/2025;x
+09/07/2025;CAFES MERLING-CAFES ERREL-CAFES SOUBIRA;GROUPE MERLING 17PERIGNY;8QW110M;080725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,80;;09/07/2025;09/07/2025;x
+09/07/2025;KINGSPARK;MEDIPOLE TOULOU31TOULOUSE;8QW110L;080725 CB****3846-;Carte bancaire;Transports;Peage et Stationnement;-1,60;;09/07/2025;09/07/2025;x
+09/07/2025;CAFES MERLING-CAFES ERREL-CAFES SOUBIRA;GROUPE MERLING 17PERIGNY;8QW110K;080725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-0,80;;09/07/2025;09/07/2025;x
+09/07/2025;PEAGE AUTOROUTE;ASF ROCADE EST 84VEDENE;8QW110J;080725 CB****3846-;Carte bancaire;Transports;Peage et Stationnement;-0,50;;09/07/2025;09/07/2025;x
+09/07/2025;CLINIQUE DE L'UNION;LE DELAS 31SAINT-JEAN;8QW0AG1;080725 CB****3846-;Carte bancaire;Sante;Consultation medicale;-1,50;;09/07/2025;09/07/2025;x
+09/07/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WLBXZ9S;BIPT251900300034560_C-Remboursement sante;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+13,50;09/07/2025;09/07/2025;x
+09/07/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;8NNV9CS;Acompte sur salaire - Kean DE SOUZA-e579acc94f4e4c48b89527b5b6acba0f;Virement recu;Revenus et rentrees d'argent;Salaires;;+800,00;08/07/2025;08/07/2025;x
+08/07/2025;ALIZE ALIZE LIFR GUYANCOURT;ALIZE ALIZE LIFR GUYANCOURT;8PQCZD9;070725 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;A categoriser - sortie d'argent;Paiement CB - a categoriser;-4,00;;08/07/2025;08/07/2025;x
+08/07/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;8P8HKJ0;070725 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,50;;08/07/2025;08/07/2025;x
+08/07/2025;MULTI IMPACT;PRLV SEPA SAS MULTI IMPACT;0FMIK7B;Assurance de pret (Contrat n GEH-EG2024-000777382-01;Prelevement;A categoriser - sortie d'argent;Prelevement - a categoriser;-41,95;;07/07/2025;07/07/2025;x
+08/07/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    417,64 ASS.    0,00E-     INT.    54,18 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;01/07/2025;01/07/2025;x
+07/07/2025;IZIVIA FR COURBEVOIE;IZIVIA FR COURBEVOIE;8O2TTH9;050725 CB****3846-40,00EUR 1 EURO = 1,000000;Carte bancaire;Transports;Carburant;-40,00;;07/07/2025;07/07/2025;x
+05/07/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FLWOTQ;1043248182585/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-39,99;;03/07/2025;03/07/2025;x
+05/07/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;01/07/2025;01/07/2025;x
+03/07/2025;INTERMARCHE;INTERMARCHE 31BALMA;8GYS56M;020725 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-26,10;;03/07/2025;03/07/2025;x
+03/07/2025;SMARTLOC PARIS 8;SMARTLOC 7508 PARIS 8;8GYS56L;020725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,50;;03/07/2025;03/07/2025;x
+03/07/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;8GYS56K;020725 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-1,50;;03/07/2025;03/07/2025;x
+02/07/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;8FT556Q;010725 CB****3846-600,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-600,00;;02/07/2025;02/07/2025;x
+02/07/2025;APPLE.COM/BILL IE 0805540003;APPLE.COM/BILL IE 0805540003;8FT556P;010725 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;02/07/2025;02/07/2025;x
+02/07/2025;TOTAL;RELAIS ROCADE P31TOULOUSE;8FB8GDM;010725 CB****3846-;Carte bancaire;Transports;Carburant;-72,14;;02/07/2025;02/07/2025;x
+02/07/2025;COFIDIS;COFIDIS AMAZON 59VILLENEUVE D;8FB8GDL;010725 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-30,68;;02/07/2025;02/07/2025;x
+02/07/2025;LIDL;LIDL 3284 31TOULOUSE;8FB8GDK;300625 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-5,73;;02/07/2025;02/07/2025;x
+02/07/2025;Wyll;VIR Wyll;8DQLQLV;06/2025 DE SOUZAK-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1568,27;01/07/2025;01/07/2025;x
+01/07/2025;DECATHLON;DECATHLON 0018 31PORTET SUR GA;8DNPWC5;300625 CB****3846-;Carte bancaire;Loisirs et vacances;Sport, Gym et Equipement;-22,97;;01/07/2025;01/07/2025;x
+01/07/2025;PAYPAL;PAYPAL LINKEDILUXEMBOURG;8C03859;280625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;;+52,06;30/06/2025;30/06/2025;x
+30/06/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;8CIB4IV;290625 CB****3846-120,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-120,00;;30/06/2025;30/06/2025;x
+30/06/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;8CIB4IU;290625 CB****3846-10,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-10,00;;30/06/2025;30/06/2025;x
+30/06/2025;CHARGEMAP STRASBOURG;CHARGEMAP 6700 STRASBOURG;8C0BMAF;290625 CB****3846-;Carte bancaire;Transports;Trains, avions et ferrys;-14,90;;30/06/2025;30/06/2025;x
+30/06/2025;BOURSORAMA BANQUE;BOURSORAMA 92BOULOGNE BILL;8C0A6SI;280625 CB****3846-;Carte bancaire;Banque et assurances;Banque et assurance - autre;-100,00;;30/06/2025;30/06/2025;x
+30/06/2025;PAYPAL;PAYPAL LINKEDILULUXEMBOURG;8C0A6SH;280625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-52,06;;30/06/2025;30/06/2025;x
+30/06/2025;PAYPAL;PAYPAL BULENOXLULUXEMBOURG;8C0A6SG;280625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-17,26;;30/06/2025;30/06/2025;x
+30/06/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FK8T25;1043107330776/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-12,00;;27/06/2025;27/06/2025;x
+27/06/2025;FRAIS BANCAIRES;INTERETS DE RETARD;8782882;;Frais bancaires;Banque et assurances;Frais bancaires;-1,45;;27/06/2025;27/06/2025;x
+27/06/2025;ECHEANCE DE CREDIT;IMP REGUL ECHEANCE PRET;8782882;;Pret;Logement - maison;Credit immobilier;-471,82;;27/06/2025;27/06/2025;x
+27/06/2025;C.P.A.M. TOULOUSE;VIR C.P.A.M. TOULOUSE;83TFTOP;251760005650-;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+911,13;26/06/2025;26/06/2025;x
+25/06/2025;FRAIS BANCAIRES;FRAIS SUR SAISIE ADMIN;0097996;XCSAR214 2025062400097996000001-;Frais bancaires;Banque et assurances;Frais bancaires;-100,00;;22/04/2025;24/06/2025;x
+25/06/2025;FRAIS BANCAIRES;FRAIS COM INTERVENTION;0097995;XCEBR400 2025062400097995000001-15/4*PRLV PayPal Europe S.*8,23?;Frais bancaires;Banque et assurances;Frais bancaires;-4,00;;16/04/2025;24/06/2025;x
+24/06/2025;LIDL;LIDL 3284 31TOULOUSE;822XOLN;230625 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-4,93;;24/06/2025;24/06/2025;x
+24/06/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0016167;XCPCB200 2025062300016167000001-Commission CB   220625 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;23/06/2025;23/06/2025;x
+24/06/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0016166;XCCNV105 2025062300016166000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/06/2025;23/06/2025;x
+23/06/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;80XEOFN;220625 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;23/06/2025;23/06/2025;x
+23/06/2025;BOURSORAMA BANQUE;BOURSORAMA 92BOULOGNE BILL;80FIGQE;210625 CB****3846-;Carte bancaire;Banque et assurances;Banque et assurance - autre;-10,00;;23/06/2025;23/06/2025;x
+23/06/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FIXRZA;1042944409551/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-15,34;;19/06/2025;19/06/2025;x
+21/06/2025;Klarna ChrisschFR Paris;Klarna ChrisschFR Paris;7XM8IHG;200625 CB****3846-40,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-40,00;;21/06/2025;21/06/2025;x
+20/06/2025;Kean De Souza;VIR INST Kean De Souza;WL7J67N;BIPT251710300613431_C-Envoye depuis Revolut;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+60,00;20/06/2025;20/06/2025;x
+18/06/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;7SNLY5A;170625 CB****3846-180,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-180,00;;18/06/2025;18/06/2025;x
+18/06/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;7S5QFIV;170625 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;18/06/2025;18/06/2025;x
+17/06/2025;DECATHLON;DECATHLON 0018 31PORTET SUR GA;7QI6TFW;160625 CB****3846-;Carte bancaire;Loisirs et vacances;Sport, Gym et Equipement;-16,98;;17/06/2025;17/06/2025;x
+17/06/2025;X CORP. PAID FEET78602 BASTROP;X CORP. PAID FEET78602 BASTROP;7QI67LC;160625 CB****3846-;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-9,60;;17/06/2025;17/06/2025;x
+16/06/2025;4661 Toulouse P31Toulouse;4661 Toulouse P31Toulouse;7OUSLU8;140625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-9,85;;16/06/2025;16/06/2025;x
+14/06/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;7LJJ244;130625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,08;;14/06/2025;14/06/2025;x
+14/06/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0015889;XCPCB200 2025061300015889000001-Commission CB   120625 FFN PROP;Frais bancaires;Banque et assurances;Frais bancaires;-1,57;;13/06/2025;13/06/2025;x
+14/06/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0015888;XCPCB200 2025061300015888000001-Commission CB   120625 FFN PROP;Frais bancaires;Banque et assurances;Frais bancaires;-1,57;;13/06/2025;13/06/2025;x
+13/06/2025;FFN PROP DESK US WWW.FUNDEDFU;FFN PROP DESK US WWW.FUNDEDFU;7KDXIV0;120625 CB****3846-50,00USD 1 EURO = 1,140510;Carte bancaire;Shopping et services;Shopping et services - autre;-43,84;;13/06/2025;13/06/2025;x
+13/06/2025;FFN PROP DESK US WWW.FUNDEDFU;FFN PROP DESK US WWW.FUNDEDFU;7KDXIUZ;120625 CB****3846-50,00USD 1 EURO = 1,140510;Carte bancaire;Shopping et services;Shopping et services - autre;-43,84;;13/06/2025;13/06/2025;x
+13/06/2025;PAYPAL;PAYPAL TRADINGLULUXEMBOURG;7JW17DU;120625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-62,07;;13/06/2025;13/06/2025;x
+13/06/2025;PAYPAL;PAYPAL ADD TO LULUXEMBOURG;7JW17DT;110625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-39,99;;13/06/2025;13/06/2025;x
+13/06/2025;PAYPAL;PAYPAL TRADINGLULUXEMBOURG;7JW17DS;120625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-21,88;;13/06/2025;13/06/2025;x
+13/06/2025;PAYPAL;PAYPAL HPFRANCLULUXEMBOURG;7JW17DR;110625 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-5,49;;13/06/2025;13/06/2025;x
+12/06/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;7IQE5HX;110625 CB****3846-30,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-30,00;;12/06/2025;12/06/2025;x
+12/06/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;7IQE5HY;110625 CB****3846-600,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-600,00;;12/06/2025;12/06/2025;x
+12/06/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;7GNV8WH;Acompte sur salaire - Kean DE SO-UZA;Virement recu;Revenus et rentrees d'argent;Salaires;;+800,00;11/06/2025;11/06/2025;0
+12/06/2025;Airbnb LU Luxembourg;Airbnb LU Luxembourg;7GKVL41;100625 CB****3846-;Carte bancaire;Loisirs et vacances;Loisirs et vacances - autre;;+31,58;11/06/2025;11/06/2025;x
+12/06/2025;BPCE Vie;PRLV SEPA BPCE Vie;0FFCHLU;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;11/06/2025;11/06/2025;x
+11/06/2025;AllSecur;PRLV SEPA AllSecur;0FGY491;AllSecur Luko by Allianz Direct-MD001AMS5ED24Z;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;10/06/2025;10/06/2025;x
+11/06/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;02/06/2025;02/06/2025;x
+03/06/2025;PEAGE AUTOROUTE;ASF AIGUILLON 84VEDENE;73CO01D;020625 CB****3846-;Carte bancaire;Transports;Peage et Stationnement;-13,00;;03/06/2025;03/06/2025;x
+03/06/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0024266;XCPCB200 2025060200024266000001-Commission CB   300525 FFN PROP;Frais bancaires;Banque et assurances;Frais bancaires;-2,22;;02/06/2025;02/06/2025;x
+03/06/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0024265;XCPCB200 2025060200024265000001-Commission CB   310525 FINOTIVE;Frais bancaires;Banque et assurances;Frais bancaires;-1,08;;02/06/2025;02/06/2025;x
+02/06/2025;APPLE.COM/BILL IE ITUNES.COM;APPLE.COM/BILL IE ITUNES.COM;7274G19;010625 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;02/06/2025;02/06/2025;x
+02/06/2025;OVH;OVH SAS 59Roubaix;71P9NUW;010625 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-11,99;;02/06/2025;02/06/2025;x
+02/06/2025;FFN PROP DESK US WWW.FUNDEDFU;FFN PROP DESK US WWW.FUNDEDFU;7270H5F;300525 CB****3846-75,00USD 1 EURO = 1,131221;Carte bancaire;Shopping et services;Shopping et services - autre;-66,30;;02/06/2025;02/06/2025;x
+02/06/2025;FINOTIVE FUNDINCY LIMASSOL;FINOTIVE FUNDINCY LIMASSOL;7270H5E;310525 CB****3846-30,80USD 1 EURO = 1,131105;Carte bancaire;Education et famille;Soutien scolaire;-27,23;;02/06/2025;02/06/2025;x
+02/06/2025;LEROY MERLIN;LEROY MERLIN 31BALMA;71P8GV9;010625 CB****3846-;Carte bancaire;Logement - maison;Travaux - Entretien;-82,37;;02/06/2025;02/06/2025;x
+02/06/2025;CASTORAMA;CASTORAMA 31L'UNION 1471/;71P8GV8;010625 CB****3846-;Carte bancaire;Logement - maison;Travaux - Entretien;-69,69;;02/06/2025;02/06/2025;x
+02/06/2025;ESSO AUCAMVILLE;CERTAS ESSOF33631AUCAMVILLE;71P8GV7;310525 CB****3846-;Carte bancaire;Transports;Carburant;-62,22;;02/06/2025;02/06/2025;x
+02/06/2025;CERBALLIANCE OCCITANIE;LABO AUCAMVILLE31AUCAMVILLE;71P8GV6;310525 CB****3846-;Carte bancaire;Sante;Consultation medicale;-22,00;;02/06/2025;02/06/2025;x
+02/06/2025;SUBWAY;SUBWAY 64LESCAR;71P8GV5;310525 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-21,40;;02/06/2025;02/06/2025;x
+02/06/2025;Wyll;VIR Wyll;6WTGI81;05/2025 DE SOUZAK-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1197,90;30/05/2025;30/05/2025;x
+02/06/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FE2I0G;1042489521260/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-17,80;;30/05/2025;30/05/2025;x
+02/06/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FE2HXT;1042489719211/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-27,59;;30/05/2025;30/05/2025;x
+02/06/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FDWI1N;1042475903092/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-15,00;;29/05/2025;29/05/2025;x
+31/05/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;6YVYJC8;300525 CB****3846-250,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-250,00;;31/05/2025;31/05/2025;0
+31/05/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;6YVYJC7;300525 CB****3846-100,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-100,00;;31/05/2025;31/05/2025;0
+27/05/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0016083;XCPCB200 2025052600016083000001-Commission CB   250525 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;26/05/2025;26/05/2025;x
+27/05/2025;FRAIS BANCAIRES;FRAIS COM INTERVENTION;0091377;XCEBR400 2025052400091377000001-28/2*PRLV PayPal Europe S*98,46?;Frais bancaires;Banque et assurances;Frais bancaires;-4,00;;04/03/2025;24/05/2025;x
+26/05/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;6QMCZVG;250525 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;26/05/2025;26/05/2025;x
+24/05/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0015631;XCCNV105 2025052300015631000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/05/2025;23/05/2025;x
+23/05/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;6L5QPKW;220525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-7,68;;23/05/2025;23/05/2025;x
+22/05/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;6K03KDH;210525 CB****3846-20,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-20,00;;22/05/2025;22/05/2025;x
+22/05/2025;BASIC FIT II;PRLV SEPA BASIC FIT FRANCE;0FCLM4M;B65005355;Prelevement;Loisirs et vacances;Sport, Gym et Equipement;-34,99;;21/05/2025;21/05/2025;x
+21/05/2025;RESTO LE BILLOT31CUGNAUX;RESTO LE BILLOT31CUGNAUX;6HUNRDQ;200525 CB****3846-;Carte bancaire;Alimentation;Restaurant;-29,30;;21/05/2025;21/05/2025;x
+21/05/2025;AMAZON;AMAZON PRIME FR75PAYLI2469664/;6HUNRDP;200525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-6,99;;21/05/2025;21/05/2025;x
+21/05/2025;C.P.A.M. TOULOUSE;VIR C.P.A.M. TOULOUSE;6EMINWP;251390006530-;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+4,40;20/05/2025;20/05/2025;x
+20/05/2025;LIDL;LIDL 3657 31TOULOUSE;6G74VK4;190525 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-7,11;;20/05/2025;20/05/2025;x
+20/05/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;6G74VK3;190525 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;20/05/2025;20/05/2025;x
+20/05/2025;RESTO SARL ALY 31SAINT GENIES;RESTO SARL ALY 31SAINT GENIES;6G749RG;190525 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-14,00;;20/05/2025;20/05/2025;x
+20/05/2025;AMZ DIGITAL FRA92PAYLI2125856/;AMZ DIGITAL FRA92PAYLI2125856/;6G749RF;190525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,99;;20/05/2025;20/05/2025;x
+20/05/2025;FREE MOBILE;PRLV SEPA FREE MOBILE;0FC85F4;FM-54297415-1;Prelevement;Logement - maison;Internet et telephonie;-16,64;;19/05/2025;19/05/2025;x
+19/05/2025;NCH 31TOULOUSE;NCH 31TOULOUSE;6EJQHB4;160525 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-29,50;;19/05/2025;19/05/2025;x
+19/05/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;6EJQHB3;190525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-26,40;;19/05/2025;19/05/2025;x
+19/05/2025;OVH;OVH SAS 59Roubaix;6EJQHB2;180525 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-5,41;;19/05/2025;19/05/2025;x
+19/05/2025;CARREFOUR EXPRE31TOULOUSE;CARREFOUR EXPRE31TOULOUSE;6EJQHB1;170525 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-3,60;;19/05/2025;19/05/2025;x
+19/05/2025;LEROY MERLIN;LEROY MERLIN 31COLOMIERS;6EJKJT9;180525 CB****3846-;Carte bancaire;Logement - maison;Travaux - Entretien;-62,57;;19/05/2025;19/05/2025;x
+19/05/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WL0KEG6;BIPT251390300072203_C-Remboursement sante;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+9,00;19/05/2025;19/05/2025;x
+19/05/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;69NW1I8;Acompte sur salaire - Kean DE SO-UZA;Virement recu;Revenus et rentrees d'argent;Salaires;;+400,00;16/05/2025;16/05/2025;x
+19/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FBYK9C;1042210172311/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-15,73;;16/05/2025;16/05/2025;x
+17/05/2025;PAYPAL;PAYPAL TOPSTEPLULUXEMBOURG;6B8IE3F;160525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-92,37;;17/05/2025;17/05/2025;x
+17/05/2025;CARREFOUR AUCAM31AUCAMVILLE;CARREFOUR AUCAM31AUCAMVILLE;6B8IE3E;160525 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-3,77;;17/05/2025;17/05/2025;x
+17/05/2025;X CORP. PAID FEET78602 BASTROP;X CORP. PAID FEET78602 BASTROP;6B8H5Z8;160525 CB****3846-;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-9,60;;17/05/2025;17/05/2025;x
+17/05/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;6B8H5Z7;160525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-7,68;;17/05/2025;17/05/2025;x
+17/05/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;6B8H5Z6;160525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-7,68;;17/05/2025;17/05/2025;x
+16/05/2025;TISSEO-REGIE AU31TOULOUSE;TISSEO-REGIE AU31TOULOUSE;69L060F;140525 CB****3846-;Carte bancaire;Juridique et administratif;Juridique et administratif - autre;-1,80;;16/05/2025;16/05/2025;x
+15/05/2025;TISSEO;S6bUbcx1Qwrp 31TISSEO OPEN P;67XGU4J;140525 CB****3846-;Carte bancaire;Transports;Transports en commun;-1,80;;15/05/2025;15/05/2025;x
+14/05/2025;TISSEO-REGIE AU31TOULOUSE;TISSEO-REGIE AU31TOULOUSE;669X8A4;120525 CB****3846-;Carte bancaire;Juridique et administratif;Juridique et administratif - autre;-1,80;;14/05/2025;14/05/2025;x
+14/05/2025;BPCE Vie;PRLV SEPA BPCE Vie;0F9JOL6;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;13/05/2025;13/05/2025;x
+14/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0FAOMB7;1042078790123/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-9,23;;12/05/2025;12/05/2025;x
+13/05/2025;SPORTING FORM;SPORTING FORM 31TOULOUSE;64MCXRI;120525 CB****3846-;Carte bancaire;Shopping et services;Coiffeurs et soins du corps;-7,00;;13/05/2025;13/05/2025;x
+12/05/2025;GC RE LUKO COVER;PRLV SEPA GC RE LUKO COVER;0FA7SJ2;REF-6EE539FE95DB891AF2-VE8AJWP;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;08/05/2025;08/05/2025;x
+09/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F918M5;1041935493886/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-20,00;;06/05/2025;06/05/2025;x
+09/05/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;02/05/2025;02/05/2025;x
+09/05/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    416,64 ASS.    0,00E-     INT.    55,18 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;02/05/2025;02/05/2025;x
+07/05/2025;INT. PARTS BP;INT. PARTS BP;6005064;INTERETS EXERCICE 2024-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+0,39;06/05/2025;06/05/2025;x
+07/05/2025;De Souza Kean et Terran;VIR SEPA De Souza Kean et Terran;1426472;;Virement;A categoriser - sortie d'argent;Virement emis - a categoriser;-650,00;;05/05/2025;07/05/2025;x
+07/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F8B83F;1041883791342/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-6,41;;05/05/2025;05/05/2025;x
+06/05/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;5T1MF5K;050525 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;06/05/2025;06/05/2025;x
+06/05/2025;PRLV Prelev impots int part;PRLV Prelev impots int part;6005064;;Divers;Impots et taxes;Impots et taxes - autre;-0,05;;06/05/2025;06/05/2025;x
+06/05/2025;CSG Prelev. Sociaux int.part;CSG Prelev. Sociaux int.part;6005064;;Prelevement;Impots et taxes;Contributions sociales CSG, CRDS... ;-0,07;;06/05/2025;06/05/2025;x
+06/05/2025;AUCHAN SUPERMAR31LAUNAGUET;AUCHAN SUPERMAR31LAUNAGUET;5T1LM0Q;040525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-15,94;;06/05/2025;06/05/2025;x
+05/05/2025;SARL GIDA;RELAIS BALMA 31BALMA;5RE8CY4;040525 CB****3846-;Carte bancaire;Transports;Carburant;-30,17;;05/05/2025;05/05/2025;x
+05/05/2025;SARL GIDA;RELAIS BALMA 31BALMA;5RE8CY3;040525 CB****3846-;Carte bancaire;Transports;Carburant;-3,30;;05/05/2025;05/05/2025;x
+05/05/2025;L'HINDI;L'HINDI 31TOULOUSE;5RE6V6X;020525 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-16,00;;05/05/2025;05/05/2025;x
+05/05/2025;Wyll;VIR Wyll;5J7D03I;04/2025 DE SOUZAK-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1491,06;02/05/2025;02/05/2025;x
+05/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F7ZB7U;1041865573699/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-49,29;;02/05/2025;02/05/2025;x
+02/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F7MPU2;1041838099552/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-27,61;;30/04/2025;30/04/2025;x
+02/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F7MPJ7;1041838369069/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-55,20;;30/04/2025;30/04/2025;x
+02/05/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F7I18Z;1041799891333/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-60,89;;29/04/2025;29/04/2025;x
+01/05/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0042490;XCPCB200 2025043000042490000001-Commission CB   290425 FFN PROP;Frais bancaires;Banque et assurances;Frais bancaires;-2,22;;30/04/2025;30/04/2025;x
+30/04/2025;FFN PROP DESK US WWW.FUNDEDFU;FFN PROP DESK US WWW.FUNDEDFU;5JMA4FL;290425 CB****3846-75,00USD 1 EURO = 1,132759;Carte bancaire;Shopping et services;Shopping et services - autre;-66,21;;30/04/2025;30/04/2025;x
+30/04/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;5JMA4FK;290425 CB****3846-200,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-200,00;;30/04/2025;30/04/2025;x
+30/04/2025;Revolut 9322 FR Paris;Revolut 9322 FR Paris;5JMA4FJ;290425 CB****3846-20,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-20,00;;30/04/2025;30/04/2025;x
+30/04/2025;JEYA EXOTIQUE;JEYA EXOTIQUE S91CORBEIL ESSON;5J4EKF0;290425 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-3,60;;30/04/2025;30/04/2025;x
+30/04/2025;RETRAIT D'ESPECES;RET DAB CORBEIL ESSONNES;5IIVI0N;RETRAIT DU 29042025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-40,00;;29/04/2025;29/04/2025;x
+29/04/2025;J MARCHE ALIMENTATION GENERALE;J MARCHE 91CORBEIL ESSO;5HGUTBU;280425 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-3,40;;29/04/2025;29/04/2025;x
+29/04/2025;J MARCHE ALIMENTATION GENERALE;J MARCHE 91CORBEIL ESSO;5HGUTBT;280425 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-1,10;;29/04/2025;29/04/2025;x
+29/04/2025;O'POULET 91CORBEIL-ESSON;O'POULET 91CORBEIL-ESSON;5HGU2IL;280425 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-16,50;;29/04/2025;29/04/2025;x
+29/04/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;5FW8T6K;Acompte sur salaire - Kean DE SO-UZA;Virement recu;Revenus et rentrees d'argent;Salaires;;+400,00;28/04/2025;28/04/2025;x
+29/04/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0018922;XCPCB200 2025042800018922000001-Commission CB   270425 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;28/04/2025;28/04/2025;x
+28/04/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;5GBAJYA;270425 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;28/04/2025;28/04/2025;x
+28/04/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WKVMBFK;BIPT251180300023676_C-Remboursement sante;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+9,00;28/04/2025;28/04/2025;x
+25/04/2025;Bowling Center 31TOULOUSE;Bowling Center 31TOULOUSE;5AUPVPJ;240425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-9,00;;25/04/2025;25/04/2025;x
+25/04/2025;Bowling Center 31TOULOUSE;Bowling Center 31TOULOUSE;5AUPVPI;240425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-4,50;;25/04/2025;25/04/2025;x
+24/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F6K3GD;1041691057638/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-11,49;;23/04/2025;23/04/2025;x
+24/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F6816T;1041613586972/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-91,49;;23/04/2025;23/04/2025;x
+24/04/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0015603;XCCNV105 2025042300015603000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/04/2025;23/04/2025;x
+23/04/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;57JN45C;220425 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;23/04/2025;23/04/2025;x
+23/04/2025;FREE MOBILE;PRLV SEPA FREE MOBILE;0F67NU3;FM-54297415-1;Prelevement;Logement - maison;Internet et telephonie;-6,99;;22/04/2025;22/04/2025;x
+22/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;55W9TDI;190425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-26,40;;22/04/2025;22/04/2025;x
+22/04/2025;AMAZON;AMAZON PRIME FR75PAYLI2469664/;55W9TDH;200425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-6,99;;22/04/2025;22/04/2025;x
+22/04/2025;AMZ DIGITAL FRA92PAYLI2125856/;AMZ DIGITAL FRA92PAYLI2125856/;55W9TDG;190425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,99;;22/04/2025;22/04/2025;x
+22/04/2025;Scalapay IT Milan;Scalapay IT Milan;4Z9UUFU;170425 CB****3846-;Carte bancaire;Alimentation;Petit commercant;;+108,33;22/04/2025;22/04/2025;x
+22/04/2025;Zettle MASSON FR PENNAUTIER;Zettle MASSON FR PENNAUTIER;56E2EHQ;200425 CB****3846-15,50EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Restaurant;-15,50;;22/04/2025;22/04/2025;x
+22/04/2025;PHARMACIE DE LA CROIX DU SUD;LA CROIX DU SUD31TOULOUSE;55W5OVB;190425 CB****3846-;Carte bancaire;Sante;Consultation medicale;-9,80;;22/04/2025;22/04/2025;x
+19/04/2025;PHARMACIE DES A31AUCAMVILLE;PHARMACIE DES A31AUCAMVILLE;50XH71U;180425 CB****3846-;Carte bancaire;Sante;Pharmacie;-21,45;;19/04/2025;19/04/2025;x
+19/04/2025;Ria Money TransETVilnius;Ria Money TransETVilnius;50XFNZA;180425 CB****3846-;Carte bancaire;Banque et assurances;Banque et assurance - autre;-101,95;;19/04/2025;19/04/2025;x
+19/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;50XFNZ9;180425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-31,68;;19/04/2025;19/04/2025;x
+19/04/2025;OVH;OVH SAS 59Roubaix;50XFNZ8;180425 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-11,99;;19/04/2025;19/04/2025;x
+19/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;50XFNZ7;180425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-10,20;;19/04/2025;19/04/2025;x
+19/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;50XFNZ6;180425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-10,20;;19/04/2025;19/04/2025;x
+17/04/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;4Y4AFU6;160425 CB****3846-150,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-150,00;;17/04/2025;17/04/2025;x
+17/04/2025;X CORP. PAID FEET78602 BASTROP;X CORP. PAID FEET78602 BASTROP;4XME7FX;160425 CB****3846-;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-9,60;;17/04/2025;17/04/2025;x
+17/04/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;4UE905H;Acompte sur salaire - Kean DE SO-UZA;Virement recu;Revenus et rentrees d'argent;Salaires;;+500,00;16/04/2025;16/04/2025;x
+17/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F5Q0OW;1041554523375/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-16,46;;16/04/2025;16/04/2025;x
+17/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F5MMOE;1041548275943/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-34,05;;16/04/2025;16/04/2025;x
+16/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F5JD5R;1041496355154/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-8,23;;15/04/2025;15/04/2025;x
+15/04/2025;AMIXAR;RELAIS ROCADE O31TOULOUSE;4UBBFCS;140425 CB****3846-;Carte bancaire;Transports;Carburant;-3,50;;15/04/2025;15/04/2025;x
+14/04/2025;SAS JCB DISTRIB31TOULOUSE;SAS JCB DISTRIB31TOULOUSE;4SNWMYP;130425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-8,44;;14/04/2025;14/04/2025;x
+14/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F4X7U1;1041453394584/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-16,13;;11/04/2025;11/04/2025;x
+14/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F4JHCK;1041431964549/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-9,57;;10/04/2025;10/04/2025;x
+11/04/2025;PHARMACIE D'AUCAMVILLE;PHARM PHARMACIE31AUCAMVILLE;4NP68PV;100425 CB****3846-;Carte bancaire;Sante;Pharmacie;-8,90;;11/04/2025;11/04/2025;x
+11/04/2025;LE JARDIN DES FLEURS;SARL HELIANTHUS31TOULOUSE;4NP68PX;100425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-11,47;;11/04/2025;11/04/2025;x
+11/04/2025;Doctolib 92PARIS;Doctolib 92PARIS;4NP68PW;100425 CB****3846-;Carte bancaire;Sante;Consultation medicale;-9,00;;11/04/2025;11/04/2025;x
+11/04/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0027431;XCPCB200 2025041000027431000001-Commission CB   090425 APEX TRAD;Frais bancaires;Banque et assurances;Frais bancaires;-1,09;;10/04/2025;10/04/2025;x
+10/04/2025;APEX TRADER FUNUS 855-2739873;APEX TRADER FUNUS 855-2739873;4MJJ2JD;090425 CB****3846-29,70USD 1 EURO = 1,088709;Carte bancaire;Shopping et services;Shopping et services - autre;-27,28;;10/04/2025;10/04/2025;x
+10/04/2025;BPCE Vie;PRLV SEPA BPCE Vie;0F2GXEN;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;09/04/2025;09/04/2025;x
+10/04/2025;BASIC FIT II;PRLV SEPA BASIC FIT FRANCE;0F46195;09-04-2025 / 06-05-2025-B65005355;Prelevement;Loisirs et vacances;Sport, Gym et Equipement;-34,99;;09/04/2025;09/04/2025;x
+09/04/2025;AMIXAR;RELAIS ROCADE O31TOULOUSE;4KE4UHN;080425 CB****3846-;Carte bancaire;Transports;Carburant;-8,00;;09/04/2025;09/04/2025;x
+09/04/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;4KE4UHM;080425 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;09/04/2025;09/04/2025;x
+09/04/2025;MARIE BLACHERE 31AUCAMVILLE;MARIE BLACHERE 31AUCAMVILLE;4KE1BK3;070425 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-8,95;;09/04/2025;09/04/2025;x
+08/04/2025;GC RE LUKO COVER;PRLV SEPA GC RE LUKO COVER;0F3FTLQ;REF-4EEE109159630991F8-VE8AJWP;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;07/04/2025;07/04/2025;x
+08/04/2025;MULTI IMPACT;PRLV SEPA SAS MULTI IMPACT;0F39B05;Assurance de pret (Contrat n GEH-EG2024-000777382-01;Prelevement;A categoriser - sortie d'argent;Prelevement - a categoriser;-41,95;;07/04/2025;07/04/2025;x
+08/04/2025;SPORTING FORM;PRLV SEPA SPORTING FORM;0F39COC;PRLV Sporting Form Toulouse - sp-RUMSPC1181659501;Prelevement;Loisirs et vacances;Sport, Gym et Equipement;-69,00;;07/04/2025;07/04/2025;x
+04/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;4C4FM6U;040425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-11,00;;04/04/2025;04/04/2025;x
+04/04/2025;SAS JCB DISTRIB31TOULOUSE;SAS JCB DISTRIB31TOULOUSE;4C4ESNW;030425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-11,07;;04/04/2025;04/04/2025;x
+04/04/2025;ORANGE;PRLV SEPA Orange SA-ORANGE;0F2EY9I;Votre abonnement mobile:06XXXXX-EPCB202310034105759;Prelevement;Logement - maison;Internet et telephonie;-20,99;;03/04/2025;03/04/2025;x
+04/04/2025;De Souza Kean et Terran;VIR SEPA De Souza Kean et Terran;1426472;;Virement;A categoriser - sortie d'argent;Virement emis - a categoriser;-650,00;;03/04/2025;04/04/2025;x
+03/04/2025;AMAZON;AMAZON PAYMENTSFR PAYLI2441535;4AYRKRY;010425 CB****3846-38,97EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-38,97;;03/04/2025;03/04/2025;x
+03/04/2025;APPLE.COM/BILL IE 0805540003;APPLE.COM/BILL IE 0805540003;4AYRKRX;020425 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;03/04/2025;03/04/2025;x
+03/04/2025;RHEA DIGITAL PABEBE BRUSS;RHEA DIGITAL PABEBE 1050 BRUSS;4AGVIWV;020425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-49,50;;03/04/2025;03/04/2025;x
+03/04/2025;SMARTLOC PARIS 8;SMARTLOC 7508 PARIS 8;4AGVIWU;020425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,50;;03/04/2025;03/04/2025;x
+03/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F1XHNM;1041239744654/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-6,77;;02/04/2025;02/04/2025;x
+03/04/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;01/04/2025;01/04/2025;x
+03/04/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    416,13 ASS.    0,00E-     INT.    55,69 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;01/04/2025;01/04/2025;x
+02/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;48TCSY1;020425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-80,00;;02/04/2025;02/04/2025;x
+02/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;48TCSY0;020425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;02/04/2025;02/04/2025;x
+02/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;48TCSXZ;020425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;02/04/2025;02/04/2025;x
+02/04/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;48TCSXY;020425 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;02/04/2025;02/04/2025;x
+02/04/2025;Wyll;VIR Wyll;45L9KPH;03/2025 DE SOUZAK-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1888,77;01/04/2025;01/04/2025;0
+02/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F1GM8O;1041176034616/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-18,78;;01/04/2025;01/04/2025;x
+02/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F1GMKE;1041176180840/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-29,11;;01/04/2025;01/04/2025;x
+02/04/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0F1GM23;1041176786527/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-58,19;;01/04/2025;01/04/2025;x
+01/04/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;475T18M;310325 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;01/04/2025;01/04/2025;x
+01/04/2025;PHARMACIE DES A31AUCAMVILLE;PHARMACIE DES A31AUCAMVILLE;475T18L;310325 CB****3846-;Carte bancaire;Sante;Pharmacie;-4,95;;01/04/2025;01/04/2025;x
+01/04/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0036131;XCPCB200 2025033100036131000001-Commission CB   300325 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;31/03/2025;31/03/2025;x
+31/03/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;46085KI;300325 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;31/03/2025;31/03/2025;x
+29/03/2025;PIZZA PASSION;PIZZA PASSION 31AUCAMVILLE;4276H0B;280325 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-4,50;;29/03/2025;29/03/2025;x
+29/03/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0018470;XCPCB200 2025032800018470000001-Commission CB   270325 APEX TRAD;Frais bancaires;Banque et assurances;Frais bancaires;-1,10;;28/03/2025;28/03/2025;x
+28/03/2025;APEX TRADER FUNUS 855-2739873;APEX TRADER FUNUS 855-2739873;411IWRB;270325 CB****3846-29,70USD 1 EURO = 1,074141;Carte bancaire;Shopping et services;Shopping et services - autre;-27,65;;28/03/2025;28/03/2025;x
+28/03/2025;LA MIE NEDELEC 31FROUZINS;LA MIE NEDELEC 31FROUZINS;40JN96H;270325 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-14,10;;28/03/2025;28/03/2025;x
+27/03/2025;CASTORAMA;CASTORAMA 31L'UNION 1471/;3YW4JME;260325 CB****3846-;Carte bancaire;Logement - maison;Travaux - Entretien;-7,99;;27/03/2025;27/03/2025;x
+27/03/2025;LE FOURNIL DES SAVEURS;FOURNIL DES SAV31LAUNAGUET;3YW3WDE;260325 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-8,30;;27/03/2025;27/03/2025;x
+27/03/2025;LA BOULANGERIE DE MARIE BLACHERE;MARIE BLACHERE 31TOULOUSE 7017;3YW3WDD;260325 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-5,40;;27/03/2025;27/03/2025;x
+27/03/2025;MATEO DISTRIBUT47LE PASSAGE;MATEO DISTRIBUT47LE PASSAGE;3YW3WDC;260325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-2,50;;27/03/2025;27/03/2025;x
+27/03/2025;MATEO DISTRIBUT47LE PASSAGE;MATEO DISTRIBUT47LE PASSAGE;3YW3WDB;260325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,50;;27/03/2025;27/03/2025;x
+26/03/2025;CAFES MERLING-CAFES ERREL-CAFES SOUBIRA;DISTRI CAFE MER17PERIGNY;3X8KBW4;250325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,30;;26/03/2025;26/03/2025;x
+25/03/2025;LA BOULANGERIE DE MARIE BLACHERE;MARIE BLACHERE 31TOULOUSE 7017;3VL1EQ3;240325 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-5,40;;25/03/2025;25/03/2025;x
+25/03/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;3VL1EQ2;240325 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;25/03/2025;25/03/2025;x
+25/03/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0010027;XCCNV105 2025032300010027000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/03/2025;23/03/2025;x
+25/03/2025;FRAIS BANCAIRES;FRAIS PRELEVEMENT IMPAYE;0103719;XCEBR021 2025032400103719000001-6/1*PRLV SPORTING FORM      *48?;Frais bancaires;Banque et assurances;Frais bancaires;-6,00;;08/01/2025;24/03/2025;0
+24/03/2025;SIMPLY MARKET;AUCHAN MAG1048 31FONBEAUZARD;3TXLSAG;230325 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-53,65;;24/03/2025;24/03/2025;x
+21/03/2025;AMAZON;AMAZON PRIME FR75PAYLI2469664/;3OYVFVA;200325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-6,99;;21/03/2025;21/03/2025;x
+20/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3NBC8WV;190325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-26,40;;20/03/2025;20/03/2025;x
+20/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3NBC8WU;190325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-8,50;;20/03/2025;20/03/2025;x
+20/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3NBC8WT;190325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-8,50;;20/03/2025;20/03/2025;x
+20/03/2025;AMZ DIGITAL FRA92PAYLI2125856/;AMZ DIGITAL FRA92PAYLI2125856/;3NBC8WS;190325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,99;;20/03/2025;20/03/2025;x
+19/03/2025;Swile FR Montpellier;Swile FR Montpellier;3M5OW5A;180325 CB****3846-17,94EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;High-Tech/Electromenager;-17,94;;19/03/2025;19/03/2025;x
+19/03/2025;MARIE BLACHERE 31AUCAMVILLE;MARIE BLACHERE 31AUCAMVILLE;3LNSPZV;180325 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-6,95;;19/03/2025;19/03/2025;0
+19/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EZKJ76;1040934649073/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-28,90;;18/03/2025;18/03/2025;x
+19/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EZDD5N;1040879720711/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-35,19;;18/03/2025;18/03/2025;x
+19/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EZKKCT;1040884296781/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-37,55;;18/03/2025;18/03/2025;x
+18/03/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;3K0A2EA;170325 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;18/03/2025;18/03/2025;x
+18/03/2025;POWER NUTRITION;POWER NUTRITION31TOURNEFEUILLE;3K09CP3;170325 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-32,70;;18/03/2025;18/03/2025;x
+18/03/2025;SAIGON MARKET;Saigon Market 31CUGNAUX;3K09CP2;170325 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-7,29;;18/03/2025;18/03/2025;x
+17/03/2025;RETRAIT D'ESPECES TOULOUSE ST SIMON SAS;RET DAB TOULOUSE ST SIMON SAS;QQM5022;CARTE ******3846-RETRAIT LE 17/03/2025 A 18:26;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-20,00;;17/03/2025;17/03/2025;x
+17/03/2025;LE LIEU 31AUCAMVILLE;LE LIEU 31AUCAMVILLE;3ICUF7Z;150325 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-34,50;;17/03/2025;17/03/2025;x
+17/03/2025;MGP Vinted 03Vilnius;MGP Vinted 03Vilnius;3ICUF7Y;160325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-28,84;;17/03/2025;17/03/2025;x
+17/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3ICUF7X;160325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-25,50;;17/03/2025;17/03/2025;x
+17/03/2025;X CORP. PAID FEET78602 BASTROP;X CORP. PAID FEET78602 BASTROP;3ICUF7W;160325 CB****3846-;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-9,60;;17/03/2025;17/03/2025;x
+17/03/2025;WYLL.IO;VIR WYLL.IO;3DH1IMZ;;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+500,00;14/03/2025;14/03/2025;x
+15/03/2025;ZETTLE MASSON FR PENNAUTIER;ZETTLE MASSON FR PENNAUTIER;3FJJZ1Y;140325 CB****3846-23,50EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Restaurant;-23,50;;15/03/2025;15/03/2025;x
+15/03/2025;COFIDIS;AMAZON 59VILLENEUVE D;3F1NJK3;140325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-38,10;;15/03/2025;15/03/2025;x
+15/03/2025;ALMA;Alma 92176 Avenue Ch;3F1M8UN;140325 CB****3846-;Carte bancaire;Logement - maison;Ameublement et appareil;-42,52;;15/03/2025;15/03/2025;x
+14/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3DE41JP;130325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,20;;14/03/2025;14/03/2025;x
+14/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3DE41JO;130325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,20;;14/03/2025;14/03/2025;x
+13/03/2025;Swile FR Montpellier;Swile FR Montpellier;3C8H600;120325 CB****3846-14,40EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;High-Tech/Electromenager;-14,40;;13/03/2025;13/03/2025;x
+13/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3BQKZP5;120325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-25,50;;13/03/2025;13/03/2025;x
+13/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3BQKZP4;120325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-23,00;;13/03/2025;13/03/2025;x
+13/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;3BQKZP3;120325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-23,00;;13/03/2025;13/03/2025;x
+13/03/2025;BASIC FIT II;PRLV SEPA BASIC FIT FRANCE;0EYMZFL;B65005355;Prelevement;Loisirs et vacances;Sport, Gym et Equipement;-34,99;;12/03/2025;12/03/2025;x
+12/03/2025;BPCE Vie;PRLV SEPA BPCE Vie;0EWHF9H;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;11/03/2025;11/03/2025;x
+12/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EYC6B3;1040764680819/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-9,67;;11/03/2025;11/03/2025;x
+12/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EYE9XG;1040785073613/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-16,35;;11/03/2025;11/03/2025;x
+11/03/2025;ORANGE;PRLV SEPA Orange SA-ORANGE;0EXYL5U;Votre abonnement mobile:06XXXXX-EPCB202310034105759;Prelevement;Logement - maison;Internet et telephonie;-19,76;;10/03/2025;10/03/2025;x
+11/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EXRKBK;1040713886108/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-38,33;;10/03/2025;10/03/2025;x
+11/03/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0012883;XCPCB200 2025030800012883000001-Commission CB   080325 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;08/03/2025;08/03/2025;x
+10/03/2025;SAMA BEYROUTH;SAMA BEYROUTH 31SAINT-ALBAN;36S32HJ;080325 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-20,50;;10/03/2025;10/03/2025;x
+10/03/2025;PAYPAL;PAYPAL AROMA ZLULUXEMBOURG;36S32HI;070325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-18,65;;10/03/2025;10/03/2025;x
+10/03/2025;PHARMACIE DE LA TOUR;PHARMACIE LA TO31CASTELGINEST;36S32HH;080325 CB****3846-;Carte bancaire;Sante;Pharmacie;-9,00;;10/03/2025;10/03/2025;x
+08/03/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;33YSUVV;080325 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;08/03/2025;08/03/2025;x
+08/03/2025;NEMO CREDIT MANAGEMENT - PAYCHEQUE;HPY CABOT FF 69CALUIRE-ET-CU;33GWA90;070325 CB****3846-;Carte bancaire;Juridique et administratif;Juridique et administratif - autre;-43,69;;08/03/2025;08/03/2025;x
+08/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;33GUV71;070325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-23,00;;08/03/2025;08/03/2025;x
+08/03/2025;PHARMACIE LAFAYETTE;PHARMACIE ST CA31L'UNION;33GUV70;070325 CB****3846-;Carte bancaire;Sante;Pharmacie;-15,85;;08/03/2025;08/03/2025;x
+07/03/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;32B93M1;060325 CB****3846-600,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-600,00;;07/03/2025;07/03/2025;x
+07/03/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;32B93M0;060325 CB****3846-60,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-60,00;;07/03/2025;07/03/2025;x
+07/03/2025;RHEA DIGITAL PABEBE BRUSS;RHEA DIGITAL PABEBE 1050 BRUSS;31TD0MW;060325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-50,70;;07/03/2025;07/03/2025;x
+07/03/2025;PAYPAL;PAYPAL ENERGETLULUXEMBOURG;31TD0MV;050325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-31,37;;07/03/2025;07/03/2025;x
+07/03/2025;C.P.A.M. TOULOUSE;VIR C.P.A.M. TOULOUSE;2YL7ZW7;250640006435-;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+1002,64;06/03/2025;06/03/2025;x
+07/03/2025;parents en confiance;PRLV SEPA parents en confiance;0EX77X7;PARENTS-EN-CONFIANCE-YG7ZV0O2KSK5GYA5;Prelevement;Sante;Consultation medicale;-39,50;;06/03/2025;06/03/2025;x
+06/03/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WKLNOAB;BIPT250650300109159_C-Remboursement sante;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+30,00;06/03/2025;06/03/2025;x
+06/03/2025;GC RE LUKO COVER;PRLV SEPA GC RE LUKO COVER;0EWRBQI;REF-4F4725D0BC7DB164A4-VE8AJWP;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;05/03/2025;05/03/2025;x
+06/03/2025;SPORTING FORM;PRLV SEPA SPORTING FORM;0EWLXRL;PRLV Sporting Form Toulouse - sp-RUMSPC1181659501;Prelevement;Loisirs et vacances;Sport, Gym et Equipement;-48,00;;05/03/2025;05/03/2025;x
+06/03/2025;RETRAIT D'ESPECES;RET DAB GDV TOULOUSE BON;2ZKBE3C;RETRAIT DU 05032025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-100,00;;05/03/2025;05/03/2025;x
+05/03/2025;FR1810285576 FR LONDON;FR1810285576 FR LONDON;2Z069DD;040325 CB****3846-203,95EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-203,95;;05/03/2025;05/03/2025;x
+05/03/2025;LIDL;LIDL 3284 31TOULOUSE;2YIAASC;040325 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-8,51;;05/03/2025;05/03/2025;x
+05/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EW87PT;1040578457422/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-7,01;;04/03/2025;04/03/2025;x
+05/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EW85QR;1040576078624/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-19,39;;04/03/2025;04/03/2025;x
+05/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EW85HX;1040578864466/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-60,07;;04/03/2025;04/03/2025;x
+05/03/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0017662;XCPCB200 2025030400017662000001-Commission CB   030325 CUE WEB A;Frais bancaires;Banque et assurances;Frais bancaires;-1,78;;04/03/2025;04/03/2025;x
+05/03/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;03/03/2025;03/03/2025;x
+05/03/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    415,63 ASS.    0,00E-     INT.    56,19 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;03/03/2025;03/03/2025;x
+04/03/2025;CUE WEB APP US CUEWEBAPP.CO;CUE WEB APP US CUEWEBAPP.CO;2XCMMVP;030325 CB****3846-53,00USD 1 EURO = 1,035965;Carte bancaire;Loisirs et vacances;Expo, musee, cinema;-51,16;;04/03/2025;04/03/2025;0
+04/03/2025;APPLE.COM/BILL IE CORK;APPLE.COM/BILL IE CORK;2XCMMVO;030325 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;04/03/2025;04/03/2025;x
+04/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;2WURCJW;040325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-11,00;;04/03/2025;04/03/2025;x
+04/03/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;2WURCJV;030325 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;04/03/2025;04/03/2025;x
+04/03/2025;Airbnb LULU Luxembourg;Airbnb LULU Luxembourg;2WUQNZI;030325 CB****3846-;Carte bancaire;Loisirs et vacances;Loisirs et vacances - autre;-31,58;;04/03/2025;04/03/2025;x
+04/03/2025;Wyll;VIR Wyll;2QBKV34;02/2025 DE SOUZAK-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1554,02;03/03/2025;03/03/2025;x
+04/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EVSY18;1040564835629/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-30,05;;03/03/2025;03/03/2025;x
+04/03/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EVEU14;1040542968076/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-98,46;;28/02/2025;28/02/2025;x
+03/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;2V7D4L7;030325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;03/03/2025;03/03/2025;x
+03/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;2V7D4L6;030325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;03/03/2025;03/03/2025;x
+03/03/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;2V7D4L5;030325 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;03/03/2025;03/03/2025;x
+26/02/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;2NFEPZK;250225 CB****3846-15,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-15,00;;26/02/2025;26/02/2025;x
+25/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EU9SK2;1040400189412/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-279,00;;24/02/2025;24/02/2025;x
+25/02/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0009737;XCCNV105 2025022300009737000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/02/2025;23/02/2025;x
+24/02/2025;BURGER KING;BURGER KING 31TOULOUSE;2JMK5O6;210225 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-15,40;;24/02/2025;24/02/2025;x
+22/02/2025;MAKE SUSHI;MAKE SUSHI 31TOULOUSE;2GBCYMA;210225 CB****3846-;Carte bancaire;Alimentation;Restaurant;-32,50;;22/02/2025;22/02/2025;x
+22/02/2025;PHARMACIE LAFAYETTE;PHARMACIE ST CA31L'UNION;2GBBO9W;210225 CB****3846-;Carte bancaire;Sante;Pharmacie;-23,14;;22/02/2025;22/02/2025;x
+20/02/2025;AMAZON;AMAZON PRIME FR75PAYLI2469664/;2D0BGBK;200225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-6,99;;20/02/2025;20/02/2025;x
+20/02/2025;AMZ DIGITAL FRA92PAYLI2125856/;AMZ DIGITAL FRA92PAYLI2125856/;2D0AP57;190225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,99;;20/02/2025;20/02/2025;x
+19/02/2025;Revolut 9309 FR Paris;Revolut 9309 FR Paris;2BUN93Q;180225 CB****3846-20,00EUR 1 EURO = 1,000000;Carte bancaire;Banque et assurances;Banque et assurance - autre;-20,00;;19/02/2025;19/02/2025;x
+19/02/2025;WYLL.IO;VIR WYLL.IO;284MIKQ;;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+400,00;18/02/2025;18/02/2025;x
+19/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0ETHJ6J;1040278418132/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-36,71;;18/02/2025;18/02/2025;x
+19/02/2025;RETRAIT D'ESPECES CHA ST JEAN DE D;RET DAB CHA ST JEAN DE D;2AR95DC;RETRAIT DU 17022025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-40,00;;17/02/2025;17/02/2025;x
+18/02/2025;INTERMARCHE;INTERMARCHE 31SAINT JEAN;29P7V5E;170225 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-24,06;;18/02/2025;18/02/2025;x
+18/02/2025;PAYPAL;PAYPAL AIRVPNDLULUXEMBOURG;29P7V5D;160225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-15,00;;18/02/2025;18/02/2025;x
+18/02/2025;LIDL;LIDL 3284 31TOULOUSE;29P7V5C;170225 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-10,78;;18/02/2025;18/02/2025;x
+18/02/2025;INTERMARCHE;INTERMARCHE 31SAINT JEAN;29P7V5B;170225 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-10,42;;18/02/2025;18/02/2025;x
+17/02/2025;COFIDIS;AMAZON 59VILLENEUVE D;281R9U5;150225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-38,10;;17/02/2025;17/02/2025;x
+17/02/2025;X CORP. PAID FEET78602 BASTROP;X CORP. PAID FEET78602 BASTROP;281R9U4;160225 CB****3846-;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-9,60;;17/02/2025;17/02/2025;x
+17/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0ET9L6P;1040254490593/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-15,40;;14/02/2025;14/02/2025;x
+15/02/2025;COFIDIS;COFIDIS 59VILLENEUVE D;24QM1LT;140225 CB****3846-;Carte bancaire;Banque et assurances;Banque et assurance - autre;-62,47;;15/02/2025;15/02/2025;x
+15/02/2025;PHARMACIE DES A31AUCAMVILLE;PHARMACIE DES A31AUCAMVILLE;24QM1LS;140225 CB****3846-;Carte bancaire;Sante;Pharmacie;-20,20;;15/02/2025;15/02/2025;x
+15/02/2025;CARREFOUR CITY 31TOULOUSE;CARREFOUR CITY 31TOULOUSE;24QM1LR;140225 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-17,50;;15/02/2025;15/02/2025;x
+15/02/2025;TISSEO-REGIE AU31TOULOUSE;TISSEO-REGIE AU31TOULOUSE;24QM1LQ;130225 CB****3846-;Carte bancaire;Juridique et administratif;Juridique et administratif - autre;-3,60;;15/02/2025;15/02/2025;x
+14/02/2025;DU PAIN SUR LA 31TOULOUSE;DU PAIN SUR LA 31TOULOUSE;2333KB1;130225 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-1,90;;14/02/2025;14/02/2025;x
+14/02/2025;Kean De Souza;VIR INST Kean De Souza;WKHK8Q4;BIPT250450300106260_C-Envoye depuis Revolut;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+263,66;14/02/2025;14/02/2025;x
+13/02/2025;ELECLERC;E.LECLERC WEB FR ROUFFIAC TOL;21XF7PH;120225 CB****3846-69,10EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Hyper/supermarche;-69,10;;13/02/2025;13/02/2025;x
+13/02/2025;0392 TOULOUSE 31FENOUILLET;0392 TOULOUSE 31FENOUILLET;21FK3EV;120225 CB****3846-;Carte bancaire;Shopping et services;Vetements et chaussures;-9,49;;13/02/2025;13/02/2025;x
+13/02/2025;MARIE BLACHERE 31AUCAMVILLE;MARIE BLACHERE 31AUCAMVILLE;21FJ94Z;120225 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-15,20;;13/02/2025;13/02/2025;x
+13/02/2025;PAYPAL;PAYPAL BASIC FLULUXEMBOURG;21FJ94Y;120225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,00;;13/02/2025;13/02/2025;x
+13/02/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WKHD8DZ;BIPT250440300132318_C-Remboursement sante;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+30,00;13/02/2025;13/02/2025;x
+13/02/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0015665;XCPCB200 2025021200015665000001-Commission CB   100225 APEXTRADE;Frais bancaires;Banque et assurances;Frais bancaires;-2,65;;12/02/2025;12/02/2025;x
+12/02/2025;APEXTRADERFUNDIUS 855-2739873;APEXTRADERFUNDIUS 855-2739873;209VSTH;100225 CB****3846-83,50USD 1 EURO = 1,030355;Carte bancaire;Education et famille;Soutien scolaire;-81,04;;12/02/2025;12/02/2025;x
+12/02/2025;PHARMACIE DES A31AUCAMVILLE;PHARMACIE DES A31AUCAMVILLE;1ZS0KXE;110225 CB****3846-;Carte bancaire;Sante;Pharmacie;-38,65;;12/02/2025;12/02/2025;x
+12/02/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;1ZRZTQK;110225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-23,00;;12/02/2025;12/02/2025;x
+12/02/2025;ALMA;Alma 92176 Avenue Ch;1ZRZTQL;110225 CB****3846-;Carte bancaire;Logement - maison;Ameublement et appareil;-42,52;;12/02/2025;12/02/2025;x
+12/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0ESIDIM;1040163826657/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-10,11;;11/02/2025;11/02/2025;x
+12/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0ESNELR;1040193453796/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-17,08;;11/02/2025;11/02/2025;x
+12/02/2025;BPCE Vie;PRLV SEPA BPCE Vie;0EQWOW2;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;11/02/2025;11/02/2025;x
+11/02/2025;AMAZON;AMAZON PAYMENTSFR PAYLI2441535;1YMC4JO;090225 CB****3846-18,03EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-18,03;;11/02/2025;11/02/2025;x
+11/02/2025;AMAZON;AMAZON PAYMENTSFR PAYLI2441535;1YMC4JN;080225 CB****3846-11,99EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-11,99;;11/02/2025;11/02/2025;x
+11/02/2025;Scalapay ITIT Milan;Scalapay ITIT Milan;1Y4H10Y;100225 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-108,33;;11/02/2025;11/02/2025;x
+11/02/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;1Y4H10X;100225 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-5,00;;11/02/2025;11/02/2025;x
+11/02/2025;PAUSE-CAFE;PAUSE CAFE 31CASTELMAUROU;1Y4H10W;100225 CB****3846-;Carte bancaire;Alimentation;Petit commercant;-0,45;;11/02/2025;11/02/2025;x
+11/02/2025;TOTAL;R. ROCADE PURPA31TOULOUSE;1Y4G99F;100225 CB****3846-;Carte bancaire;Transports;Carburant;-7,70;;11/02/2025;11/02/2025;x
+11/02/2025;Kean De Souza;VIR INST Kean De Souza;WKGWHOB;BIPT250420300022305_C-Envoye depuis Revolut;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+113,07;11/02/2025;11/02/2025;x
+10/02/2025;CARREFOUR 75PARIS;CARREFOUR 75PARIS;1WH1DH8;070225 CB****3846-;Carte bancaire;Banque et assurances;Banque et assurance - autre;-28,93;;10/02/2025;10/02/2025;x
+10/02/2025;PHIE BLAGNAC 31BLAGNAC;PHIE BLAGNAC 31BLAGNAC;1WH1DH7;080225 CB****3846-;Carte bancaire;Sante;Pharmacie;-16,80;;10/02/2025;10/02/2025;x
+10/02/2025;PAYPAL;PAYPAL BOOHOO LUXEMBOURG;1RI8JPX;050225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;;+79,41;07/02/2025;07/02/2025;x
+10/02/2025;RETRAIT D'ESPECES;RET DAB GAB TOULOUSE JOL;1VVF61J;RETRAIT DU 07022025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-50,00;;07/02/2025;07/02/2025;x
+08/02/2025;ESSO;CERTAS ESSOF05531TOULOUSE;1T5UGPB;070225 CB****3846-;Carte bancaire;Transports;Carburant;-72,39;;08/02/2025;08/02/2025;x
+07/02/2025;RETRAIT D'ESPECES;RET DAB TOULOUSE ST CYPR;1QWT4EW;RETRAIT DU 07022025-CARTE :******3846;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-20,00;;07/02/2025;07/02/2025;x
+07/02/2025;SAVEUR ISTANBUL31TOULOUSE;SAVEUR ISTANBUL31TOULOUSE;1RIC5DL;060225 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-23,00;;07/02/2025;07/02/2025;x
+07/02/2025;parents en confiance;PRLV SEPA parents en confiance;0ERCS98;PARENTS-EN-CONFIANCE-YG7ZV0O2KSK5GYA5;Prelevement;Sante;Consultation medicale;-39,50;;06/02/2025;06/02/2025;x
+06/02/2025;GC RE LUKO COVER;PRLV SEPA GC RE LUKO COVER;0EQYHMZ;REF-9F91143FF63CC42BAD-VE8AJWP;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;05/02/2025;05/02/2025;x
+06/02/2025;SPORTING FORM;PRLV SEPA SPORTING FORM;0EQX5WY;+REPRESENTATION+PRLV Sporting Fo-RUMSPC1181659501;Prelevement;Loisirs et vacances;Sport, Gym et Equipement;-48,00;;05/02/2025;05/02/2025;x
+05/02/2025;ELECLERC;E.LECLERC WEB FR ROUFFIAC TOL;1OP4JXQ;040225 CB****3846-28,39EUR 1 EURO = 1,000000;Carte bancaire;Alimentation;Hyper/supermarche;-28,39;;05/02/2025;05/02/2025;x
+05/02/2025;PHARMACIE DES A31AUCAMVILLE;PHARMACIE DES A31AUCAMVILLE;1O79AA0;040225 CB****3846-;Carte bancaire;Sante;Pharmacie;-15,80;;05/02/2025;05/02/2025;x
+05/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EPZ86Z;1039972886184/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-7,02;;04/02/2025;04/02/2025;x
+05/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EQDPLF;1039998778327/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-53,69;;04/02/2025;04/02/2025;x
+05/02/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EQDR0D;1039979180384/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-99,30;;04/02/2025;04/02/2025;x
+05/02/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0016853;XCPCB200 2025020400016853000001-Commission CB   030225 APEX TRAD;Frais bancaires;Banque et assurances;Frais bancaires;-3,10;;04/02/2025;04/02/2025;x
+05/02/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;03/02/2025;03/02/2025;x
+05/02/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    415,13 ASS.    0,00E-     INT.    56,69 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;03/02/2025;03/02/2025;x
+04/02/2025;APEX TRADER FUNUS 855-2739873;APEX TRADER FUNUS 855-2739873;1N1KR6I;030225 CB****3846-100,00USD 1 EURO = 1,034875;Carte bancaire;Shopping et services;Shopping et services - autre;-96,63;;04/02/2025;04/02/2025;x
+04/02/2025;MARIE BLACHERE 31AUCAMVILLE;MARIE BLACHERE 31AUCAMVILLE;1MJPQGI;030225 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-13,40;;04/02/2025;04/02/2025;x
+04/02/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;1MJPQGH;040225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-11,00;;04/02/2025;04/02/2025;x
+04/02/2025;PHARMACIE DES A31AUCAMVILLE;PHARMACIE DES A31AUCAMVILLE;1MJPQGJ;030225 CB****3846-;Carte bancaire;Sante;Pharmacie;-50,45;;04/02/2025;04/02/2025;x
+04/02/2025;SDF DOUMALI ELH31TOULOUSE;SDF DOUMALI ELH31TOULOUSE;1MJP1DT;030225 CB****3846-;Carte bancaire;Sante;Consultation medicale;-100,00;;04/02/2025;04/02/2025;x
+04/02/2025;PICARD;PICARD 0608 31TOULOUSE;1MJP1DS;030225 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-33,33;;04/02/2025;04/02/2025;x
+04/02/2025;LE FOURNIL DES SAVEURS;FOURNIL DES SAV31LAUNAGUET;1MJP1DR;030225 CB****3846-;Carte bancaire;Alimentation;Alimentation - autre;-26,60;;04/02/2025;04/02/2025;x
+04/02/2025;Wyll;VIR Wyll;1G0JUND;01/2025 DE SOUZAK-;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+1745,73;03/02/2025;03/02/2025;x
+04/02/2025;C.P.A.M. TOULOUSE;VIR C.P.A.M. TOULOUSE;1G0JG0U;250310007712-;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+28,00;03/02/2025;03/02/2025;x
+04/02/2025;ORANGE;PRLV SEPA Orange SA-ORANGE;0EPQO7N;Votre abonnement mobile:06XXXXX-EPCB202310034105759;Prelevement;Logement - maison;Internet et telephonie;-25,99;;03/02/2025;03/02/2025;x
+04/02/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0022480;XCPCB200 2025020300022480000001-Commission CB   020225 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;03/02/2025;03/02/2025;x
+03/02/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;1LE5GU3;020225 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;03/02/2025;03/02/2025;x
+03/02/2025;APPLE.COM/BILL IE 0805540003;APPLE.COM/BILL IE 0805540003;1LE5GU2;020225 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;03/02/2025;03/02/2025;x
+03/02/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;1KWB9K8;030225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;03/02/2025;03/02/2025;x
+03/02/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;1KWB9K7;030225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;03/02/2025;03/02/2025;x
+03/02/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;1KWB9K6;030225 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;03/02/2025;03/02/2025;x
+01/02/2025;IM 31L UNION;IM 31L UNION;1HL32A5;310125 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-9,74;;01/02/2025;01/02/2025;x
+01/02/2025;PHARMACIE LAFAYETTE;PHARMACIE ST CA31L'UNION;1HL1JFM;310125 CB****3846-;Carte bancaire;Sante;Pharmacie;-16,26;;01/02/2025;01/02/2025;x
+31/01/2025;ALAN INSURANCE;VIR INST ALAN INSURANCE;WKDZMLM;BIPT250310300275935_C-Remboursement sante;Virement recu;Revenus et rentrees d'argent;Remboursements de soins;;+33,00;31/01/2025;31/01/2025;x
+31/01/2025;IKEA;IKEA TOULOUSE 31ROQUES;1FXJSLF;300125 CB****3846-;Carte bancaire;Logement - maison;Ameublement et appareil;-1,00;;31/01/2025;31/01/2025;x
+30/01/2025;PEAGE AUTOROUTE;ASF L'UNION 84VEDENE;1EA1DC9;290125 CB****3846-;Carte bancaire;Transports;Peage et Stationnement;-0,50;;30/01/2025;30/01/2025;x
+27/01/2025;CARREFOUR 75PARIS;CARREFOUR 75PARIS;19BI3U1;240125 CB****3846-;Carte bancaire;Banque et assurances;Banque et assurance - autre;-45,00;;27/01/2025;27/01/2025;x
+25/01/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;160BCNL;240125 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-2,00;;25/01/2025;25/01/2025;x
+24/01/2025;CARREFOUR EXPRE31TOULOUSE;CARREFOUR EXPRE31TOULOUSE;14CSE8R;230125 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-1,20;;24/01/2025;24/01/2025;x
+24/01/2025;COTISATIONS BANCAIRES;COTIS CONVENTION OCF;0013420;XCCNV105 2025012300013420000001-CONTRAT CNV0007690673;Frais bancaires;Banque et assurances;Frais bancaires;-1,00;;23/01/2025;23/01/2025;x
+23/01/2025;WERO M JEAN MAURICE;VIR INST WERO M JEAN MAURICE;WKCONIU;86b7aa1814bc498fb2f1d292740540b3-cc;Virement recu;A categoriser - rentree d'argent;Virement recu - a categoriser;;+50,00;23/01/2025;23/01/2025;x
+22/01/2025;RETRAIT D'ESPECES TLSE ST CYPRIEN INT;RET DAB TLSE ST CYPRIEN INT;QJM0822;CARTE ******3846-RETRAIT LE 22/01/2025 A 10:33;Retrait d'especes;A categoriser - sortie d'argent;Retrait d'especes - a categoriser;-20,00;;22/01/2025;22/01/2025;x
+22/01/2025;PAYBYPHONE 92BOULOGNE-BILL;PAYBYPHONE 92BOULOGNE-BILL;111OWK0;210125 CB****3846-;Carte bancaire;Logement - maison;Internet et telephonie;-6,00;;22/01/2025;22/01/2025;x
+22/01/2025;MIJOT 31TOULOUSE;MIJOT 31TOULOUSE;111OWK1;210125 CB****3846-;Carte bancaire;Alimentation;Restaurant;-6,40;;22/01/2025;22/01/2025;x
+20/01/2025;AMAZON;AMAZON PRIME FR75PAYLI2469664/;0XQRXSM;200125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-6,99;;20/01/2025;20/01/2025;0
+20/01/2025;PAYPAL;PAYPAL BOOHOO LULUXEMBOURG;0XQQZ81;180125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-119,39;;20/01/2025;20/01/2025;x
+20/01/2025;AU BUREAU 509 31FENOUILLET;AU BUREAU 509 31FENOUILLET;0XQQZ80;180125 CB****3846-;Carte bancaire;Alimentation;Restaurant;-49,20;;20/01/2025;20/01/2025;x
+20/01/2025;CENTRAKOR;CENTRAKOR 102 31ST ALBAN;0XQQZ7Z;180125 CB****3846-;Carte bancaire;Logement - maison;Ameublement et appareil;-35,00;;20/01/2025;20/01/2025;x
+20/01/2025;0392 TOULOUSE 31FENOUILLET;0392 TOULOUSE 31FENOUILLET;0XQQZ7Y;180125 CB****3846-;Carte bancaire;Shopping et services;Vetements et chaussures;-34,74;;20/01/2025;20/01/2025;x
+20/01/2025;INTERMARCHE;INTERMARCHE 31TOULOUSE;0XQQZ7X;180125 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-21,64;;20/01/2025;20/01/2025;x
+20/01/2025;AMZ DIGITAL FRA92PAYLI2125856/;AMZ DIGITAL FRA92PAYLI2125856/;0XQQZ7W;190125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-1,99;;20/01/2025;20/01/2025;x
+17/01/2025;PAYPAL;PAYPAL BOLT.EULULUXEMBOURG;0SS0UBY;150125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-16,10;;17/01/2025;17/01/2025;x
+17/01/2025;X CORP. PAID FEET94103 SAN FRA;X CORP. PAID FEET94103 SAN FRA;0SS0UBX;160125 CB****3846-;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-9,60;;17/01/2025;17/01/2025;x
+17/01/2025;L'HINDI;L'HINDI 31TOULOUSE;0SS0UBW;160125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-4,30;;17/01/2025;17/01/2025;x
+17/01/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0014270;XCPCB200 2025011600014270000001-Commission CB   150125 WFP.IT.;Frais bancaires;Banque et assurances;Frais bancaires;-2,30;;16/01/2025;16/01/2025;x
+16/01/2025;WFP.IT. UA DNIPRO;WFP.IT. UA DNIPRO;0RMDGWA;150125 CB****3846-2991,45UAH 1 EURO = 43,272827;Carte bancaire;Shopping et services;High-Tech/Electromenager;-69,13;;16/01/2025;16/01/2025;x
+16/01/2025;PICARD;PICARD 0608 31TOULOUSE;0R4IEPP;150125 CB****3846-;Carte bancaire;Alimentation;Hyper/supermarche;-21,78;;16/01/2025;16/01/2025;x
+16/01/2025;PAYPAL;PAYPAL BOLT.EULULUXEMBOURG;0R4HMGJ;150125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-8,20;;16/01/2025;16/01/2025;x
+15/01/2025;ESSO AUCAMVILLE;CERTAS ESSOF33631AUCAMVILLE;0PGY3C2;140125 CB****3846-;Carte bancaire;Transports;Carburant;-73,52;;15/01/2025;15/01/2025;x
+15/01/2025;ALMA;Alma 92176 Avenue Ch;0PGY3C1;140125 CB****3846-;Carte bancaire;Logement - maison;Ameublement et appareil;-42,52;;15/01/2025;15/01/2025;x
+15/01/2025;COFIDIS;AMAZON 59VILLENEUVE D;0PGY3C0;140125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-38,10;;15/01/2025;15/01/2025;x
+14/01/2025;S.A.S. WYLL.IO;VIR S.A.S. WYLL.IO;0M8SJX7;Acompte sur salaire - Kean DE SO-UZA;Virement recu;Revenus et rentrees d'argent;Salaires;;+600,00;13/01/2025;13/01/2025;x
+14/01/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EM9IHJ;1039516917954/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-10,14;;13/01/2025;13/01/2025;x
+14/01/2025;BPCE Vie;PRLV SEPA BPCE Vie;0EKOXKC;PREV 124PJ522285 PROTECTION JURI-NAEX20012012400006449712001;Prelevement;Banque et assurances;Banque et assurance - autre;-8,80;;10/01/2025;10/01/2025;x
+10/01/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;0H79BVA;090125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-11,00;;10/01/2025;10/01/2025;x
+08/01/2025;GC RE LUKO COVER;PRLV SEPA GC RE LUKO COVER;0EKK61O;REF-6919C810DFA3892336-VE8AJWP;Prelevement;Banque et assurances;Banque et assurance - autre;-11,27;;06/01/2025;06/01/2025;x
+08/01/2025;MULTI IMPACT;PRLV SEPA SAS MULTI IMPACT;0EK76NA;Assurance de pret (Contrat n GEH-EG2024-000777382-01;Prelevement;A categoriser - sortie d'argent;Prelevement - a categoriser;-41,95;;06/01/2025;06/01/2025;x
+07/01/2025;FRAIS BANCAIRES;COMMISSION FACTURETTE CB;0019305;XCPCB200 2025010600019305000001-Commission CB   050125 D J*WSJ;Frais bancaires;Banque et assurances;Frais bancaires;-0,41;;06/01/2025;06/01/2025;x
+06/01/2025;D J WSJ US 800-568-7625;D J WSJ US 800-568-7625;0B32XRO;050125 CB****3846-4,00EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-4,00;;06/01/2025;06/01/2025;x
+06/01/2025;AFFAK 31TOULOUSE;AFFAK 31TOULOUSE;0AL8XKW;050125 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-26,80;;06/01/2025;06/01/2025;x
+06/01/2025;AFFAK 31TOULOUSE;AFFAK 31TOULOUSE;0AL8XKV;050125 CB****3846-;Carte bancaire;Alimentation;Restauration rapide;-1,10;;06/01/2025;06/01/2025;x
+06/01/2025;PAYPAL;PAYPAL TOPSTEPLULUXEMBOURG;0AL7Y0H;050125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-49,84;;06/01/2025;06/01/2025;x
+06/01/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EJRM60;1039317854299/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-7,03;;03/01/2025;03/01/2025;x
+06/01/2025;ORANGE;PRLV SEPA Orange SA-ORANGE;0EJW2TP;Votre abonnement mobile:06XXXXX-EPCB202310034105759;Prelevement;Logement - maison;Internet et telephonie;-25,99;;03/01/2025;03/01/2025;x
+06/01/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782883;DONT CAP      0,07 ASS.    0,00E-     INT.   100,54 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-100,61;;02/01/2025;02/01/2025;x
+06/01/2025;ECHEANCE DE CREDIT;ECHEANCE PRET;8782882;DONT CAP    414,63 ASS.    0,00E-     INT.    57,19 COM.    0,00E;Pret;Logement - maison;Credit immobilier;-471,82;;02/01/2025;02/01/2025;x
+04/01/2025;AMAZON;AMAZON EU SARL FR PAYLI2090401;07RXHBQ;020125 CB****3846-53,80EUR 1 EURO = 1,000000;Carte bancaire;Shopping et services;Shopping et services - autre;-53,80;;04/01/2025;04/01/2025;x
+04/01/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;079ZTRZ;030125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-22,50;;04/01/2025;04/01/2025;x
+03/01/2025;APPLE.COM/BILL IE 0805540003;APPLE.COM/BILL IE 0805540003;064DXVD;020125 CB****3846-0,99EUR 1 EURO = 1,000000;Carte bancaire;Loisirs et vacances;Video, Musique et jeux;-0,99;;03/01/2025;03/01/2025;x
+03/01/2025;SMARTLOC PARIS 8;SMARTLOC 7508 PARIS 8;05MHUC8;020125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-19,50;;03/01/2025;03/01/2025;x
+03/01/2025;AMAZON;AMAZON EU SARL 75PAYLI2090401/;05MHUC7;010125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-6,65;;03/01/2025;03/01/2025;x
+02/01/2025;Revolut 9309 IE Dublin;Revolut 9309 IE Dublin;04GX3ZT;010125 CB****3846-50,00EUR 1 EURO = 1,000000;Carte bancaire;Epargne;Epargne - autre;-50,00;;02/01/2025;02/01/2025;x
+02/01/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;03Z1C7Y;020125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;02/01/2025;02/01/2025;x
+02/01/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;03Z1C7X;020125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;02/01/2025;02/01/2025;x
+02/01/2025;PHIDIAS PROPFIRETGX11 1AA GIBR;PHIDIAS PROPFIRETGX11 1AA GIBR;03Z1C7W;020125 CB****3846-;Carte bancaire;Shopping et services;Shopping et services - autre;-14,70;;02/01/2025;02/01/2025;x
+02/01/2025;PayPal;PRLV SEPA PayPal Europe S.a.r.l.;0EJAM5X;1039265386261/PAYPAL-5YTJ22535GX84;Prelevement;Shopping et services;Shopping et services - autre;-126,11;;31/12/2024;31/12/2024;x

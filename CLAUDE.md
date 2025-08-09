@@ -184,6 +184,16 @@ export DB_PASSWORD=database_password
 - Default backend URL: `http://localhost:8080/api`
 - Supports multiple environments via build flavors
 
+## Development Guidelines
+
+### Specification Clarification Process
+**MANDATORY**: Before implementing any feature or making changes:
+1. **Ask clarifying questions** about requirements and specifications until everything is clear
+2. **Confirm understanding** of the expected behavior, edge cases, and constraints
+3. **Validate assumptions** about data structures, user flows, and business logic
+4. **Only proceed with implementation** after all specifications are well-defined
+5. **Don't make assumptions** - when in doubt, ask the user for clarification
+
 ## Important Notes
 
 - **Code generation is required** for Flutter after modifying models or API clients

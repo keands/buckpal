@@ -1,12 +1,12 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import type {
-  User,
   LoginRequest,
   RegisterRequest,
   JwtResponse,
   Account,
   Category,
   Transaction,
+  CalendarDay,
   CsvUploadResponse,
   CsvColumnMappingRequest,
   CsvPreviewResponse,
@@ -39,10 +39,12 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
+        // Only redirect to login on actual authentication errors
         if (error.response?.status === 401) {
           this.setToken(null)
           window.location.href = '/login'
         }
+        // Don't redirect on other errors (404, 500, etc.)
         return Promise.reject(error)
       }
     )
@@ -209,6 +211,30 @@ class ApiClient {
     const response: AxiosResponse<Blob> = await this.client.get('/csv-import/template', {
       responseType: 'blob',
     })
+    return response.data
+  }
+
+  // Calendar
+  async getCalendarData(startDate: string, endDate: string): Promise<CalendarDay[]> {
+    const response: AxiosResponse<CalendarDay[]> = await this.client.get('/transactions/calendar', {
+      params: { startDate, endDate }
+    })
+    return response.data
+  }
+
+  // Transaction Management
+  async getTransactionCountByAccount(accountId: number): Promise<{ count: number }> {
+    const response: AxiosResponse<{ count: number }> = await this.client.get(`/transactions/account/${accountId}/count`)
+    return response.data
+  }
+
+  async deleteAllTransactionsByAccount(accountId: number, forceDelete: boolean = false): Promise<{ message: string; deletedCount: number }> {
+    const response: AxiosResponse<{ message: string; deletedCount: number }> = await this.client.delete(
+      `/transactions/account/${accountId}/all`,
+      {
+        params: { forceDelete }
+      }
+    )
     return response.data
   }
 }

@@ -1,5 +1,8 @@
 package com.buckpal.controller;
 
+import com.buckpal.dto.CalendarDayDto;
+import com.buckpal.dto.DeleteAllTransactionsResponse;
+import com.buckpal.dto.TransactionCountResponse;
 import com.buckpal.dto.TransactionDto;
 import com.buckpal.entity.Account;
 import com.buckpal.entity.Transaction;
@@ -8,6 +11,8 @@ import com.buckpal.repository.AccountRepository;
 import com.buckpal.repository.TransactionRepository;
 import com.buckpal.service.CategoryService;
 import com.buckpal.service.CsvImportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,14 +23,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/transactions")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class TransactionController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
     
     @Autowired
     private TransactionRepository transactionRepository;
@@ -141,6 +150,121 @@ public class TransactionController {
         Transaction updatedTransaction = transactionRepository.save(transaction);
         
         return ResponseEntity.ok(convertToDto(updatedTransaction));
+    }
+    
+    @GetMapping("/calendar")
+    public ResponseEntity<List<CalendarDayDto>> getCalendarData(
+            Authentication authentication,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        
+        User user = (User) authentication.getPrincipal();
+        List<Account> userAccounts = accountRepository.findByUser(user);
+        
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        
+        List<Object[]> rawData = transactionRepository
+            .findCalendarDataRawByAccountsAndDateRange(userAccounts, start, end);
+        
+        List<CalendarDayDto> calendarData = rawData.stream().map(row -> {
+            LocalDate date = (LocalDate) row[0];
+            BigDecimal totalIncome = (BigDecimal) row[1];
+            BigDecimal totalExpense = (BigDecimal) row[2];
+            BigDecimal netAmount = (BigDecimal) row[3];
+            Long transactionCount = (Long) row[4];
+            
+            return new CalendarDayDto(
+                date,
+                totalIncome != null ? totalIncome : BigDecimal.ZERO,
+                totalExpense != null ? totalExpense : BigDecimal.ZERO,
+                netAmount != null ? netAmount : BigDecimal.ZERO,
+                transactionCount != null ? transactionCount : 0L
+            );
+        }).collect(Collectors.toList());
+        
+        return ResponseEntity.ok(calendarData);
+    }
+    
+    @DeleteMapping("/account/{accountId}/all")
+    public ResponseEntity<?> deleteAllTransactionsByAccount(
+            Authentication authentication,
+            @PathVariable Long accountId,
+            @RequestParam(defaultValue = "false") Boolean forceDelete) {
+        
+        User user = (User) authentication.getPrincipal();
+        
+        logger.info("User {} attempting to delete all transactions for account {}", 
+                   user.getEmail(), accountId);
+        
+        Optional<Account> accountOpt = accountRepository.findById(accountId);
+        if (accountOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Account not found");
+        }
+        Account account = accountOpt.get();
+        
+        if (!account.getUser().getId().equals(user.getId())) {
+            logger.warn("User {} attempted to delete transactions for account {} they don't own", 
+                       user.getEmail(), accountId);
+            return ResponseEntity.status(403).body("Access denied");
+        }
+        
+        List<Transaction> transactions = transactionRepository.findByAccount(account);
+        int transactionCount = transactions.size();
+        
+        if (transactionCount == 0) {
+            logger.info("No transactions found for account {} (user: {})", accountId, user.getEmail());
+            return ResponseEntity.ok(new DeleteAllTransactionsResponse(
+                "All transactions deleted successfully", 
+                0
+            ));
+        }
+        
+        // Log the deletion action with details
+        logger.warn("PERMANENT DELETION: User {} is deleting {} transactions from account '{}' (ID: {}). " +
+                   "Force delete: {}. This action is irreversible.", 
+                   user.getEmail(), transactionCount, account.getName(), accountId, forceDelete);
+        
+        // Perform hard delete
+        try {
+            transactionRepository.deleteAll(transactions);
+            
+            logger.error("DELETION COMPLETED: {} transactions permanently deleted from account '{}' " +
+                        "(ID: {}) by user {}. This action cannot be undone.", 
+                        transactionCount, account.getName(), accountId, user.getEmail());
+            
+            return ResponseEntity.ok(new DeleteAllTransactionsResponse(
+                "All transactions permanently deleted. This action cannot be undone.", 
+                transactionCount
+            ));
+            
+        } catch (Exception e) {
+            logger.error("DELETION FAILED: Error deleting transactions for account {} (user: {}): {}", 
+                        accountId, user.getEmail(), e.getMessage(), e);
+            return ResponseEntity.status(500)
+                .body("Failed to delete transactions: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/account/{accountId}/count")
+    public ResponseEntity<?> getTransactionCountByAccount(
+            Authentication authentication,
+            @PathVariable Long accountId) {
+        
+        User user = (User) authentication.getPrincipal();
+        Optional<Account> accountOpt = accountRepository.findById(accountId);
+        if (accountOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Account not found");
+        }
+        Account account = accountOpt.get();
+        
+        if (!account.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(403).body("Access denied");
+        }
+        
+        Long count = transactionRepository.countByAccount(account);
+        
+        return ResponseEntity.ok(new TransactionCountResponse(count));
     }
     
     private TransactionDto convertToDto(Transaction transaction) {

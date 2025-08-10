@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 BuckPal is a multi-platform budget management application consisting of:
 - **Spring Boot Backend** (Java 17) with PostgreSQL database
-- **Flutter Frontend** supporting iOS, Android, and Web platforms
+- **React Web Frontend** (TypeScript, Vite, Tailwind CSS) for web interface
+- **Flutter Mobile Apps** (planned for future development after web stabilization)
 
 ## Project Structure
 
@@ -21,13 +22,17 @@ buckpal/
 │   ├── config/                    # Configuration classes
 │   └── security/                  # JWT authentication
 ├── src/test/                      # Backend unit/integration tests
-├── flutter-app/                   # Flutter multiplatform app
-│   └── lib/
-│       ├── core/                  # Utilities, constants, network
-│       └── features/              # Feature-based clean architecture
-│           ├── auth/              # Authentication
-│           ├── dashboard/         # Dashboard views
-│           └── transactions/      # Transaction management
+├── react-app/                     # React web frontend
+│   ├── src/
+│   │   ├── components/            # Reusable UI components
+│   │   ├── contexts/              # React contexts (auth, etc.)
+│   │   ├── lib/                   # Utilities and API client
+│   │   ├── pages/                 # Page components
+│   │   └── types/                 # TypeScript type definitions
+│   ├── public/                    # Static assets
+│   └── package.json               # Node.js dependencies
+├── flutter-app/                   # Flutter apps (future development)
+│   └── lib/                       # Flutter source (when implemented)
 └── pom.xml                        # Maven configuration
 ```
 
@@ -57,59 +62,57 @@ buckpal/
 - Transactions: `/api/transactions` with pagination and CSV import
 - Health checks: `/actuator/health`
 
-## Frontend Development (Flutter)
+## Frontend Development (React)
 
 ### Commands
-Navigation to flutter-app directory required for all Flutter commands:
+Navigation to react-app directory required for all React commands:
 ```bash
-cd flutter-app
+cd react-app
 ```
 
 **Essential development commands:**
-- **Install dependencies**: `flutter pub get`
-- **Generate code**: `flutter packages pub run build_runner build --delete-conflicting-outputs`
-- **Watch for changes**: `flutter packages pub run build_runner watch --delete-conflicting-outputs`
-- **Run app**: `flutter run` (mobile/desktop) or `flutter run -d web` (web)
-- **Run tests**: `flutter test`
-- **Static analysis**: `flutter analyze`
-- **Format code**: `dart format lib/ test/ --line-length 80`
+- **Install dependencies**: `npm install`
+- **Start development server**: `npm run dev`
+- **Build for production**: `npm run build`
+- **Run linting**: `npm run lint`
+- **Preview production build**: `npm run preview`
 
-**Build commands:**
-- **Web**: `flutter build web --release`
-- **Android APK**: `flutter build apk --release`
-- **Android Bundle**: `flutter build appbundle --release`
-- **iOS**: `flutter build ios --release` (macOS only)
-
-**Makefile shortcuts** (in flutter-app/):
-- `make help` - Show all available commands
-- `make setup` - Install dependencies and generate code
-- `make dev-setup` - Full development setup (clean + install + generate)
-- `make generate` - Generate code only
-- `make test` - Run tests
-- `make build` - Build for all platforms
-- `make run-web` - Run on web with custom port (8081)
+### Technology Stack
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for styling
+- **React Router** for client-side routing
+- **Axios** for API communication
+- **React Hook Form** with Zod validation
+- **Lucide React** for icons
+- **date-fns** for date manipulation
 
 ### Architecture
-- **Clean Architecture** with feature-based organization
-- **BLoC pattern** for state management
-- **Repository pattern** for data access
-- **Dependency injection** using Provider pattern
+- **Component-based architecture** with reusable UI components
+- **Context API** for state management (auth, etc.)
+- **Custom hooks** for business logic
+- **TypeScript** for type safety
+- **Responsive design** with mobile-first approach
 
 ### Key Files
-- **Entry point**: `lib/main.dart`
-- **App constants**: `lib/core/constants/app_constants.dart` (API endpoints, colors, etc.)
-- **Network client**: `lib/core/network/dio_client.dart`
-- **Secure storage**: `lib/core/storage/secure_storage.dart`
+- **Entry point**: `src/main.tsx`
+- **App component**: `src/App.tsx`
+- **API client**: `src/lib/api.ts`
+- **Type definitions**: `src/types/api.ts`
+- **Utilities**: `src/lib/utils.ts`
+- **Auth context**: `src/contexts/auth-context.tsx`
 
-### Code Generation Requirements
-- **JSON serialization**: Uses `json_annotation` and `build_runner`
-- **Generated files** have `.g.dart` extension
-- **Must run code generation** after modifying models or API clients
-- Generated files are excluded from linting in `analysis_options.yaml`
+### UI Components
+- Located in `src/components/ui/`
+- **Shadcn/ui** inspired components
+- **Tailwind CSS** for styling
+- **Responsive** and **accessible** design patterns
 
 ### Navigation
-- Uses **GoRouter** for navigation
-- Routes defined in `main.dart`: `/`, `/register`, `/dashboard`
+- Uses **React Router DOM** for routing
+- Routes defined in `src/App.tsx`
+- Protected routes with authentication guards
+- Current routes: `/login`, `/register`, `/dashboard`, `/accounts`, `/calendar`, `/csv-import`, `/settings`
 
 ## Development Workflow
 
@@ -119,17 +122,23 @@ cd flutter-app
 3. Configure environment variables or update `application.yml`
 4. Run: `mvn spring-boot:run`
 
-### Frontend Setup
+### Frontend Setup (React)
+1. Navigate to `react-app/` directory: `cd react-app`
+2. Install dependencies: `npm install`
+3. Update API endpoint in Vite config if needed (proxy configured for `/api`)
+4. Start development server: `npm run dev`
+
+### Full Development Setup
+Use the provided commands for comprehensive setup:
+- **Backend**: `mvn spring-boot:run` (runs on port 8080)
+- **Frontend**: `cd react-app && npm install && npm run dev` (runs on port 5173)
+
+### Flutter Apps (Future Development)
+When ready to implement mobile apps:
 1. Navigate to `flutter-app/` directory
 2. Install dependencies: `flutter pub get`
 3. Generate code: `flutter packages pub run build_runner build --delete-conflicting-outputs`
-4. Update API endpoint in `lib/core/constants/app_constants.dart` if needed
-5. Run: `flutter run` or `flutter run -d web`
-
-### Full Development Setup
-Use the provided scripts for comprehensive setup:
-- **Backend**: `mvn spring-boot:run`
-- **Frontend**: `cd flutter-app && make dev-setup && flutter run`
+4. Run: `flutter run` for mobile or `flutter run -d web`
 
 ## Testing
 
@@ -149,24 +158,32 @@ Use the provided scripts for comprehensive setup:
 - Run with: `mvn test`
 - **Coverage requirement**: Minimum 90% code coverage for service layer
 
-### Frontend Testing
+### Frontend Testing (React)
+- **Unit tests** for all business logic (API client, utilities, custom hooks)
+- **Component tests** for all UI components using React Testing Library
+- **Context tests** for React contexts and state management
+- **Integration tests** for complete user flows and API interactions
+- **TDD approach**: Write test files (`.test.tsx` or `.test.ts`) before implementation
+- **Mock external dependencies** using Mock Service Worker (MSW) for API calls
+- Run with: `npm test` (from react-app directory)
+- **Coverage requirement**: Run `npm run test:coverage` and maintain >85% coverage
+
+### Future Flutter Testing
+When implementing mobile apps:
 - **Unit tests** for all business logic (use cases, repositories, models)
 - **Widget tests** for all custom UI components
 - **BLoC tests** using `bloc_test` package for all state management
 - **Integration tests** for complete user flows
-- **TDD approach**: Write test files (`.test.dart`) before implementation
-- **Mock external dependencies** using Mockito
 - Run with: `flutter test` (from flutter-app directory)
-- **Coverage requirement**: Run `flutter test --coverage` and maintain >85% coverage
 
 ### TDD Best Practices
 - **Backend**: Create test classes in `src/test/java/com/buckpal/` mirroring production structure
-- **Frontend**: Create test files in `test/` directory mirroring `lib/` structure
-- **Naming convention**: `ClassNameTest.java` (backend) or `class_name_test.dart` (frontend)
+- **React Frontend**: Create test files alongside components or in `src/__tests__/` directory
+- **Naming convention**: `ClassNameTest.java` (backend) or `ComponentName.test.tsx` (React frontend)
 - **Test isolation**: Each test should be independent and repeatable
 - **Arrange-Act-Assert** pattern for test structure
-- **Edge cases**: Test null values, empty collections, error conditions
-- **Integration points**: Mock external services (Plaid API, database)
+- **Edge cases**: Test null values, empty collections, error conditions, network failures
+- **Integration points**: Mock external services (Plaid API, database, API calls)
 
 ## Environment Configuration
 
@@ -179,7 +196,14 @@ export DB_USERNAME=database_username
 export DB_PASSWORD=database_password
 ```
 
-### Flutter Configuration
+### React Configuration
+- API endpoint configured via Vite proxy in `vite.config.ts`
+- Development: API calls to `/api/*` are proxied to `http://localhost:8080/api`
+- Production: Configure base URL in `src/lib/api.ts` or environment variables
+- Environment variables using `.env` files (`.env.local`, `.env.development`, `.env.production`)
+
+### Future Flutter Configuration
+When implementing mobile apps:
 - API endpoint configured in `lib/core/constants/app_constants.dart`
 - Default backend URL: `http://localhost:8080/api`
 - Supports multiple environments via build flavors
@@ -196,9 +220,22 @@ export DB_PASSWORD=database_password
 
 ## Important Notes
 
-- **Code generation is required** for Flutter after modifying models or API clients
 - **Database migrations** handled automatically by Hibernate DDL (update mode)
-- **JWT tokens** stored securely using FlutterSecureStorage
-- **CORS configuration** in Spring Boot allows Flutter web clients
-- **Linting rules** strictly enforced for Flutter (see `analysis_options.yaml`)
-- **Multi-platform support**: Web, Android, iOS with responsive UI
+- **JWT tokens** stored securely in localStorage (React) - consider upgrading to httpOnly cookies for production
+- **CORS configuration** in Spring Boot allows React web clients
+- **Linting rules** enforced via ESLint and Prettier for React (see `.eslintrc.json`)
+- **Type safety** ensured through TypeScript across the React frontend
+- **Responsive design** implemented with Tailwind CSS mobile-first approach
+
+### Current Focus: React Web Frontend
+- Primary development focus on React web application
+- Backend API fully supports React frontend
+- Calendar feature implemented and functional
+- Mobile apps (Flutter) planned for future development once web frontend is stable
+
+### Future Mobile Development
+When ready for mobile apps:
+- **Code generation** will be required for Flutter after modifying models or API clients
+- **JWT tokens** will be stored securely using FlutterSecureStorage
+- **Multi-platform support**: Android, iOS with Flutter
+- **Design system** to be consistent between React web and Flutter mobile

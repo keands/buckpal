@@ -154,3 +154,12 @@ export interface CsvMappingTemplate {
   categoryColumnIndex?: number
   dateFormat?: string
 }
+
+// Calendar Types
+export interface CalendarDay {
+  date: string
+  totalIncome: number
+  totalExpense: number
+  netAmount: number
+  transactionCount: number
+}

@@ -7,6 +7,7 @@ import { Select } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog'
 import { 
   Plus, 
   Edit, 
@@ -16,7 +17,8 @@ import {
   Eye,
   EyeOff,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  FileX
 } from 'lucide-react'
 import type { Account } from '@/types/api'
 
@@ -49,8 +51,12 @@ export default function AccountsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDeleteTransactionsDialogOpen, setIsDeleteTransactionsDialogOpen] = useState(false)
   const [editingAccount, setEditingAccount] = useState<Account | null>(null)
   const [deletingAccount, setDeletingAccount] = useState<Account | null>(null)
+  const [deletingTransactionsAccount, setDeletingTransactionsAccount] = useState<Account | null>(null)
+  const [transactionCount, setTransactionCount] = useState<number>(0)
+  const [isDeletingTransactions, setIsDeletingTransactions] = useState(false)
   
   // Form state
   const [formData, setFormData] = useState<AccountFormData>({
@@ -210,6 +216,45 @@ export default function AccountsPage() {
     }
   }
 
+  // Delete all transactions
+  const openDeleteTransactionsDialog = async (account: Account) => {
+    try {
+      setError('')
+      // Get transaction count first
+      const countResponse = await apiClient.getTransactionCountByAccount(account.id)
+      setTransactionCount(countResponse.count)
+      setDeletingTransactionsAccount(account)
+      setIsDeleteTransactionsDialogOpen(true)
+    } catch (error: any) {
+      setError('Erreur lors de la récupération du nombre de transactions')
+    }
+  }
+
+  const handleDeleteAllTransactions = async (forceDelete: boolean) => {
+    if (!deletingTransactionsAccount) return
+
+    try {
+      setIsDeletingTransactions(true)
+      setError('')
+      
+      const result = await apiClient.deleteAllTransactionsByAccount(
+        deletingTransactionsAccount.id, 
+        forceDelete
+      )
+      
+      setIsDeleteTransactionsDialogOpen(false)
+      setDeletingTransactionsAccount(null)
+      setTransactionCount(0)
+      setSuccess(`${result.deletedCount} transactions supprimées définitivement`)
+      setTimeout(() => setSuccess(''), 5000)
+      
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Erreur lors de la suppression des transactions')
+    } finally {
+      setIsDeletingTransactions(false)
+    }
+  }
+
   const toggleAccountNumberVisibility = (accountId: number) => {
     setShowAccountNumbers(prev => ({
       ...prev,
@@ -355,23 +400,34 @@ export default function AccountsPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex space-x-2 pt-2">
+              <div className="space-y-2 pt-2">
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openEditDialog(account)}
+                    className="flex-1"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Modifier
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openDeleteDialog(account)}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => openEditDialog(account)}
-                  className="flex-1"
+                  onClick={() => openDeleteTransactionsDialog(account)}
+                  className="w-full text-orange-600 hover:text-orange-700 border-orange-200 hover:border-orange-300"
                 >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Modifier
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openDeleteDialog(account)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="w-4 h-4" />
+                  <FileX className="w-4 h-4 mr-2" />
+                  Supprimer toutes les transactions
                 </Button>
               </div>
             </CardContent>
@@ -620,6 +676,32 @@ export default function AccountsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete All Transactions Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={isDeleteTransactionsDialogOpen}
+        onClose={() => {
+          setIsDeleteTransactionsDialogOpen(false)
+          setDeletingTransactionsAccount(null)
+          setTransactionCount(0)
+        }}
+        onConfirm={handleDeleteAllTransactions}
+        title="Supprimer toutes les transactions"
+        message="Vous êtes sur le point de supprimer définitivement toutes les transactions de ce compte."
+        confirmText="Supprimer définitivement"
+        cancelText="Annuler"
+        isDestructive={true}
+        isLoading={isDeletingTransactions}
+        showForceOption={true}
+        warningDetails={
+          deletingTransactionsAccount
+            ? {
+                count: transactionCount,
+                accountName: deletingTransactionsAccount.name,
+              }
+            : undefined
+        }
+      />
     </div>
   )
 }

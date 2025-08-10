@@ -24,6 +24,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     Page<Transaction> findByAccount(Account account, Pageable pageable);
     
+    List<Transaction> findByAccount(Account account);
+    
+    Long countByAccount(Account account);
+    
     List<Transaction> findByAccountAndCategory(Account account, Category category);
     
     List<Transaction> findByAccountAndTransactionType(Account account, TransactionType transactionType);
@@ -53,4 +57,21 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("date") LocalDate date,
         @Param("amount") BigDecimal amount,
         @Param("description") String description);
+    
+    @Query("""
+        SELECT t.transactionDate as date,
+               SUM(CASE WHEN t.transactionType = 'INCOME' THEN t.amount ELSE 0 END) as totalIncome,
+               SUM(CASE WHEN t.transactionType = 'EXPENSE' THEN ABS(t.amount) ELSE 0 END) as totalExpense,
+               SUM(CASE WHEN t.transactionType = 'INCOME' THEN t.amount WHEN t.transactionType = 'EXPENSE' THEN t.amount ELSE 0 END) as netAmount,
+               COUNT(t) as transactionCount
+        FROM Transaction t
+        WHERE t.account IN :accounts
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        GROUP BY t.transactionDate
+        ORDER BY t.transactionDate
+        """)
+    List<Object[]> findCalendarDataRawByAccountsAndDateRange(
+        @Param("accounts") List<Account> accounts,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
 }

@@ -16,7 +16,9 @@
       "Bash(./gradlew:*)",
       "Bash(set PATH=E:/android-sdk/platform-tools)",
       "Bash(%PATH%)",
-      "Bash(export:*)"
+      "Bash(export:*)",
+      "Bash(npm run dev:*)",
+      "Bash(mvn:*)"
     ],
     "deny": []
   }

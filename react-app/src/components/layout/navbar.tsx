@@ -7,7 +7,8 @@ import {
   Upload, 
   Settings, 
   LogOut,
-  User 
+  User,
+  Calendar
 } from 'lucide-react'
 
 export default function Navbar() {
@@ -17,6 +18,7 @@ export default function Navbar() {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
     { name: 'Comptes', href: '/accounts', icon: CreditCard },
+    { name: 'Calendrier', href: '/calendar', icon: Calendar },
     { name: 'Import CSV', href: '/csv-import', icon: Upload },
     { name: 'Paramètres', href: '/settings', icon: Settings },
   ]

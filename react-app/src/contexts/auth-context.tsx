@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { apiClient } from '@/lib/api'
 import type { User, LoginRequest, RegisterRequest } from '@/types/api'
 
@@ -36,9 +36,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Try to fetch user info to validate token
       // For now, we'll assume token is valid if it exists
       // In a real app, you might want to validate the token with the backend
+      
+      // Try to decode JWT to get user info
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        if (payload.sub && payload.firstName && payload.lastName) {
+          const user: User = {
+            id: parseInt(payload.sub) || 0,
+            firstName: payload.firstName || '',
+            lastName: payload.lastName || '',
+            email: payload.sub || '',
+            createdAt: new Date().toISOString()
+          }
+          setUser(user)
+        }
+      } catch (error) {
+        console.warn('Could not decode JWT token:', error)
+        // Token might be invalid, clear it
+        apiClient.setToken(null)
+      }
       setIsLoading(false)
-      // You might want to decode the JWT to get user info
-      // or make a call to /api/auth/me or similar
     } else {
       setIsLoading(false)
     }

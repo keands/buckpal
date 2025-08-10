@@ -8,6 +8,7 @@ import RegisterPage from '@/pages/register'
 import DashboardPage from '@/pages/dashboard'
 import AccountsPage from '@/pages/accounts'
 import CsvImportPage from '@/pages/csv-import'
+import CalendarPage from '@/pages/calendar'
 
 function App() {
   return (
@@ -57,6 +58,20 @@ function App() {
                     <Navbar />
                     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                       <CsvImportPage />
+                    </main>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <div>
+                    <Navbar />
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                      <CalendarPage />
                     </main>
                   </div>
                 </ProtectedRoute>

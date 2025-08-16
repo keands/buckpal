@@ -4,6 +4,14 @@ import com.buckpal.dto.csv.*;
 import com.buckpal.entity.CsvMappingTemplate;
 import com.buckpal.entity.User;
 import com.buckpal.service.CsvImportWizardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/csv-import")
 @CrossOrigin(origins = "*")
+@Tag(name = "CSV Import", description = "API d'importation de transactions via fichiers CSV")
+@SecurityRequirement(name = "bearerAuth")
 public class CsvImportController {
     
     @Autowired
@@ -26,7 +36,16 @@ public class CsvImportController {
      * Step 1: Upload CSV file and get preview
      */
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadCsv(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "Upload fichier CSV", description = "Étape 1: Télécharge un fichier CSV et retourne un aperçu des données")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Fichier uploadé avec succès",
+                content = @Content(schema = @Schema(implementation = CsvUploadResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Fichier invalide ou vide"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur lors de l'upload")
+    })
+    public ResponseEntity<?> uploadCsv(
+            @Parameter(description = "Fichier CSV à importer", required = true)
+            @RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Le fichier CSV est vide");

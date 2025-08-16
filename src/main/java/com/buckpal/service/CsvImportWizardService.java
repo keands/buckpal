@@ -162,17 +162,89 @@ public class CsvImportWizardService {
             }
         }
         
+        // Create balanced preview (4 transactions: 2 income + 2 expense)
+        List<CsvPreviewResponse.TransactionPreview> balancedPreview = createBalancedPreview(validTransactions);
+        
         CsvPreviewResponse response = new CsvPreviewResponse();
         response.setSessionId(request.getSessionId());
-        response.setValidTransactions(validTransactions);
+        response.setValidTransactions(balancedPreview); // Show balanced preview instead of all
         response.setValidationErrors(validationErrors);
         response.setDuplicateWarnings(duplicateWarnings);
         response.setTotalProcessed(session.getAllRows().size());
-        response.setValidCount(validTransactions.size());
+        response.setValidCount(validTransactions.size()); // Keep full count for stats
         response.setErrorCount(validationErrors.size());
         response.setDuplicateCount(duplicateWarnings.size());
         
         return response;
+    }
+    
+    /**
+     * Create a balanced preview with 4 transactions (2 income + 2 expense)
+     */
+    private List<CsvPreviewResponse.TransactionPreview> createBalancedPreview(
+            List<CsvPreviewResponse.TransactionPreview> allTransactions) {
+        
+        List<CsvPreviewResponse.TransactionPreview> incomeTransactions = allTransactions.stream()
+                .filter(t -> "INCOME".equals(t.getTransactionType()))
+                .collect(Collectors.toList());
+        
+        List<CsvPreviewResponse.TransactionPreview> expenseTransactions = allTransactions.stream()
+                .filter(t -> "EXPENSE".equals(t.getTransactionType()))
+                .collect(Collectors.toList());
+        
+        List<CsvPreviewResponse.TransactionPreview> preview = new ArrayList<>();
+        
+        // Prioritize showing more income transactions (2-3) for better visibility
+        if (incomeTransactions.size() >= 3) {
+            // Add 3 income transactions if we have enough
+            preview.addAll(incomeTransactions.stream().limit(3).collect(Collectors.toList()));
+            // Add 1 expense transaction
+            preview.addAll(expenseTransactions.stream().limit(1).collect(Collectors.toList()));
+        } else if (incomeTransactions.size() >= 2) {
+            // Add 2 income transactions
+            preview.addAll(incomeTransactions.stream().limit(2).collect(Collectors.toList()));
+            // Add up to 2 expense transactions
+            preview.addAll(expenseTransactions.stream().limit(2).collect(Collectors.toList()));
+        } else {
+            // Fallback: add available income transactions
+            preview.addAll(incomeTransactions.stream().limit(4).collect(Collectors.toList()));
+            // Fill remaining slots with expense transactions
+            int remainingSlots = 4 - preview.size();
+            if (remainingSlots > 0) {
+                preview.addAll(expenseTransactions.stream().limit(remainingSlots).collect(Collectors.toList()));
+            }
+        }
+        
+        // Ensure we have exactly 4 transactions if possible
+        if (preview.size() < 4) {
+            int needed = 4 - preview.size();
+            
+            // Add more transactions from whichever type has more available
+            if (expenseTransactions.size() > preview.stream()
+                    .mapToInt(t -> "EXPENSE".equals(t.getTransactionType()) ? 1 : 0).sum()) {
+                // Add more expenses
+                long currentExpenseCount = preview.stream()
+                        .filter(t -> "EXPENSE".equals(t.getTransactionType())).count();
+                preview.addAll(expenseTransactions.stream()
+                        .skip(currentExpenseCount)
+                        .limit(needed)
+                        .collect(Collectors.toList()));
+            } else if (incomeTransactions.size() > preview.stream()
+                    .mapToInt(t -> "INCOME".equals(t.getTransactionType()) ? 1 : 0).sum()) {
+                // Add more income
+                long currentIncomeCount = preview.stream()
+                        .filter(t -> "INCOME".equals(t.getTransactionType())).count();
+                preview.addAll(incomeTransactions.stream()
+                        .skip(currentIncomeCount)
+                        .limit(needed)
+                        .collect(Collectors.toList()));
+            }
+        }
+        
+        // Sort by row index to maintain original order
+        return preview.stream()
+                .sorted(Comparator.comparingInt(CsvPreviewResponse.TransactionPreview::getRowIndex))
+                .collect(Collectors.toList());
     }
     
     /**
@@ -204,8 +276,11 @@ public class CsvImportWizardService {
                 continue;
             }
             
-            // Skip if not in approved rows (when approved list is provided)
-            if (request.getApprovedRows() != null && !request.getApprovedRows().contains(rowIndex)) {
+            // Skip if not in approved rows (when approved list is provided and not empty)
+            // If approvedRows is empty, import all valid transactions (preview workflow)
+            if (request.getApprovedRows() != null && 
+                !request.getApprovedRows().isEmpty() && 
+                !request.getApprovedRows().contains(rowIndex)) {
                 skippedCount++;
                 continue;
             }
@@ -411,7 +486,8 @@ public class CsvImportWizardService {
                 debitAmount = parseAmount(debitStr);
                 if (debitAmount != null && debitAmount.compareTo(BigDecimal.ZERO) != 0) {
                     hasDebit = true;
-                    debitAmount = debitAmount.negate(); // Debit is negative
+                    // Don't negate - French bank CSV already has negative values for debits
+                    // debitAmount = debitAmount.negate(); // Removed: debit amounts are already negative
                 }
             }
         }

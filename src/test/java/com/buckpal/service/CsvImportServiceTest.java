@@ -142,7 +142,7 @@ class CsvImportServiceTest {
         assertThat(result).hasSize(3);
         
         assertThat(result.get(0).getTransactionDate()).isEqualTo(LocalDate.of(2023, 12, 1));
-        assertThat(result.get(1).getTransactionDate()).isEqualTo(LocalDate.of(2023, 12, 2));
+        assertThat(result.get(1).getTransactionDate()).isEqualTo(LocalDate.of(2023, 2, 12)); // 12/02/2023 now parsed as dd/MM/yyyy (12 Feb)
     }
     
     @Test

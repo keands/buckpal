@@ -161,25 +161,26 @@ class CsvImportWizardServiceIntegrationTest {
         
         CsvPreviewResponse previewResponse = csvImportWizardService.processMappingAndPreview(mappingRequest);
         
-        // Étape 3: Validation - Approuver seulement les 5 premières transactions valides
+        // Étape 3: Validation - Approuver toutes les transactions de la preview
         CsvValidationRequest validationRequest = new CsvValidationRequest();
         validationRequest.setSessionId(uploadResponse.getSessionId());
         
-        // Prendre les 5 premiers numéros de ligne des transactions valides
+        // Prendre tous les numéros de ligne des transactions de la preview (4 transactions)
         validationRequest.setApprovedRows(
                 previewResponse.getValidTransactions().stream()
-                        .limit(5)
                         .map(CsvPreviewResponse.TransactionPreview::getRowIndex)
                         .toList()
         );
+        
+        int expectedImports = previewResponse.getValidTransactions().size();
         
         // When - Import final
         CsvImportResult importResult = csvImportWizardService.finalizeImport(validationRequest);
         
         // Then
         assertThat(importResult).isNotNull();
-        assertThat(importResult.getSuccessfulImports()).isEqualTo(5);
-        assertThat(importResult.getImportedTransactionIds()).hasSize(5);
+        assertThat(importResult.getSuccessfulImports()).isEqualTo(expectedImports);
+        assertThat(importResult.getImportedTransactionIds()).hasSize(expectedImports);
         
         // Vérifier que les transactions sont bien en base
         assertThat(transactionRepository.findById(importResult.getImportedTransactionIds().get(0))).isPresent();

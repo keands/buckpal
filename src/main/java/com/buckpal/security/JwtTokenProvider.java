@@ -28,8 +28,14 @@ public class JwtTokenProvider {
     public String generateJwtToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
         
+        // Cast to User to get additional fields
+        com.buckpal.entity.User user = (com.buckpal.entity.User) userPrincipal;
+        
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
+                .claim("firstName", user.getFirstName())
+                .claim("lastName", user.getLastName())
+                .claim("userId", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)

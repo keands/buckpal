@@ -40,20 +40,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Try to decode JWT to get user info
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
-        if (payload.sub && payload.firstName && payload.lastName) {
+        console.log('JWT Payload:', payload) // Debug log
+        
+        if (payload.sub) {
+          // JWT now contains firstName, lastName, and userId
           const user: User = {
-            id: parseInt(payload.sub) || 0,
+            id: payload.userId || 0,
             firstName: payload.firstName || '',
             lastName: payload.lastName || '',
-            email: payload.sub || '',
+            email: payload.sub,
             createdAt: new Date().toISOString()
           }
           setUser(user)
         }
       } catch (error) {
         console.warn('Could not decode JWT token:', error)
-        // Token might be invalid, clear it
-        apiClient.setToken(null)
+        // Don't clear token, just set user to null but keep authenticated
+        console.log('Token exists but user info unavailable, staying authenticated')
       }
       setIsLoading(false)
     } else {

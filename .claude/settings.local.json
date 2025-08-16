@@ -18,8 +18,12 @@
       "Bash(%PATH%)",
       "Bash(export:*)",
       "Bash(npm run dev:*)",
-      "Bash(mvn:*)"
+      "Bash(mvn:*)",
+      "Bash(rm:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run build:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

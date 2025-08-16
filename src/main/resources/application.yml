@@ -17,6 +17,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
   
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+    properties:
+      hibernate6-module:
+        force-lazy-loading: false
+        use-transient-annotation: false
+  
   security:
     jwt:
       secret: ${JWT_SECRET:oB8PJIGZ3TABdIfncM0pebJz6z3eDOettxrQk0LHXYUED1HTa+vvprLTkzxHUa4oIHqshUDu7B2ETJ1wBq522g==}

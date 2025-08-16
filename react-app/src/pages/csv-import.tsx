@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -70,14 +70,18 @@ export default function CsvImportPage() {
 
   const loadInitialData = async () => {
     try {
+      console.log('Loading initial data for CSV import...')
       const [accountsData, templatesData] = await Promise.all([
         apiClient.getAccounts(),
         apiClient.getCsvMappingTemplates(),
       ])
+      console.log('Accounts loaded:', accountsData)
+      console.log('Templates loaded:', templatesData)
       setAccounts(accountsData)
       setTemplates(templatesData)
     } catch (error) {
       console.error('Error loading initial data:', error)
+      setError('Erreur lors du chargement des données: ' + (error as any)?.message)
     }
   }
 
@@ -151,9 +155,12 @@ export default function CsvImportPage() {
       const response = await apiClient.processCsvMapping(mapping)
       setPreviewResponse(response)
       
-      // Initialize validation choices with all valid transactions approved
+      // Initialize validation choices with ALL valid transactions approved by default
+      // Note: We need to approve all valid transactions, not just the preview ones
+      // Since we don't have all row indices from preview, we'll approve all by setting approvedRows to null
+      // The backend will import all valid transactions when approvedRows is null
       setValidationChoices({
-        approvedRows: response.validTransactions.map(t => t.rowIndex),
+        approvedRows: [], // We'll modify backend to import all when this is empty and no rejections
         rejectedRows: [],
         manualCorrections: {},
       })
@@ -388,7 +395,7 @@ export default function CsvImportPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {uploadResponse.previewData.slice(0, 3).map((row, rowIndex) => (
+                    {uploadResponse.previewData.slice(0, 5).map((row, rowIndex) => (
                       <tr key={rowIndex} className="border-b">
                         {row.map((cell, cellIndex) => (
                           <td key={cellIndex} className="p-2 text-gray-700">
@@ -441,17 +448,36 @@ export default function CsvImportPage() {
                 <label className="block text-sm font-medium mb-2">
                   Compte de destination *
                 </label>
-                <Select
-                  value={mapping.accountId || ''}
-                  onChange={(e) => handleMappingChange('accountId', parseInt(e.target.value))}
-                >
-                  <option value="">Sélectionner un compte</option>
-                  {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} - {account.bankName || account.accountType}
+                <div className="space-y-2">
+                  <Select
+                    value={mapping.accountId || ''}
+                    onChange={(e) => handleMappingChange('accountId', parseInt(e.target.value))}
+                  >
+                    <option value="">
+                      {accounts.length === 0 ? 'Aucun compte disponible' : 'Sélectionner un compte'}
                     </option>
-                  ))}
-                </Select>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name} - {account.bankName || account.accountType}
+                      </option>
+                    ))}
+                  </Select>
+                  {accounts.length === 0 && (
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={loadInitialData}
+                        disabled={isLoading}
+                      >
+                        Recharger les comptes
+                      </Button>
+                      <span className="text-sm text-gray-500">
+                        Aucun compte trouvé
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Column Mapping */}
@@ -607,10 +633,21 @@ export default function CsvImportPage() {
           <CardHeader>
             <CardTitle>Prévisualisation des transactions</CardTitle>
             <CardDescription>
-              {previewResponse.validCount} transactions valides, {previewResponse.errorCount} erreurs, {previewResponse.duplicateCount} doublons détectés
+              Aperçu de {previewResponse.validTransactions.length} transactions sur {previewResponse.validCount} valides trouvées • {previewResponse.errorCount} erreurs • {previewResponse.duplicateCount} doublons détectés
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Preview Information */}
+            {previewResponse.validCount > previewResponse.validTransactions.length && (
+              <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="text-sm text-blue-800">
+                  <strong>Aperçu équilibré :</strong> Cette prévisualisation montre {previewResponse.validTransactions.length} transactions représentatives 
+                  (incluant revenus et dépenses) pour vérifier le format. Par défaut, toutes les {previewResponse.validCount} transactions valides 
+                  seront importées. Vous pouvez approuver/rejeter individuellement les transactions de l'aperçu si nécessaire.
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {previewResponse.validTransactions.map((transaction) => (
                 <div
@@ -661,8 +698,12 @@ export default function CsvImportPage() {
                 Retour
               </Button>
 
-              <Button onClick={handleFinalImport} disabled={isLoading || validationChoices.approvedRows.length === 0}>
-                {isLoading ? 'Import...' : `Importer ${validationChoices.approvedRows.length} transactions`}
+              <Button onClick={handleFinalImport} disabled={isLoading}>
+                {isLoading ? 'Import...' : 
+                 validationChoices.approvedRows.length > 0 
+                   ? `Importer ${validationChoices.approvedRows.length} transactions sélectionnées`
+                   : `Importer toutes les transactions valides (${previewResponse.validCount})`
+                }
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>

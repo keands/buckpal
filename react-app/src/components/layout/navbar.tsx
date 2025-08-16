@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Link, useLocation } from 'react-router-dom'
+import { apiClient } from '@/lib/api'
 import { 
   CreditCard, 
   BarChart3, 
@@ -58,23 +59,24 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             {user && (
               <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">
-                    {user.firstName} {user.lastName}
-                  </span>
-                </div>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={logout}
-                  className="ml-4"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Déconnexion
-                </Button>
+                <User className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-700">
+                  {user.firstName} {user.lastName}
+                </span>
               </div>
+            )}
+            
+            {/* Always show logout button when authenticated, even if user info is not available */}
+            {(user || apiClient.getToken()) && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={logout}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Déconnexion
+              </Button>
             )}
           </div>
         </div>

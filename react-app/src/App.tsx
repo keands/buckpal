@@ -9,6 +9,8 @@ import DashboardPage from '@/pages/dashboard'
 import AccountsPage from '@/pages/accounts'
 import CsvImportPage from '@/pages/csv-import'
 import CalendarPage from '@/pages/calendar'
+import DebugAuthPage from '@/pages/debug-auth'
+import ResetAuthPage from '@/pages/reset-auth'
 
 function App() {
   return (
@@ -94,6 +96,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
+            <Route
+              path="/debug-auth"
+              element={
+                <ProtectedRoute>
+                  <div>
+                    <Navbar />
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                      <DebugAuthPage />
+                    </main>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Public route for auth reset */}
+            <Route path="/reset-auth" element={<ResetAuthPage />} />
           </Routes>
         </div>
       </Router>

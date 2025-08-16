@@ -30,10 +30,10 @@ public class CsvImportService {
     
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
         DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-        DateTimeFormatter.ofPattern("MM/dd/yyyy"),
-        DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-        DateTimeFormatter.ofPattern("M/d/yyyy"),
-        DateTimeFormatter.ofPattern("d/M/yyyy")
+        DateTimeFormatter.ofPattern("dd/MM/yyyy"),  // French format first
+        DateTimeFormatter.ofPattern("MM/dd/yyyy"),  // US format second
+        DateTimeFormatter.ofPattern("d/M/yyyy"),    // Single digit French first
+        DateTimeFormatter.ofPattern("M/d/yyyy")     // Single digit US second
     };
     
     public List<Transaction> importTransactionsFromCsv(MultipartFile file, Long accountId) throws IOException {

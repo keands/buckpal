@@ -44,6 +44,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("startDate") LocalDate startDate, 
         @Param("endDate") LocalDate endDate);
     
+    @Query("SELECT t FROM Transaction t WHERE t.account IN :accounts AND t.transactionDate = :date ORDER BY t.transactionDate DESC, t.id DESC")
+    List<Transaction> findByAccountInAndTransactionDateOrderByTransactionDateDesc(
+        @Param("accounts") List<Account> accounts, 
+        @Param("date") LocalDate date);
+    
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.account IN :accounts AND t.transactionType = :type AND t.transactionDate BETWEEN :startDate AND :endDate")
     Double sumAmountByAccountsAndTypeAndDateRange(
         @Param("accounts") List<Account> accounts,

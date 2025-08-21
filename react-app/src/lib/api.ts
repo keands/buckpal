@@ -222,6 +222,11 @@ class ApiClient {
     return response.data
   }
 
+  async getTransactionsByDate(date: string): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get(`/transactions/date/${date}`)
+    return response.data
+  }
+
   // Transaction Management
   async getTransactionCountByAccount(accountId: number): Promise<{ count: number }> {
     const response: AxiosResponse<{ count: number }> = await this.client.get(`/transactions/account/${accountId}/count`)

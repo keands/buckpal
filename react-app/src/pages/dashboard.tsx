@@ -94,18 +94,18 @@ export default function DashboardPage() {
         </div>
         
         <div className="flex space-x-3">
-          <Button asChild>
-            <Link to="/csv-import">
+          <Link to="/csv-import">
+            <Button>
               <Upload className="w-4 h-4 mr-2" />
               Importer CSV
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link to="/accounts">
+            </Button>
+          </Link>
+          <Link to="/accounts">
+            <Button variant="outline">
               <Plus className="w-4 h-4 mr-2" />
               Nouveau compte
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -195,9 +195,9 @@ export default function DashboardPage() {
                 <div className="text-center py-4 text-gray-500">
                   <CreditCard className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                   <p>Aucun compte configuré</p>
-                  <Button className="mt-2" asChild>
-                    <Link to="/accounts">Ajouter un compte</Link>
-                  </Button>
+                  <Link to="/accounts">
+                    <Button className="mt-2">Ajouter un compte</Button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -255,9 +255,9 @@ export default function DashboardPage() {
                 <div className="text-center py-4 text-gray-500">
                   <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                   <p>Aucune transaction récente</p>
-                  <Button className="mt-2" asChild>
-                    <Link to="/csv-import">Importer des transactions</Link>
-                  </Button>
+                  <Link to="/csv-import">
+                    <Button className="mt-2">Importer des transactions</Button>
+                  </Link>
                 </div>
               )}
             </div>

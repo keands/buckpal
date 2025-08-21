@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '@/contexts/auth-context'
 import { apiClient } from '@/lib/api'
 import { formatCurrency, cn } from '@/lib/utils'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -10,21 +15,70 @@ import {
   TrendingUp,
   TrendingDown,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  X,
+  Edit3,
+  Save,
+  Trash2
 } from 'lucide-react'
-import type { CalendarDay } from '@/types/api'
+import type { CalendarDay, Transaction, Account, Category } from '@/types/api'
 import { startOfMonth, endOfMonth, format, addMonths, subMonths, eachDayOfInterval, getDay, isToday, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
 export default function CalendarPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([])
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
+  const [dayTransactions, setDayTransactions] = useState<Transaction[]>([])
+  const [loadingTransactions, setLoadingTransactions] = useState(false)
+  const [showTransactionPanel, setShowTransactionPanel] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [saving, setSaving] = useState(false)
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    description: '',
+    amount: '',
+    transactionType: 'EXPENSE' as 'INCOME' | 'EXPENSE' | 'TRANSFER',
+    accountId: '',
+    categoryId: '',
+    transactionDate: ''
+  })
 
   useEffect(() => {
-    loadCalendarData()
-  }, [currentMonth])
+    if (isAuthenticated && !authLoading) {
+      loadCalendarData()
+    }
+  }, [currentMonth, isAuthenticated, authLoading])
+
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      loadAccountsAndCategories()
+    }
+  }, [isAuthenticated, authLoading])
+
+  const loadAccountsAndCategories = async () => {
+    try {
+      const [accountsData, categoriesData] = await Promise.all([
+        apiClient.getAccounts(),
+        apiClient.getCategories()
+      ])
+      setAccounts(accountsData)
+      setCategories(categoriesData)
+      setError(null)
+    } catch (error) {
+      console.error('Error loading accounts and categories:', error)
+      setError('Erreur lors du chargement des comptes et catégories')
+    }
+  }
 
   const loadCalendarData = async () => {
     try {
@@ -38,12 +92,29 @@ export default function CalendarPage() {
       
       const data = await apiClient.getCalendarData(startDate, endDate)
       setCalendarData(data)
+      setError(null)
     } catch (error) {
       console.error('Error loading calendar data:', error)
-      // Don't let API errors cause disconnection - just show empty calendar
+      setError('Erreur lors du chargement des données du calendrier')
       setCalendarData([])
     } finally {
       setIsLoading(false)
+    }
+  }
+
+
+  const loadDayTransactions = async (date: string) => {
+    try {
+      setLoadingTransactions(true)
+      const transactions = await apiClient.getTransactionsByDate(date)
+      setDayTransactions(transactions)
+      setError(null)
+    } catch (error) {
+      console.error('Error loading day transactions:', error)
+      setError('Erreur lors du chargement des transactions de la journée')
+      setDayTransactions([])
+    } finally {
+      setLoadingTransactions(false)
     }
   }
 
@@ -53,6 +124,109 @@ export default function CalendarPage() {
 
   const goToNextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1))
+  }
+
+  const openTransactionPanel = (dayData: CalendarDay) => {
+    setSelectedDay(dayData)
+    setShowTransactionPanel(true)
+    loadDayTransactions(dayData.date)
+  }
+
+  const closeTransactionPanel = () => {
+    setShowTransactionPanel(false)
+    setSelectedDay(null)
+    setDayTransactions([])
+  }
+
+  const openEditModal = (transaction: Transaction) => {
+    setEditingTransaction(transaction)
+    setFormData({
+      description: transaction.description || '',
+      amount: Math.abs(transaction.amount).toString(),
+      transactionType: transaction.transactionType,
+      accountId: transaction.account?.id?.toString() || '',
+      categoryId: transaction.category?.id?.toString() || '',
+      transactionDate: transaction.transactionDate?.split('T')[0] || '' // Extract date part
+    })
+    setShowEditModal(true)
+  }
+
+  const closeEditModal = () => {
+    setShowEditModal(false)
+    setEditingTransaction(null)
+    setFormData({
+      description: '',
+      amount: '',
+      transactionType: 'EXPENSE',
+      accountId: '',
+      categoryId: '',
+      transactionDate: ''
+    })
+  }
+
+  const handleSaveTransaction = async () => {
+    if (!editingTransaction) return
+
+    try {
+      setSaving(true)
+      
+      const updatedTransaction: Partial<Transaction> = {
+        description: formData.description,
+        amount: formData.transactionType === 'EXPENSE' ? -Math.abs(Number(formData.amount)) : Math.abs(Number(formData.amount)),
+        transactionType: formData.transactionType,
+        transactionDate: formData.transactionDate,
+        account: formData.accountId ? { id: Number(formData.accountId) } as Account : undefined,
+        category: formData.categoryId ? { id: Number(formData.categoryId) } as Category : undefined
+      }
+
+      await apiClient.updateTransaction(editingTransaction.id, updatedTransaction)
+      
+      // Refresh transactions in the sidebar
+      if (selectedDay) {
+        await loadDayTransactions(selectedDay.date)
+      }
+      
+      // Refresh calendar data
+      await loadCalendarData()
+      
+      closeEditModal()
+      setError(null)
+    } catch (error) {
+      console.error('Error updating transaction:', error)
+      setError('Erreur lors de la mise à jour de la transaction')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteTransaction = async () => {
+    if (!editingTransaction) return
+    
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?')) {
+      return
+    }
+
+    try {
+      setSaving(true)
+      
+      await apiClient.deleteTransaction(editingTransaction.id)
+      
+      // Refresh transactions in the sidebar
+      if (selectedDay) {
+        await loadDayTransactions(selectedDay.date)
+      }
+      
+      // Refresh calendar data
+      await loadCalendarData()
+      
+      closeEditModal()
+      setError(null)
+    } catch (error) {
+      console.error('Error deleting transaction:', error)
+      setError('Erreur lors de la suppression de la transaction')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const getCalendarDays = () => {
@@ -115,6 +289,22 @@ export default function CalendarPage() {
     { totalIncome: 0, totalExpense: 0, netAmount: 0, transactionCount: 0 }
   )
 
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="text-lg">Authentification...</div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="text-lg">Redirection...</div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -127,6 +317,29 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-6">
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <X className="h-5 w-5 text-red-400" />
+            </div>
+            <div className="ml-3 flex-1">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <button
+                type="button"
+                className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
+                onClick={() => setError(null)}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -231,7 +444,11 @@ export default function CalendarPage() {
                     isToday(date) && isCurrentMonth && 'ring-2 ring-blue-500',
                     selectedDay?.date === format(date, 'yyyy-MM-dd') && 'ring-2 ring-primary'
                   )}
-                  onClick={() => dayData && setSelectedDay(dayData)}
+                  onClick={() => {
+                    if (dayData && isCurrentMonth) {
+                      openTransactionPanel(dayData)
+                    }
+                  }}
                 >
                   <div className="flex justify-between items-start h-full">
                     <span className={cn(
@@ -268,58 +485,292 @@ export default function CalendarPage() {
         </CardContent>
       </Card>
 
-      {/* Selected Day Details */}
-      {selectedDay && (
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {format(parseISO(selectedDay.date), 'EEEE d MMMM yyyy', { locale: fr })}
-            </CardTitle>
-            <CardDescription>
-              Détail des transactions du jour
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <ArrowUpRight className="w-5 h-5 text-green-600" />
-                  <span className="font-medium">Revenus</span>
+      {/* Transaction Sidebar Panel */}
+      {showTransactionPanel && selectedDay && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/20 z-40"
+            onClick={closeTransactionPanel}
+          />
+          
+          {/* Slide-out Panel */}
+          <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
+            <div className="flex flex-col h-full">
+              {/* Panel Header */}
+              <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {format(parseISO(selectedDay.date), 'EEEE d MMMM', { locale: fr })}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {selectedDay.transactionCount} transaction{selectedDay.transactionCount > 1 ? 's' : ''}
+                  </p>
                 </div>
-                <span className="text-green-600 font-bold">
-                  +{formatCurrency(selectedDay.totalIncome)}
-                </span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={closeTransactionPanel}
+                  className="hover:bg-gray-200"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <ArrowDownLeft className="w-5 h-5 text-red-600" />
-                  <span className="font-medium">Dépenses</span>
+              {/* Summary Cards */}
+              <div className="p-4 space-y-3 border-b">
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <ArrowUpRight className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium">Revenus</span>
+                  </div>
+                  <span className="text-green-600 font-bold text-sm">
+                    +{formatCurrency(selectedDay.totalIncome)}
+                  </span>
                 </div>
-                <span className="text-red-600 font-bold">
-                  -{formatCurrency(selectedDay.totalExpense)}
-                </span>
+                
+                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <ArrowDownLeft className="w-4 h-4 text-red-600" />
+                    <span className="text-sm font-medium">Dépenses</span>
+                  </div>
+                  <span className="text-red-600 font-bold text-sm">
+                    -{formatCurrency(selectedDay.totalExpense)}
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <CalendarIcon className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium">Solde net</span>
+                  </div>
+                  <span className={`font-bold text-sm ${
+                    selectedDay.netAmount >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {selectedDay.netAmount >= 0 ? '+' : ''}
+                    {formatCurrency(selectedDay.netAmount)}
+                  </span>
+                </div>
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <CalendarIcon className="w-5 h-5 text-gray-600" />
-                  <span className="font-medium">Solde net</span>
-                </div>
-                <span className={`font-bold ${
-                  selectedDay.netAmount >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {selectedDay.netAmount >= 0 ? '+' : ''}
-                  {formatCurrency(selectedDay.netAmount)}
-                </span>
+              {/* Transactions List */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Transactions</h4>
+                
+                {loadingTransactions ? (
+                  <div className="text-center py-8">
+                    <div className="text-sm text-gray-600">Chargement...</div>
+                  </div>
+                ) : dayTransactions.length > 0 ? (
+                  <div className="space-y-3">
+                    {dayTransactions.map((transaction) => (
+                      <div key={transaction.id} className="p-3 border rounded-lg hover:bg-gray-50 transition-colors group">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3 flex-1">
+                            <div className={cn(
+                              'w-2 h-2 rounded-full mt-2',
+                              transaction.transactionType === 'INCOME' ? 'bg-green-500' : 'bg-red-500'
+                            )} />
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm text-gray-900 truncate">
+                                {transaction.description || 'Transaction'}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {transaction.account?.name || 'Compte inconnu'}
+                              </div>
+                              {transaction.category && (
+                                <div className="text-xs text-gray-400 mt-1">
+                                  {transaction.category?.name || 'Sans catégorie'}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-start space-x-2">
+                            <div className="text-right">
+                              <div className={cn(
+                                'font-semibold text-sm',
+                                transaction.transactionType === 'INCOME' ? 'text-green-600' : 'text-red-600'
+                              )}>
+                                {transaction.transactionType === 'INCOME' ? '+' : '-'}
+                                {formatCurrency(Math.abs(transaction.amount))}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {transaction.transactionDate ? format(parseISO(transaction.transactionDate), 'HH:mm', { locale: fr }) : '--:--'}
+                              </div>
+                            </div>
+                            
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEditModal(transaction)}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-sm text-gray-600">Aucune transaction ce jour-là</div>
+                  </div>
+                )}
               </div>
             </div>
-            
-            <div className="mt-4 text-center text-sm text-gray-600">
-              {selectedDay.transactionCount} transaction{selectedDay.transactionCount > 1 ? 's' : ''} ce jour-là
+          </div>
+        </>
+      )}
+
+      {/* Edit Transaction Modal */}
+      {showEditModal && editingTransaction && (
+        <>
+          {/* Modal Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/50 z-50"
+            onClick={closeEditModal}
+          />
+          
+          {/* Modal Content */}
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex flex-col">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Modifier la transaction
+                </h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={closeEditModal}
+                  className="hover:bg-gray-100"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              {/* Modal Body */}
+              <div className="p-4 space-y-4">
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Description de la transaction"
+                    rows={2}
+                  />
+                </div>
+
+                {/* Amount */}
+                <div className="space-y-2">
+                  <Label htmlFor="amount">Montant</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    placeholder="0.00"
+                  />
+                </div>
+
+                {/* Transaction Type */}
+                <div className="space-y-2">
+                  <Label htmlFor="transactionType">Type</Label>
+                  <Select 
+                    id="transactionType"
+                    value={formData.transactionType} 
+                    onChange={(e) => setFormData({ ...formData, transactionType: e.target.value as 'INCOME' | 'EXPENSE' | 'TRANSFER' })}
+                  >
+                    <option value="INCOME">Revenu</option>
+                    <option value="EXPENSE">Dépense</option>
+                    <option value="TRANSFER">Transfert</option>
+                  </Select>
+                </div>
+
+                {/* Account */}
+                <div className="space-y-2">
+                  <Label htmlFor="account">Compte</Label>
+                  <Select 
+                    id="account"
+                    value={formData.accountId} 
+                    onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
+                  >
+                    <option value="">Sélectionner un compte</option>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id.toString()}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Category */}
+                <div className="space-y-2">
+                  <Label htmlFor="category">Catégorie (optionnel)</Label>
+                  <Select 
+                    id="category"
+                    value={formData.categoryId} 
+                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                  >
+                    <option value="">Aucune catégorie</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id.toString()}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="transactionDate">Date</Label>
+                  <Input
+                    id="transactionDate"
+                    type="date"
+                    value={formData.transactionDate}
+                    onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
+                  />
+                </div>
+              </div>
+              
+              {/* Modal Footer */}
+              <div className="flex items-center justify-between p-4 border-t bg-gray-50">
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteTransaction}
+                  disabled={saving}
+                  className="flex items-center space-x-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Supprimer</span>
+                </Button>
+                
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={closeEditModal}
+                    disabled={saving}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    onClick={handleSaveTransaction}
+                    disabled={saving || !formData.amount || !formData.accountId}
+                    className="flex items-center space-x-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
+                  </Button>
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </>
       )}
     </div>
   )

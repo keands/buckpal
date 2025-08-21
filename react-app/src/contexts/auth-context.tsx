@@ -32,15 +32,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // Check if user is already logged in on app start
     const token = apiClient.getToken()
+    
     if (token) {
-      // Try to fetch user info to validate token
-      // For now, we'll assume token is valid if it exists
-      // In a real app, you might want to validate the token with the backend
-      
-      // Try to decode JWT to get user info
+      // Try to decode JWT to get user info and validate token
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
-        console.log('JWT Payload:', payload) // Debug log
+        
+        // Check if token is expired
+        const now = Date.now() / 1000
+        if (payload.exp && payload.exp < now) {
+          apiClient.setToken(null)
+          setIsLoading(false)
+          return
+        }
         
         if (payload.sub) {
           // JWT now contains firstName, lastName, and userId
@@ -52,11 +56,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             createdAt: new Date().toISOString()
           }
           setUser(user)
+        } else {
+          apiClient.setToken(null)
         }
       } catch (error) {
-        console.warn('Could not decode JWT token:', error)
-        // Don't clear token, just set user to null but keep authenticated
-        console.log('Token exists but user info unavailable, staying authenticated')
+        // If token is malformed, clear it
+        apiClient.setToken(null)
       }
       setIsLoading(false)
     } else {
@@ -109,9 +114,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null)
   }
 
+  // Authentication check
+  const isAuthenticatedState = !!user && !!apiClient.getToken()
+  
   const value: AuthContextType = {
     user,
-    isAuthenticated: !!user || !!apiClient.getToken(),
+    isAuthenticated: isAuthenticatedState,
     isLoading,
     login,
     register,

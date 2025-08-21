@@ -765,9 +765,9 @@ export default function CsvImportPage() {
               <Button variant="outline" onClick={resetWizard}>
                 Nouveau import
               </Button>
-              <Button asChild>
-                <a href="/dashboard">Voir le dashboard</a>
-              </Button>
+              <a href="/dashboard">
+                <Button>Voir le dashboard</Button>
+              </a>
             </div>
           </CardContent>
         </Card>

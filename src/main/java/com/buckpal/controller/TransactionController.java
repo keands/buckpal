@@ -267,6 +267,35 @@ public class TransactionController {
         return ResponseEntity.ok(new TransactionCountResponse(count));
     }
     
+    @GetMapping("/date/{date}")
+    public ResponseEntity<List<TransactionDto>> getTransactionsByDate(
+            Authentication authentication,
+            @PathVariable String date) {
+        
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            LocalDate transactionDate = LocalDate.parse(date);
+            
+            // Get all user's accounts
+            List<Account> userAccounts = accountRepository.findByUser(user);
+            
+            // Get all transactions for that date across all user accounts
+            List<Transaction> transactions = transactionRepository
+                    .findByAccountInAndTransactionDateOrderByTransactionDateDesc(userAccounts, transactionDate);
+            
+            List<TransactionDto> transactionDtos = transactions.stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(transactionDtos);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving transactions for date {}: {}", date, e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
     private TransactionDto convertToDto(Transaction transaction) {
         TransactionDto dto = new TransactionDto();
         dto.setId(transaction.getId());

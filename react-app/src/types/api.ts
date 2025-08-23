@@ -58,9 +58,10 @@ export interface Transaction {
   transactionDate: string
   transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER'
   isPending: boolean
-  createdAt: string
-  account: Account
-  category?: Category
+  accountId: number
+  accountName: string
+  categoryId?: number
+  categoryName?: string
 }
 
 // CSV Import Types

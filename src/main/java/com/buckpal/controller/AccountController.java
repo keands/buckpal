@@ -4,7 +4,9 @@ import com.buckpal.dto.AccountDto;
 import com.buckpal.entity.Account;
 import com.buckpal.entity.User;
 import com.buckpal.repository.AccountRepository;
+import com.buckpal.repository.TransactionRepository;
 import com.buckpal.service.PlaidService;
+import com.buckpal.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,12 @@ public class AccountController {
     
     @Autowired
     private PlaidService plaidService;
+    
+    @Autowired
+    private TransactionRepository transactionRepository;
+    
+    @Autowired
+    private TransactionService transactionService;
     
     @GetMapping
     public ResponseEntity<List<AccountDto>> getUserAccounts(Authentication authentication) {
@@ -119,6 +127,38 @@ public class AccountController {
         List<Account> syncedAccounts = plaidService.syncAccounts(accessToken, user);
         
         return ResponseEntity.ok().body("Synced " + syncedAccounts.size() + " accounts from Plaid");
+    }
+    
+    @PostMapping("/{accountId}/recalculate-balance")
+    public ResponseEntity<AccountDto> recalculateAccountBalance(
+            Authentication authentication,
+            @PathVariable Long accountId) {
+        
+        User user = (User) authentication.getPrincipal();
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+        
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        
+        transactionService.recalculateAccountBalance(account);
+        
+        // Reload the account to get the updated balance
+        Account updatedAccount = accountRepository.findById(accountId)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+        
+        return ResponseEntity.ok(convertToDto(updatedAccount));
+    }
+    
+    @PostMapping("/recalculate-all-balances")
+    public ResponseEntity<String> recalculateAllAccountBalances(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        // Only allow this for the user's accounts
+        transactionService.recalculateAllAccountBalances();
+        
+        return ResponseEntity.ok("All account balances have been recalculated");
     }
     
     private AccountDto convertToDto(Account account) {

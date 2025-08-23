@@ -18,7 +18,9 @@ import {
   EyeOff,
   CheckCircle,
   AlertCircle,
-  FileX
+  FileX,
+  Calculator,
+  RefreshCw
 } from 'lucide-react'
 import type { Account } from '@/types/api'
 
@@ -27,7 +29,6 @@ type AccountFormData = {
   accountType: Account['accountType']
   bankName: string
   accountNumber: string
-  routingNumber: string
   balance: string
   isActive: boolean
 }
@@ -64,13 +65,14 @@ export default function AccountsPage() {
     accountType: 'CHECKING',
     bankName: '',
     accountNumber: '',
-    routingNumber: '',
     balance: '0',
     isActive: true,
   })
   
   // UI state
   const [showAccountNumbers, setShowAccountNumbers] = useState<Record<number, boolean>>({})
+  const [isRecalculating, setIsRecalculating] = useState<Record<number, boolean>>({})
+  const [isRecalculatingAll, setIsRecalculatingAll] = useState(false)
 
   useEffect(() => {
     loadAccounts()
@@ -95,7 +97,6 @@ export default function AccountsPage() {
       accountType: 'CHECKING',
       bankName: '',
       accountNumber: '',
-      routingNumber: '',
       balance: '0',
       isActive: true,
     })
@@ -130,7 +131,6 @@ export default function AccountsPage() {
         accountType: formData.accountType,
         bankName: formData.bankName.trim(),
         accountNumber: formData.accountNumber.trim() || undefined,
-        routingNumber: formData.routingNumber.trim() || undefined,
         balance: parseFloat(formData.balance),
         isActive: formData.isActive,
       })
@@ -153,7 +153,6 @@ export default function AccountsPage() {
       accountType: account.accountType,
       bankName: account.bankName || '',
       accountNumber: account.accountNumber || '',
-      routingNumber: account.routingNumber || '',
       balance: account.balance.toString(),
       isActive: account.isActive,
     })
@@ -176,7 +175,6 @@ export default function AccountsPage() {
         accountType: formData.accountType,
         bankName: formData.bankName.trim(),
         accountNumber: formData.accountNumber.trim() || undefined,
-        routingNumber: formData.routingNumber.trim() || undefined,
         balance: parseFloat(formData.balance),
         isActive: formData.isActive,
       })
@@ -262,6 +260,47 @@ export default function AccountsPage() {
     }))
   }
 
+  // Recalculate individual account balance
+  const handleRecalculateAccountBalance = async (account: Account) => {
+    try {
+      setIsRecalculating(prev => ({ ...prev, [account.id]: true }))
+      setError('')
+      
+      const updatedAccount = await apiClient.recalculateAccountBalance(account.id)
+      
+      setAccounts(prev => prev.map(acc => 
+        acc.id === account.id ? updatedAccount : acc
+      ))
+      
+      setSuccess(`Solde recalculé pour le compte "${account.name}"`)
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Erreur lors du recalcul du solde')
+    } finally {
+      setIsRecalculating(prev => ({ ...prev, [account.id]: false }))
+    }
+  }
+
+  // Recalculate all account balances
+  const handleRecalculateAllBalances = async () => {
+    try {
+      setIsRecalculatingAll(true)
+      setError('')
+      
+      await apiClient.recalculateAllAccountBalances()
+      
+      // Reload all accounts to get updated balances
+      await loadAccounts()
+      
+      setSuccess('Tous les soldes de comptes ont été recalculés')
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Erreur lors du recalcul des soldes')
+    } finally {
+      setIsRecalculatingAll(false)
+    }
+  }
+
   const maskAccountNumber = (accountNumber: string | undefined): string => {
     if (!accountNumber) return 'Non spécifié'
     if (accountNumber.length <= 4) return accountNumber
@@ -305,10 +344,21 @@ export default function AccountsPage() {
           <p className="text-gray-600">Gérez vos comptes bancaires et leurs informations</p>
         </div>
         
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nouveau Compte
-        </Button>
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline"
+            onClick={handleRecalculateAllBalances}
+            disabled={isRecalculatingAll}
+            className="flex items-center space-x-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRecalculatingAll ? 'animate-spin' : ''}`} />
+            <span>{isRecalculatingAll ? 'Recalcul...' : 'Recalculer tous les soldes'}</span>
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nouveau Compte
+          </Button>
+        </div>
       </div>
 
       {/* Success/Error Messages */}
@@ -423,6 +473,16 @@ export default function AccountsPage() {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => handleRecalculateAccountBalance(account)}
+                  disabled={isRecalculating[account.id]}
+                  className="w-full text-blue-600 hover:text-blue-700 border-blue-200 hover:border-blue-300"
+                >
+                  <Calculator className={`w-4 h-4 mr-2 ${isRecalculating[account.id] ? 'animate-spin' : ''}`} />
+                  {isRecalculating[account.id] ? 'Recalcul...' : 'Recalculer le solde'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => openDeleteTransactionsDialog(account)}
                   className="w-full text-orange-600 hover:text-orange-700 border-orange-200 hover:border-orange-300"
                 >
@@ -490,23 +550,13 @@ export default function AccountsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Numéro de compte</label>
-                <Input
-                  value={formData.accountNumber}
-                  onChange={(e) => handleFormChange('accountNumber', e.target.value)}
-                  placeholder="123456789"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Code banque</label>
-                <Input
-                  value={formData.routingNumber}
-                  onChange={(e) => handleFormChange('routingNumber', e.target.value)}
-                  placeholder="12345"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Numéro de compte</label>
+              <Input
+                value={formData.accountNumber}
+                onChange={(e) => handleFormChange('accountNumber', e.target.value)}
+                placeholder="123456789"
+              />
             </div>
 
             <div>
@@ -586,23 +636,13 @@ export default function AccountsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Numéro de compte</label>
-                <Input
-                  value={formData.accountNumber}
-                  onChange={(e) => handleFormChange('accountNumber', e.target.value)}
-                  placeholder="123456789"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Code banque</label>
-                <Input
-                  value={formData.routingNumber}
-                  onChange={(e) => handleFormChange('routingNumber', e.target.value)}
-                  placeholder="12345"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Numéro de compte</label>
+              <Input
+                value={formData.accountNumber}
+                onChange={(e) => handleFormChange('accountNumber', e.target.value)}
+                placeholder="123456789"
+              />
             </div>
 
             <div>

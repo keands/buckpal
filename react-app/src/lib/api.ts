@@ -112,6 +112,16 @@ class ApiClient {
     await this.client.delete(`/accounts/${id}`)
   }
 
+  async recalculateAccountBalance(id: number): Promise<Account> {
+    const response: AxiosResponse<Account> = await this.client.post(`/accounts/${id}/recalculate-balance`)
+    return response.data
+  }
+
+  async recalculateAllAccountBalances(): Promise<string> {
+    const response: AxiosResponse<string> = await this.client.post('/accounts/recalculate-all-balances')
+    return response.data
+  }
+
   // Transactions
   async getTransactions(accountId?: number, page = 0, size = 20): Promise<{
     content: Transaction[]

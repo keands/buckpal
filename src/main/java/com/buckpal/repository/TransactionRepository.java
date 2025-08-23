@@ -28,23 +28,37 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     Long countByAccount(Account account);
     
+    @Query("""
+        SELECT COALESCE(SUM(
+            CASE 
+                WHEN t.transactionType = 'INCOME' THEN t.amount 
+                WHEN t.transactionType = 'EXPENSE' THEN -ABS(t.amount)
+                WHEN t.transactionType = 'TRANSFER' THEN t.amount
+                ELSE 0 
+            END
+        ), 0) 
+        FROM Transaction t 
+        WHERE t.account = :account
+        """)
+    BigDecimal calculateBalanceByAccount(@Param("account") Account account);
+    
     List<Transaction> findByAccountAndCategory(Account account, Category category);
     
     List<Transaction> findByAccountAndTransactionType(Account account, TransactionType transactionType);
     
     Optional<Transaction> findByPlaidTransactionId(String plaidTransactionId);
     
-    @Query("SELECT t FROM Transaction t WHERE t.account IN :accounts ORDER BY t.transactionDate DESC")
+    @Query("SELECT t FROM Transaction t JOIN FETCH t.account LEFT JOIN FETCH t.category WHERE t.account IN :accounts ORDER BY t.transactionDate DESC")
     Page<Transaction> findByAccountsOrderByTransactionDateDesc(
         @Param("accounts") List<Account> accounts, Pageable pageable);
     
-    @Query("SELECT t FROM Transaction t WHERE t.account IN :accounts AND t.transactionDate BETWEEN :startDate AND :endDate")
+    @Query("SELECT t FROM Transaction t JOIN FETCH t.account LEFT JOIN FETCH t.category WHERE t.account IN :accounts AND t.transactionDate BETWEEN :startDate AND :endDate")
     List<Transaction> findByAccountsAndDateRange(
         @Param("accounts") List<Account> accounts, 
         @Param("startDate") LocalDate startDate, 
         @Param("endDate") LocalDate endDate);
     
-    @Query("SELECT t FROM Transaction t WHERE t.account IN :accounts AND t.transactionDate = :date ORDER BY t.transactionDate DESC, t.id DESC")
+    @Query("SELECT t FROM Transaction t JOIN FETCH t.account LEFT JOIN FETCH t.category WHERE t.account IN :accounts AND t.transactionDate = :date ORDER BY t.transactionDate DESC, t.id DESC")
     List<Transaction> findByAccountInAndTransactionDateOrderByTransactionDateDesc(
         @Param("accounts") List<Account> accounts, 
         @Param("date") LocalDate date);
@@ -67,7 +81,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         SELECT t.transactionDate as date,
                SUM(CASE WHEN t.transactionType = 'INCOME' THEN t.amount ELSE 0 END) as totalIncome,
                SUM(CASE WHEN t.transactionType = 'EXPENSE' THEN ABS(t.amount) ELSE 0 END) as totalExpense,
-               SUM(CASE WHEN t.transactionType = 'INCOME' THEN t.amount WHEN t.transactionType = 'EXPENSE' THEN t.amount ELSE 0 END) as netAmount,
+               SUM(CASE WHEN t.transactionType = 'INCOME' THEN t.amount WHEN t.transactionType = 'EXPENSE' THEN -ABS(t.amount) ELSE 0 END) as netAmount,
                COUNT(t) as transactionCount
         FROM Transaction t
         WHERE t.account IN :accounts

@@ -11,6 +11,8 @@ import com.buckpal.repository.AccountRepository;
 import com.buckpal.repository.TransactionRepository;
 import com.buckpal.service.CategoryService;
 import com.buckpal.service.CsvImportService;
+import com.buckpal.service.TransactionService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,9 @@ public class TransactionController {
     
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private TransactionService transactionService;
     
     @GetMapping
     public ResponseEntity<Page<TransactionDto>> getTransactions(
@@ -114,10 +119,10 @@ public class TransactionController {
         
         List<Transaction> importedTransactions = csvImportService.importTransactionsFromCsv(file, accountId);
         
-        // Auto-categorize imported transactions
+        // Auto-categorize imported transactions and save with balance updates
         for (Transaction transaction : importedTransactions) {
             transaction.setCategory(categoryService.categorizeTransaction(transaction));
-            transactionRepository.save(transaction);
+            transactionService.createTransaction(transaction);
         }
         
         return ResponseEntity.ok().body("Imported " + importedTransactions.size() + " transactions");
@@ -130,6 +135,91 @@ public class TransactionController {
             .header("Content-Type", "text/csv")
             .header("Content-Disposition", "attachment; filename=\"transaction_template.csv\"")
             .body(template);
+    }
+    
+    @PostMapping
+    public ResponseEntity<TransactionDto> createTransaction(
+            Authentication authentication,
+            @Valid @RequestBody TransactionDto transactionDto) {
+        
+        User user = (User) authentication.getPrincipal();
+        Account account = accountRepository.findById(transactionDto.getAccountId())
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+        
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        
+        Transaction transaction = new Transaction();
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setDescription(transactionDto.getDescription());
+        transaction.setMerchantName(transactionDto.getMerchantName());
+        transaction.setTransactionDate(transactionDto.getTransactionDate());
+        transaction.setTransactionType(transactionDto.getTransactionType());
+        transaction.setAccount(account);
+        
+        if (transactionDto.getCategoryId() != null) {
+            categoryService.getCategoryById(transactionDto.getCategoryId())
+                .ifPresent(transaction::setCategory);
+        }
+        
+        Transaction savedTransaction = transactionService.createTransaction(transaction);
+        return ResponseEntity.ok(convertToDto(savedTransaction));
+    }
+    
+    @PutMapping("/{transactionId}")
+    public ResponseEntity<TransactionDto> updateTransaction(
+            Authentication authentication,
+            @PathVariable Long transactionId,
+            @Valid @RequestBody TransactionDto transactionDto) {
+        
+        User user = (User) authentication.getPrincipal();
+        Transaction existingTransaction = transactionRepository.findById(transactionId)
+            .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        
+        if (!existingTransaction.getAccount().getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        
+        Account account = accountRepository.findById(transactionDto.getAccountId())
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+        
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        
+        Transaction updatedTransaction = new Transaction();
+        updatedTransaction.setAmount(transactionDto.getAmount());
+        updatedTransaction.setDescription(transactionDto.getDescription());
+        updatedTransaction.setMerchantName(transactionDto.getMerchantName());
+        updatedTransaction.setTransactionDate(transactionDto.getTransactionDate());
+        updatedTransaction.setTransactionType(transactionDto.getTransactionType());
+        updatedTransaction.setAccount(account);
+        
+        if (transactionDto.getCategoryId() != null) {
+            categoryService.getCategoryById(transactionDto.getCategoryId())
+                .ifPresent(updatedTransaction::setCategory);
+        }
+        
+        Transaction savedTransaction = transactionService.updateTransaction(transactionId, updatedTransaction);
+        return ResponseEntity.ok(convertToDto(savedTransaction));
+    }
+    
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<?> deleteTransaction(
+            Authentication authentication,
+            @PathVariable Long transactionId) {
+        
+        User user = (User) authentication.getPrincipal();
+        Transaction transaction = transactionRepository.findById(transactionId)
+            .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        
+        if (!transaction.getAccount().getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        
+        transactionService.deleteTransaction(transactionId);
+        return ResponseEntity.ok().build();
     }
     
     @PutMapping("/{transactionId}/category")
@@ -225,9 +315,9 @@ public class TransactionController {
                    "Force delete: {}. This action is irreversible.", 
                    user.getEmail(), transactionCount, account.getName(), accountId, forceDelete);
         
-        // Perform hard delete
+        // Perform hard delete using TransactionService to update balance
         try {
-            transactionRepository.deleteAll(transactions);
+            transactionService.deleteAllTransactionsByAccount(account);
             
             logger.error("DELETION COMPLETED: {} transactions permanently deleted from account '{}' " +
                         "(ID: {}) by user {}. This action cannot be undone.", 

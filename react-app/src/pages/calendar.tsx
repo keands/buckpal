@@ -144,8 +144,8 @@ export default function CalendarPage() {
       description: transaction.description || '',
       amount: Math.abs(transaction.amount).toString(),
       transactionType: transaction.transactionType,
-      accountId: transaction.account?.id?.toString() || '',
-      categoryId: transaction.category?.id?.toString() || '',
+      accountId: transaction.accountId?.toString() || '',
+      categoryId: transaction.categoryId?.toString() || '',
       transactionDate: transaction.transactionDate?.split('T')[0] || '' // Extract date part
     })
     setShowEditModal(true)
@@ -175,8 +175,8 @@ export default function CalendarPage() {
         amount: formData.transactionType === 'EXPENSE' ? -Math.abs(Number(formData.amount)) : Math.abs(Number(formData.amount)),
         transactionType: formData.transactionType,
         transactionDate: formData.transactionDate,
-        account: formData.accountId ? { id: Number(formData.accountId) } as Account : undefined,
-        category: formData.categoryId ? { id: Number(formData.categoryId) } as Category : undefined
+        accountId: formData.accountId ? Number(formData.accountId) : undefined,
+        categoryId: formData.categoryId ? Number(formData.categoryId) : undefined
       }
 
       await apiClient.updateTransaction(editingTransaction.id, updatedTransaction)
@@ -576,11 +576,11 @@ export default function CalendarPage() {
                                 {transaction.description || 'Transaction'}
                               </div>
                               <div className="text-xs text-gray-500 mt-1">
-                                {transaction.account?.name || 'Compte inconnu'}
+                                {transaction.accountName || 'Compte inconnu'}
                               </div>
-                              {transaction.category && (
+                              {transaction.categoryName && (
                                 <div className="text-xs text-gray-400 mt-1">
-                                  {transaction.category?.name || 'Sans catégorie'}
+                                  {transaction.categoryName}
                                 </div>
                               )}
                             </div>

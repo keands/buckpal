@@ -2,6 +2,7 @@ package com.buckpal.repository;
 
 import com.buckpal.entity.Account;
 import com.buckpal.entity.Category;
+import com.buckpal.entity.ProjectCategory;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.Transaction.TransactionType;
 import org.springframework.data.domain.Page;
@@ -91,6 +92,38 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         """)
     List<Object[]> findCalendarDataRawByAccountsAndDateRange(
         @Param("accounts") List<Account> accounts,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
+    
+    List<Transaction> findByProjectCategoriesContaining(ProjectCategory projectCategory);
+    
+    @Query("SELECT t FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory")
+    List<Transaction> findByProjectCategory(@Param("projectCategory") ProjectCategory projectCategory);
+    
+    @Query("SELECT t FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory AND t.transactionDate BETWEEN :startDate AND :endDate")
+    List<Transaction> findByProjectCategoryAndDateRange(
+        @Param("projectCategory") ProjectCategory projectCategory,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
+    
+    @Query("SELECT SUM(t.amount) FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory AND t.transactionType = :type")
+    Double sumAmountByProjectCategoryAndType(
+        @Param("projectCategory") ProjectCategory projectCategory,
+        @Param("type") TransactionType type);
+    
+    @Query("SELECT SUM(t.amount) FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory AND t.transactionType = :type AND t.transactionDate BETWEEN :startDate AND :endDate")
+    Double sumAmountByProjectCategoryAndTypeAndDateRange(
+        @Param("projectCategory") ProjectCategory projectCategory,
+        @Param("type") TransactionType type,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
+    
+    @Query("SELECT COUNT(t) FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory")
+    Long countByProjectCategory(@Param("projectCategory") ProjectCategory projectCategory);
+    
+    @Query("SELECT t FROM Transaction t JOIN t.projectCategories pc WHERE pc IN :projectCategories AND t.transactionDate BETWEEN :startDate AND :endDate")
+    List<Transaction> findByProjectCategoriesInAndDateRange(
+        @Param("projectCategories") List<ProjectCategory> projectCategories,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
 }

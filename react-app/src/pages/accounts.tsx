@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { apiClient } from '@/lib/api'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrencyI18n } from '@/lib/i18n-utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -33,16 +34,20 @@ type AccountFormData = {
   isActive: boolean
 }
 
-const ACCOUNT_TYPES = [
-  { value: 'CHECKING', label: 'Compte Courant' },
-  { value: 'SAVINGS', label: 'Compte Épargne' },
-  { value: 'CREDIT_CARD', label: 'Carte de Crédit' },
-  { value: 'INVESTMENT', label: 'Compte d\'Investissement' },
-  { value: 'LOAN', label: 'Prêt' },
-  { value: 'OTHER', label: 'Autre' },
-] as const
+// Move ACCOUNT_TYPES inside component to access t() function
 
 export default function AccountsPage() {
+  const { t } = useTranslation()
+  
+  const ACCOUNT_TYPES = [
+    { value: 'CHECKING', label: t('accounts.accountTypes.CHECKING') },
+    { value: 'SAVINGS', label: t('accounts.accountTypes.SAVINGS') },
+    { value: 'CREDIT_CARD', label: t('accounts.accountTypes.CREDIT_CARD') },
+    { value: 'INVESTMENT', label: t('accounts.accountTypes.INVESTMENT') },
+    { value: 'LOAN', label: t('accounts.accountTypes.LOAN') },
+    { value: 'OTHER', label: t('accounts.accountTypes.OTHER') },
+  ] as const
+  
   const [accounts, setAccounts] = useState<Account[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -330,7 +335,7 @@ export default function AccountsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="text-lg">Chargement des comptes...</div>
+        <div className="text-lg">{t('common.loading')}</div>
       </div>
     )
   }
@@ -340,8 +345,8 @@ export default function AccountsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des Comptes</h1>
-          <p className="text-gray-600">Gérez vos comptes bancaires et leurs informations</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('accounts.title')}</h1>
+          <p className="text-gray-600">{t('accounts.subtitle')}</p>
         </div>
         
         <div className="flex space-x-2">
@@ -352,11 +357,11 @@ export default function AccountsPage() {
             className="flex items-center space-x-2"
           >
             <RefreshCw className={`w-4 h-4 ${isRecalculatingAll ? 'animate-spin' : ''}`} />
-            <span>{isRecalculatingAll ? 'Recalcul...' : 'Recalculer tous les soldes'}</span>
+            <span>{isRecalculatingAll ? t('common.loading') : t('accounts.recalculateAllBalances')}</span>
           </Button>
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            Nouveau Compte
+            {t('accounts.newAccount')}
           </Button>
         </div>
       </div>
@@ -405,16 +410,16 @@ export default function AccountsPage() {
                 <div className={`text-2xl font-bold ${
                   account.balance >= 0 ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  {formatCurrency(account.balance)}
+                  {formatCurrencyI18n(account.balance)}
                 </div>
-                <p className="text-sm text-gray-500">Solde actuel</p>
+                <p className="text-sm text-gray-500">{t('accounts.currentBalance')}</p>
               </div>
 
               {/* Account Details */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Banque :</span>
-                  <span className="font-medium">{account.bankName || 'Non spécifiée'}</span>
+                  <span className="text-gray-500">{t('accounts.bankName')} :</span>
+                  <span className="font-medium">{account.bankName || t('common.optional')}</span>
                 </div>
                 
                 {account.accountNumber && (
@@ -699,7 +704,7 @@ export default function AccountsPage() {
                     {getAccountTypeLabel(deletingAccount.accountType)} - {deletingAccount.bankName}
                   </div>
                   <div className="text-sm font-semibold text-red-600">
-                    Solde : {formatCurrency(deletingAccount.balance)}
+                    Solde : {formatCurrencyI18n(deletingAccount.balance)}
                   </div>
                 </div>
               </div>

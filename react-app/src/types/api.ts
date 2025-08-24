@@ -164,3 +164,51 @@ export interface CalendarDay {
   netAmount: number
   transactionCount: number
 }
+
+// Budget Types
+export interface Budget {
+  id: number
+  budgetMonth: number
+  budgetYear: number
+  projectedIncome: number
+  actualIncome: number
+  totalAllocatedAmount: number
+  totalSpentAmount: number
+  budgetModel: string
+  notes?: string
+  isActive?: boolean
+  createdAt?: string
+  updatedAt?: string
+  budgetCategories: BudgetCategory[]
+  remainingAmount?: number
+  usagePercentage?: number
+  isOverBudget?: boolean
+  
+  // Computed properties for compatibility with frontend
+  categories?: BudgetCategory[]
+  name?: string
+}
+
+export interface BudgetCategory {
+  id: number
+  name: string
+  allocatedAmount: number
+  spentAmount: number
+  categoryType: 'NEEDS' | 'WANTS' | 'SAVINGS' | 'EXPENSES' | 'HOUSING' | 'LIVING'
+  colorCode?: string
+  projectCategories?: ProjectCategory[]
+  
+  // Computed properties for compatibility
+  remainingAmount?: number
+  usagePercentage?: number
+  isOverBudget?: boolean
+}
+
+export interface ProjectCategory {
+  id: number
+  name: string
+  description?: string
+  color?: string
+  parentProjectCategory?: ProjectCategory
+  childProjectCategories?: ProjectCategory[]
+}

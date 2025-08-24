@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "transactions")
@@ -54,6 +56,32 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "transaction_project_categories",
+        joinColumns = @JoinColumn(name = "transaction_id"),
+        inverseJoinColumns = @JoinColumn(name = "project_category_id")
+    )
+    @JsonIgnore
+    private Set<ProjectCategory> projectCategories = new HashSet<>();
+    
+    // Budget category assignment (for budget tracking)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "budget_category_id")
+    private BudgetCategory budgetCategory;
+    
+    // Assignment status for hybrid approach
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assignment_status")
+    private AssignmentStatus assignmentStatus = AssignmentStatus.UNASSIGNED;
+    
+    public enum AssignmentStatus {
+        UNASSIGNED,     // Not assigned to any budget category
+        AUTO_ASSIGNED,  // Automatically assigned based on category matching
+        MANUALLY_ASSIGNED, // Manually assigned by user
+        NEEDS_REVIEW    // Requires user review
+    }
     
     @PrePersist
     protected void onCreate() {
@@ -113,6 +141,9 @@ public class Transaction {
     
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+    
+    public Set<ProjectCategory> getProjectCategories() { return projectCategories; }
+    public void setProjectCategories(Set<ProjectCategory> projectCategories) { this.projectCategories = projectCategories; }
     
     public enum TransactionType {
         INCOME,

@@ -1,7 +1,9 @@
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
+import { LanguageSwitcher } from '@/components/ui/language-switcher'
 import { Link, useLocation } from 'react-router-dom'
 import { apiClient } from '@/lib/api'
+import { useTranslation } from 'react-i18next'
 import { 
   CreditCard, 
   BarChart3, 
@@ -9,19 +11,22 @@ import {
   Settings, 
   LogOut,
   User,
-  Calendar
+  Calendar,
+  PieChart
 } from 'lucide-react'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const location = useLocation()
+  const { t } = useTranslation()
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-    { name: 'Comptes', href: '/accounts', icon: CreditCard },
-    { name: 'Calendrier', href: '/calendar', icon: Calendar },
-    { name: 'Import CSV', href: '/csv-import', icon: Upload },
-    { name: 'Paramètres', href: '/settings', icon: Settings },
+    { name: t('navigation.dashboard'), href: '/dashboard', icon: BarChart3 },
+    { name: t('navigation.accounts'), href: '/accounts', icon: CreditCard },
+    { name: t('navigation.calendar'), href: '/calendar', icon: Calendar },
+    { name: t('navigation.budget'), href: '/budget', icon: PieChart },
+    { name: t('navigation.csvImport'), href: '/csv-import', icon: Upload },
+    { name: t('navigation.settings'), href: '/settings', icon: Settings },
   ]
 
   return (
@@ -57,6 +62,8 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
+            
             {user && (
               <div className="flex items-center space-x-2">
                 <User className="w-4 h-4 text-gray-500" />
@@ -75,7 +82,7 @@ export default function Navbar() {
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
               >
                 <LogOut className="w-4 h-4 mr-2" />
-                Déconnexion
+                {t('navigation.logout')}
               </Button>
             )}
           </div>

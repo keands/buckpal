@@ -13,6 +13,9 @@ import type {
   CsvValidationRequest,
   CsvImportResult,
   CsvMappingTemplate,
+  Budget,
+  BudgetCategory,
+  ProjectCategory,
 } from '@/types/api'
 
 class ApiClient {
@@ -250,6 +253,51 @@ class ApiClient {
         params: { forceDelete }
       }
     )
+    return response.data
+  }
+
+  // Budget Management
+  async getBudgets(): Promise<Budget[]> {
+    const response: AxiosResponse<Budget[]> = await this.client.get('/budgets')
+    return response.data
+  }
+
+  async getBudget(id: number): Promise<Budget> {
+    const response: AxiosResponse<Budget> = await this.client.get(`/budgets/${id}`)
+    return response.data
+  }
+
+  async createBudget(budget: Partial<Budget>): Promise<Budget> {
+    const response: AxiosResponse<Budget> = await this.client.post('/budgets', budget)
+    return response.data
+  }
+
+  async updateBudget(id: number, budget: Partial<Budget>): Promise<Budget> {
+    const response: AxiosResponse<Budget> = await this.client.put(`/budgets/${id}`, budget)
+    return response.data
+  }
+
+  async deleteBudget(id: number): Promise<void> {
+    await this.client.delete(`/budgets/${id}`)
+  }
+
+  async getTransactionsByCategory(budgetId: number, categoryId: number): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get(`/budgets/${budgetId}/categories/${categoryId}/transactions`)
+    return response.data
+  }
+
+  async createBudgetFromWizard(wizardData: any): Promise<Budget> {
+    const response: AxiosResponse<Budget> = await this.client.post('/budgets/setup-wizard', wizardData)
+    return response.data
+  }
+
+  async getPreviousMonthBudget(): Promise<Budget> {
+    const response: AxiosResponse<Budget> = await this.client.get('/budgets/previous')
+    return response.data
+  }
+
+  async getCurrentMonthBudget(): Promise<Budget> {
+    const response: AxiosResponse<Budget> = await this.client.get('/budgets/current')
     return response.data
   }
 }

@@ -62,6 +62,9 @@ export interface Transaction {
   accountName: string
   categoryId?: number
   categoryName?: string
+  budgetCategoryId?: number
+  budgetCategoryName?: string
+  assignmentStatus?: 'UNASSIGNED' | 'AUTO_ASSIGNED' | 'MANUALLY_ASSIGNED' | 'NEEDS_REVIEW'
 }
 
 // CSV Import Types
@@ -211,4 +214,13 @@ export interface ProjectCategory {
   color?: string
   parentProjectCategory?: ProjectCategory
   childProjectCategories?: ProjectCategory[]
+}
+
+export interface BudgetCategoryTemplate {
+  name: string
+  description: string
+  categoryType: 'NEEDS' | 'WANTS' | 'SAVINGS'
+  colorCode: string
+  iconName: string
+  suggestedPercentage: number
 }

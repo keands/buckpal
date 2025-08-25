@@ -5,6 +5,7 @@ import com.buckpal.entity.Category;
 import com.buckpal.entity.ProjectCategory;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.Transaction.TransactionType;
+import com.buckpal.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -126,4 +127,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("projectCategories") List<ProjectCategory> projectCategories,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
+    
+    // Transaction Assignment queries
+    @Query("SELECT t FROM Transaction t WHERE t.account.user = :user")
+    List<Transaction> findByUser(@Param("user") User user);
+    
+    @Query("SELECT t FROM Transaction t WHERE t.account.user = :user AND t.assignmentStatus = :status")
+    List<Transaction> findByUserAndAssignmentStatus(
+        @Param("user") User user,
+        @Param("status") Transaction.AssignmentStatus status);
+    
+    @Query("SELECT t FROM Transaction t WHERE t.id = :id AND t.account.user = :user")
+    Optional<Transaction> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
 }

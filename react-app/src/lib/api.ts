@@ -300,6 +300,49 @@ class ApiClient {
     const response: AxiosResponse<Budget> = await this.client.get('/budgets/current')
     return response.data
   }
+
+  // Transaction Assignment
+  async autoAssignTransactions(budgetId: number): Promise<{ message: string; status: string }> {
+    const response: AxiosResponse<{ message: string; status: string }> = await this.client.post(`/transaction-assignments/auto-assign/${budgetId}`)
+    return response.data
+  }
+
+  async manuallyAssignTransaction(transactionId: number, budgetCategoryId: number): Promise<{ message: string; status: string }> {
+    const response: AxiosResponse<{ message: string; status: string }> = await this.client.post('/transaction-assignments/manual-assign', {
+      transactionId,
+      budgetCategoryId
+    })
+    return response.data
+  }
+
+  async overrideAssignment(transactionId: number, budgetCategoryId: number): Promise<{ message: string; status: string }> {
+    const response: AxiosResponse<{ message: string; status: string }> = await this.client.put(`/transaction-assignments/override/${transactionId}`, {
+      budgetCategoryId
+    })
+    return response.data
+  }
+
+  async getTransactionsNeedingReview(budgetId?: number): Promise<Transaction[]> {
+    const endpoint = budgetId 
+      ? `/transaction-assignments/needs-review/${budgetId}`
+      : '/transaction-assignments/needs-review'
+    const response: AxiosResponse<Transaction[]> = await this.client.get(endpoint)
+    return response.data
+  }
+
+  async getUnassignedTransactions(budgetId?: number): Promise<Transaction[]> {
+    const endpoint = budgetId 
+      ? `/transaction-assignments/unassigned/${budgetId}`
+      : '/transaction-assignments/unassigned'
+    const response: AxiosResponse<Transaction[]> = await this.client.get(endpoint)
+    return response.data
+  }
+
+  // Budget Category Templates
+  async getBudgetCategoryTemplates(): Promise<BudgetCategoryTemplate[]> {
+    const response: AxiosResponse<BudgetCategoryTemplate[]> = await this.client.get('/budgets/category-templates')
+    return response.data
+  }
 }
 
 // Export a singleton instance

@@ -52,6 +52,11 @@ public class Category {
     @JsonIgnore
     private Set<Transaction> transactions = new HashSet<>();
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -103,4 +108,7 @@ public class Category {
     
     public Set<Transaction> getTransactions() { return transactions; }
     public void setTransactions(Set<Transaction> transactions) { this.transactions = transactions; }
+    
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

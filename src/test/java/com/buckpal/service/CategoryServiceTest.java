@@ -4,6 +4,7 @@ import com.buckpal.entity.Account;
 import com.buckpal.entity.Category;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.Transaction.TransactionType;
+import com.buckpal.entity.User;
 import com.buckpal.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,9 @@ class CategoryServiceTest {
     
     @Mock
     private CategoryRepository categoryRepository;
+    
+    @Mock
+    private CategoryInitializationService categoryInitializationService;
     
     @InjectMocks
     private CategoryService categoryService;
@@ -108,24 +112,36 @@ class CategoryServiceTest {
     }
     
     @Test
-    void shouldInitializeDefaultCategories() {
-        when(categoryRepository.findByName(anyString())).thenReturn(Optional.empty());
-        when(categoryRepository.save(any(Category.class))).thenReturn(new Category());
+    void shouldInitializeCategoriesForNewUser() {
+        // Given
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test@example.com");
         
-        categoryService.initializeDefaultCategories();
+        when(categoryInitializationService.hasCategories(newUser)).thenReturn(false);
         
-        verify(categoryRepository, atLeast(8)).save(any(Category.class));
+        // When
+        categoryService.initializeCategoriesForUser(newUser);
+        
+        // Then
+        verify(categoryInitializationService).hasCategories(newUser);
+        verify(categoryInitializationService).createPredefinedTransactionCategories(newUser);
     }
     
     @Test
-    void shouldNotCreateCategoryIfAlreadyExists() {
-        when(categoryRepository.findByName("Food & Dining")).thenReturn(Optional.of(testCategory));
-        when(categoryRepository.findByName("Transportation")).thenReturn(Optional.empty());
-        when(categoryRepository.save(any(Category.class))).thenReturn(new Category());
+    void shouldNotInitializeCategoriesIfUserAlreadyHasCategories() {
+        // Given
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setEmail("existing@example.com");
         
-        categoryService.initializeDefaultCategories();
+        when(categoryInitializationService.hasCategories(existingUser)).thenReturn(true);
         
-        verify(categoryRepository, never()).save(argThat(cat -> "Food & Dining".equals(cat.getName())));
-        verify(categoryRepository, atLeastOnce()).save(argThat(cat -> "Transportation".equals(cat.getName())));
+        // When
+        categoryService.initializeCategoriesForUser(existingUser);
+        
+        // Then
+        verify(categoryInitializationService).hasCategories(existingUser);
+        verify(categoryInitializationService, never()).createPredefinedTransactionCategories(existingUser);
     }
 }

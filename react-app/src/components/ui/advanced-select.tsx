@@ -68,11 +68,11 @@ const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps & a
 )
 SelectTrigger.displayName = "SelectTrigger"
 
-const SelectValue = ({ placeholder, selectedValue, children }: any) => {
+const SelectValue = ({ placeholder, selectedValue}: any) => {
   return <span>{selectedValue || placeholder}</span>
 }
 
-const SelectContent = ({ children, open, selectedValue, onValueChange, setOpen, ...props }: SelectContentProps & any) => {
+const SelectContent = ({ children, open, selectedValue, onValueChange, setOpen}: SelectContentProps & any) => {
   if (!open) return null
 
   return (

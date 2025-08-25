@@ -2,6 +2,7 @@ package com.buckpal.service;
 
 import com.buckpal.entity.Category;
 import com.buckpal.entity.Transaction;
+import com.buckpal.entity.User;
 import com.buckpal.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,9 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
     
+    @Autowired
+    private CategoryInitializationService categoryInitializationService;
+    
     private final Map<String, String[]> categoryKeywords = new HashMap<String, String[]>() {{
         put("Food & Dining", new String[]{"restaurant", "cafe", "food", "dining", "pizza", "mcdonald", "burger", "grocery", "supermarket", "walmart", "target"});
         put("Transportation", new String[]{"uber", "lyft", "taxi", "gas", "fuel", "parking", "metro", "bus", "train", "airline"});
@@ -28,15 +32,12 @@ public class CategoryService {
         put("Transfer", new String[]{"transfer", "atm", "withdrawal", "deposit"});
     }};
     
-    public void initializeDefaultCategories() {
-        for (String categoryName : categoryKeywords.keySet()) {
-            if (categoryRepository.findByName(categoryName).isEmpty()) {
-                Category category = new Category();
-                category.setName(categoryName);
-                category.setDescription("Auto-generated category for " + categoryName.toLowerCase());
-                category.setIsDefault(true);
-                categoryRepository.save(category);
-            }
+    /**
+     * Initialize default categories for a new user
+     */
+    public void initializeCategoriesForUser(User user) {
+        if (!categoryInitializationService.hasCategories(user)) {
+            categoryInitializationService.createPredefinedTransactionCategories(user);
         }
     }
     
@@ -72,6 +73,14 @@ public class CategoryService {
     
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+    
+    public List<Category> getCategoriesForUser(User user) {
+        return categoryRepository.findByUser(user);
+    }
+    
+    public List<Category> getMainCategoriesForUser(User user) {
+        return categoryRepository.findByUserAndParentCategoryIsNull(user);
     }
     
     public List<Category> getMainCategories() {

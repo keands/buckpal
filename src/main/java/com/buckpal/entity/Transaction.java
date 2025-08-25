@@ -145,6 +145,12 @@ public class Transaction {
     public Set<ProjectCategory> getProjectCategories() { return projectCategories; }
     public void setProjectCategories(Set<ProjectCategory> projectCategories) { this.projectCategories = projectCategories; }
     
+    public BudgetCategory getBudgetCategory() { return budgetCategory; }
+    public void setBudgetCategory(BudgetCategory budgetCategory) { this.budgetCategory = budgetCategory; }
+    
+    public AssignmentStatus getAssignmentStatus() { return assignmentStatus; }
+    public void setAssignmentStatus(AssignmentStatus assignmentStatus) { this.assignmentStatus = assignmentStatus; }
+    
     public enum TransactionType {
         INCOME,
         EXPENSE,

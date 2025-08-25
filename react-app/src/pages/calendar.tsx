@@ -21,7 +21,7 @@ import {
   Save,
   Trash2
 } from 'lucide-react'
-import type { CalendarDay, Transaction, Account, Category } from '@/types/api'
+import type { CalendarDay, Transaction, Account, Category, Budget, BudgetCategory } from '@/types/api'
 import { startOfMonth, endOfMonth, format, addMonths, subMonths, eachDayOfInterval, getDay, isToday, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
@@ -41,6 +41,8 @@ export default function CalendarPage() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [accounts, setAccounts] = useState<Account[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [budgets, setBudgets] = useState<Budget[]>([])
+  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([])
   const [saving, setSaving] = useState(false)
   
   // Form state
@@ -50,6 +52,7 @@ export default function CalendarPage() {
     transactionType: 'EXPENSE' as 'INCOME' | 'EXPENSE' | 'TRANSFER',
     accountId: '',
     categoryId: '',
+    budgetCategoryId: '',
     transactionDate: ''
   })
 
@@ -67,12 +70,19 @@ export default function CalendarPage() {
 
   const loadAccountsAndCategories = async () => {
     try {
-      const [accountsData, categoriesData] = await Promise.all([
+      const [accountsData, categoriesData, budgetsData] = await Promise.all([
         apiClient.getAccounts(),
-        apiClient.getCategories()
+        apiClient.getCategories(),
+        apiClient.getBudgets()
       ])
       setAccounts(accountsData)
       setCategories(categoriesData)
+      setBudgets(budgetsData)
+      
+      // Extract all budget categories from all budgets
+      const allBudgetCategories = budgetsData.flatMap(budget => budget.budgetCategories || [])
+      setBudgetCategories(allBudgetCategories)
+      
       setError(null)
     } catch (error) {
       console.error('Error loading accounts and categories:', error)
@@ -146,6 +156,7 @@ export default function CalendarPage() {
       transactionType: transaction.transactionType,
       accountId: transaction.accountId?.toString() || '',
       categoryId: transaction.categoryId?.toString() || '',
+      budgetCategoryId: transaction.budgetCategoryId?.toString() || '',
       transactionDate: transaction.transactionDate?.split('T')[0] || '' // Extract date part
     })
     setShowEditModal(true)
@@ -160,6 +171,7 @@ export default function CalendarPage() {
       transactionType: 'EXPENSE',
       accountId: '',
       categoryId: '',
+      budgetCategoryId: '',
       transactionDate: ''
     })
   }
@@ -721,6 +733,23 @@ export default function CalendarPage() {
                     {categories.map((category) => (
                       <option key={category.id} value={category.id.toString()}>
                         {category.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Budget Category */}
+                <div className="space-y-2">
+                  <Label htmlFor="budgetCategory">Catégorie de budget (optionnel)</Label>
+                  <Select 
+                    id="budgetCategory"
+                    value={formData.budgetCategoryId} 
+                    onChange={(e) => setFormData({ ...formData, budgetCategoryId: e.target.value })}
+                  >
+                    <option value="">Aucune catégorie de budget</option>
+                    {budgetCategories.map((budgetCategory) => (
+                      <option key={budgetCategory.id} value={budgetCategory.id.toString()}>
+                        {budgetCategory.name}
                       </option>
                     ))}
                   </Select>

@@ -6,6 +6,7 @@ import com.buckpal.dto.UserRegistrationDto;
 import com.buckpal.entity.User;
 import com.buckpal.repository.UserRepository;
 import com.buckpal.security.JwtTokenProvider;
+import com.buckpal.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,6 +44,9 @@ public class AuthController {
     
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    
+    @Autowired
+    private CategoryService categoryService;
     
     @PostMapping("/signin")
     @Operation(summary = "Connexion utilisateur", description = "Authentification avec email/mot de passe et génération d'un token JWT")
@@ -90,7 +94,10 @@ public class AuthController {
                            signUpRequest.getEmail(),
                            encoder.encode(signUpRequest.getPassword()));
         
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        
+        // Initialize predefined categories for the new user
+        categoryService.initializeCategoriesForUser(savedUser);
         
         Map<String, String> response = new HashMap<>();
         response.put("message", "User registered successfully!");

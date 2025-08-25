@@ -4,6 +4,7 @@ import com.buckpal.dto.BudgetDto;
 import com.buckpal.entity.Budget;
 import com.buckpal.entity.User;
 import com.buckpal.service.BudgetService;
+import com.buckpal.service.CategoryInitializationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -171,5 +172,14 @@ public class BudgetController {
         }
         
         return ResponseEntity.status(HttpStatus.CREATED).body(budgetDto);
+    }
+    
+    /**
+     * Get predefined budget category templates
+     */
+    @GetMapping("/category-templates")
+    public ResponseEntity<List<CategoryInitializationService.BudgetCategoryTemplate>> getBudgetCategoryTemplates() {
+        List<CategoryInitializationService.BudgetCategoryTemplate> templates = budgetService.getBudgetCategoryTemplates();
+        return ResponseEntity.ok(templates);
     }
 }

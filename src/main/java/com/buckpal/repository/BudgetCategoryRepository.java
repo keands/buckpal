@@ -50,4 +50,10 @@ public interface BudgetCategoryRepository extends JpaRepository<BudgetCategory, 
     // Check if category has transactions linked
     @Query("SELECT COUNT(t) > 0 FROM BudgetCategory bc JOIN bc.transactions t WHERE bc = :category")
     boolean hasLinkedTransactions(@Param("category") BudgetCategory category);
+    
+    // For transaction assignment matching
+    List<BudgetCategory> findByBudgetIdAndNameContainingIgnoreCase(Long budgetId, String name);
+    
+    @Query("SELECT bc FROM BudgetCategory bc WHERE bc.budget.id = :budgetId AND bc.name = :name")
+    Optional<BudgetCategory> findByBudgetIdAndName(@Param("budgetId") Long budgetId, @Param("name") String name);
 }

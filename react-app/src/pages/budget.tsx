@@ -8,6 +8,7 @@ import { PieChart, Plus, Settings } from 'lucide-react'
 import BudgetSetupWizard from '@/components/budget/budget-setup-wizard'
 import BudgetProgressDashboard from '@/components/budget/budget-progress-dashboard'
 import CategoryTransactionsModal from '@/components/budget/category-transactions-modal'
+import { TransactionAssignment } from '@/components/budget/transaction-assignment'
 
 export default function BudgetPage() {
   const { t } = useTranslation()
@@ -21,6 +22,8 @@ export default function BudgetPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [previousMonthIncome, setPreviousMonthIncome] = useState<number>(0)
+  const [, setCurrentMonthBudget] = useState<any>(null)
+  const [showCurrentMonthPrompt, setShowCurrentMonthPrompt] = useState(false)
 
   // Helper functions
   const getMonthName = (monthNumber: number) => {
@@ -29,6 +32,15 @@ export default function BudgetPage() {
       'July', 'August', 'September', 'October', 'November', 'December'
     ]
     return months[monthNumber - 1] || 'Unknown'
+  }
+
+  const getCurrentMonthInfo = () => {
+    const now = new Date()
+    return {
+      month: now.getMonth() + 1, // JavaScript months are 0-based
+      year: now.getFullYear(),
+      monthName: getMonthName(now.getMonth() + 1)
+    }
   }
 
   // Transform backend budget data to frontend format
@@ -51,19 +63,47 @@ export default function BudgetPage() {
   }
 
   // Load budgets from API
-  useEffect(() => {
-    const loadBudgets = async () => {
+  const loadBudgets = async () => {
       if (!isAuthenticated) return
       
       try {
         setIsLoading(true)
         
-        // Fetch budgets first
+        // First, try to get current month budget
+        let currentBudget = null
+        try {
+          currentBudget = await apiClient.getCurrentMonthBudget()
+          if (currentBudget) {
+            const transformedCurrentBudget = transformBudgetData([currentBudget])[0]
+            setCurrentMonthBudget(transformedCurrentBudget)
+            setSelectedBudgetId(transformedCurrentBudget.id)
+            setShowCurrentMonthPrompt(false)
+          }
+        } catch (error: any) {
+          // Current month budget doesn't exist - show prompt
+          console.log('No current month budget found:', error.response?.status)
+          setCurrentMonthBudget(null)
+          setShowCurrentMonthPrompt(true)
+        }
+        
+        // Fetch all budgets
         const budgetData = await apiClient.getBudgets()
         const transformedBudgets = transformBudgetData(budgetData)
         setBudgets(transformedBudgets)
         
-        // Try to get previous month income, but don't fail if none exists
+        // If no current month budget, select most recent budget or show all
+        if (!currentBudget && transformedBudgets.length > 0 && selectedBudgetId === null) {
+          // Sort budgets by year/month descending to get most recent
+          const sortedBudgets = transformedBudgets.sort((a, b) => {
+            if (a.budgetYear !== b.budgetYear) {
+              return b.budgetYear - a.budgetYear
+            }
+            return b.budgetMonth - a.budgetMonth
+          })
+          setSelectedBudgetId(sortedBudgets[0].id)
+        }
+        
+        // Try to get previous month income for wizard
         try {
           const previousBudget = await apiClient.getPreviousMonthBudget()
           if (previousBudget) {
@@ -75,14 +115,9 @@ export default function BudgetPage() {
           setPreviousMonthIncome(0)
         }
         
-        // Set first budget as selected if none selected
-        if (transformedBudgets.length > 0 && selectedBudgetId === null) {
-          setSelectedBudgetId(transformedBudgets[0].id)
-        }
         setError(null)
       } catch (error: any) {
         console.error('Error loading budgets:', error)
-        // Show error for debugging - API might not be implemented yet
         setError(`Failed to load budgets: ${error.response?.status || 'Network error'}`)
         setBudgets([])
       } finally {
@@ -90,6 +125,7 @@ export default function BudgetPage() {
       }
     }
 
+  useEffect(() => {
     loadBudgets()
   }, [isAuthenticated])
 
@@ -114,13 +150,18 @@ export default function BudgetPage() {
               // Call the backend API to create the budget
               const createdBudget = await apiClient.createBudgetFromWizard(budgetData)
               
-              // Refresh the budgets list
-              const allBudgets = await apiClient.getBudgets()
-              const transformedBudgets = transformBudgetData(allBudgets)
-              setBudgets(transformedBudgets)
+              // Refresh all budget data (this handles current month detection)
+              await loadBudgets()
               
               // Select the newly created budget
               setSelectedBudgetId(createdBudget.id)
+              
+              // Hide the prompt if we just created current month budget
+              const currentInfo = getCurrentMonthInfo()
+              if (createdBudget.budgetMonth === currentInfo.month && createdBudget.budgetYear === currentInfo.year) {
+                setShowCurrentMonthPrompt(false)
+                setCurrentMonthBudget(transformBudgetData([createdBudget])[0])
+              }
               
               setShowWizard(false)
               setError(null)
@@ -234,6 +275,41 @@ export default function BudgetPage() {
         </div>
       </div>
 
+      {/* Current Month Budget Prompt - Yellow Warning */}
+      {showCurrentMonthPrompt && (
+        <Card className="border-yellow-300 bg-yellow-50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center">
+                  <Plus className="w-4 h-4 text-yellow-800" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-yellow-900">
+                    {t('budget.currentMonthPrompt.title', { 
+                      month: getCurrentMonthInfo().monthName, 
+                      year: getCurrentMonthInfo().year 
+                    })}
+                  </h3>
+                  <p className="text-yellow-700">
+                    {t('budget.currentMonthPrompt.description')}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={() => {
+                  setShowWizard(true)
+                }} 
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {t('budget.currentMonthPrompt.createButton', { month: getCurrentMonthInfo().monthName })}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Budget Progress Dashboard */}
       {showDashboard && (
         <BudgetProgressDashboard 
@@ -245,6 +321,17 @@ export default function BudgetPage() {
           }}
           onBudgetChange={(budgetId) => {
             setSelectedBudgetId(budgetId)
+          }}
+        />
+      )}
+
+      {/* Transaction Assignment */}
+      {selectedBudget && (
+        <TransactionAssignment
+          budget={selectedBudget}
+          onAssignmentComplete={() => {
+            // Refresh budget data after assignment
+            loadBudgets()
           }}
         />
       )}

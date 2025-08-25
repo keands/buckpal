@@ -7,6 +7,8 @@ import com.buckpal.entity.BudgetCategory;
 import com.buckpal.entity.User;
 import com.buckpal.repository.BudgetRepository;
 import com.buckpal.repository.BudgetCategoryRepository;
+import com.buckpal.repository.TransactionRepository;
+import com.buckpal.service.CategoryInitializationService.BudgetCategoryTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +27,18 @@ public class BudgetService {
     
     private final BudgetRepository budgetRepository;
     private final BudgetCategoryRepository budgetCategoryRepository;
+    private final TransactionRepository transactionRepository;
+    private final CategoryInitializationService categoryInitializationService;
     
     @Autowired
-    public BudgetService(BudgetRepository budgetRepository, BudgetCategoryRepository budgetCategoryRepository) {
+    public BudgetService(BudgetRepository budgetRepository, 
+                        BudgetCategoryRepository budgetCategoryRepository,
+                        TransactionRepository transactionRepository,
+                        CategoryInitializationService categoryInitializationService) {
         this.budgetRepository = budgetRepository;
         this.budgetCategoryRepository = budgetCategoryRepository;
+        this.transactionRepository = transactionRepository;
+        this.categoryInitializationService = categoryInitializationService;
     }
     
     public BudgetDto createBudget(User user, BudgetDto budgetDto) {
@@ -277,5 +286,116 @@ public class BudgetService {
         entity.setTotalSpentAmount(dto.getTotalSpentAmount());
         entity.setNotes(dto.getNotes());
         entity.setIsActive(dto.getIsActive());
+    }
+    
+    /**
+     * Recalculate spent amounts for a specific budget category based on assigned transactions
+     */
+    public void recalculateBudgetCategorySpentAmount(Long budgetCategoryId) {
+        BudgetCategory category = budgetCategoryRepository.findById(budgetCategoryId)
+            .orElseThrow(() -> new RuntimeException("Budget category not found"));
+        
+        // Calculate total spent amount from assigned transactions
+        BigDecimal totalSpent = calculateSpentAmountForCategory(category);
+        
+        // Update category spent amount
+        category.setSpentAmount(totalSpent);
+        budgetCategoryRepository.save(category);
+        
+        // Update the parent budget's total spent amount
+        recalculateBudgetTotalSpentAmount(category.getBudget());
+    }
+    
+    /**
+     * Recalculate total spent amount for an entire budget
+     */
+    public void recalculateBudgetTotalSpentAmount(Budget budget) {
+        BigDecimal totalSpent = budget.getBudgetCategories().stream()
+            .map(BudgetCategory::getSpentAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        budget.setTotalSpentAmount(totalSpent);
+        budgetRepository.save(budget);
+    }
+    
+    /**
+     * Recalculate all budget categories for a specific budget
+     */
+    public void recalculateAllBudgetCategories(Long budgetId) {
+        Budget budget = budgetRepository.findById(budgetId)
+            .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        // Recalculate each category
+        for (BudgetCategory category : budget.getBudgetCategories()) {
+            BigDecimal totalSpent = calculateSpentAmountForCategory(category);
+            category.setSpentAmount(totalSpent);
+            budgetCategoryRepository.save(category);
+        }
+        
+        // Recalculate budget total
+        recalculateBudgetTotalSpentAmount(budget);
+    }
+    
+    /**
+     * Calculate spent amount for a budget category from assigned transactions
+     */
+    private BigDecimal calculateSpentAmountForCategory(BudgetCategory category) {
+        // Sum up all EXPENSE transactions assigned to this budget category
+        return category.getTransactions().stream()
+            .filter(transaction -> "EXPENSE".equals(transaction.getTransactionType().name()))
+            .map(transaction -> transaction.getAmount().abs()) // Ensure positive amounts
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    
+    /**
+     * Update budget category spent amount when a transaction is assigned/unassigned
+     */
+    public void updateBudgetAfterTransactionAssignment(Long budgetCategoryId) {
+        recalculateBudgetCategorySpentAmount(budgetCategoryId);
+    }
+    
+    /**
+     * Create budget categories from predefined templates
+     */
+    public void createBudgetCategoriesFromTemplates(Budget budget) {
+        List<BudgetCategoryTemplate> templates = categoryInitializationService.getPredefinedBudgetCategoryTemplates();
+        
+        for (BudgetCategoryTemplate template : templates) {
+            BudgetCategory category = new BudgetCategory();
+            category.setName(template.getName());
+            category.setDescription(template.getDescription());
+            category.setColorCode(template.getColorCode());
+            category.setIconName(template.getIconName());
+            category.setBudget(budget);
+            
+            // Convert template category type to entity category type
+            BudgetCategory.BudgetCategoryType entityType;
+            switch (template.getCategoryType()) {
+                case NEEDS -> entityType = BudgetCategory.BudgetCategoryType.EXPENSE;
+                case WANTS -> entityType = BudgetCategory.BudgetCategoryType.EXPENSE;
+                case SAVINGS -> entityType = BudgetCategory.BudgetCategoryType.SAVINGS;
+                default -> entityType = BudgetCategory.BudgetCategoryType.EXPENSE;
+            }
+            category.setCategoryType(entityType);
+            
+            // Calculate allocated amount based on suggested percentage and income
+            BigDecimal suggestedPercentage = BigDecimal.valueOf(template.getSuggestedPercentage());
+            BigDecimal allocatedAmount = budget.getProjectedIncome()
+                .multiply(suggestedPercentage)
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            category.setAllocatedAmount(allocatedAmount);
+            
+            category.setSpentAmount(BigDecimal.ZERO);
+            category.setIsActive(true);
+            
+            budgetCategoryRepository.save(category);
+        }
+    }
+    
+    /**
+     * Get predefined budget category templates for frontend
+     */
+    public List<BudgetCategoryTemplate> getBudgetCategoryTemplates() {
+        return categoryInitializationService.getPredefinedBudgetCategoryTemplates();
     }
 }

@@ -3,6 +3,7 @@ package com.buckpal.controller;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.service.TransactionAssignmentService;
+import com.buckpal.service.EnhancedTransactionAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,20 +11,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/transaction-assignments")
 public class TransactionAssignmentController {
     
     private final TransactionAssignmentService transactionAssignmentService;
+    private final EnhancedTransactionAssignmentService enhancedTransactionAssignmentService;
     
     @Autowired
-    public TransactionAssignmentController(TransactionAssignmentService transactionAssignmentService) {
+    public TransactionAssignmentController(
+            TransactionAssignmentService transactionAssignmentService,
+            EnhancedTransactionAssignmentService enhancedTransactionAssignmentService) {
         this.transactionAssignmentService = transactionAssignmentService;
+        this.enhancedTransactionAssignmentService = enhancedTransactionAssignmentService;
     }
     
     /**
-     * Auto-assign unassigned transactions to budget categories
+     * Auto-assign unassigned transactions to budget categories (basic version)
      */
     @PostMapping("/auto-assign/{budgetId}")
     public ResponseEntity<Map<String, Object>> autoAssignTransactions(
@@ -37,6 +43,55 @@ public class TransactionAssignmentController {
             "message", "Auto-assignment completed",
             "status", "success"
         ));
+    }
+    
+    /**
+     * Enhanced auto-assign with detailed results and multiple strategies
+     */
+    @PostMapping("/enhanced-auto-assign/{budgetId}")
+    public ResponseEntity<Map<String, Object>> enhancedAutoAssignTransactions(
+            @PathVariable Long budgetId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        EnhancedTransactionAssignmentService.AssignmentResult result = 
+            enhancedTransactionAssignmentService.autoAssignTransactions(user, budgetId);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Enhanced auto-assignment completed");
+        response.put("totalAssigned", result.getTotalAssigned());
+        response.put("totalNeedsReview", result.getTotalNeedsReview());
+        response.put("strategyBreakdown", result.getStrategyBreakdown());
+        
+        // Add confidence statistics
+        Map<String, Object> confidenceStats = new HashMap<>();
+        if (!result.getAssigned().isEmpty()) {
+            double avgConfidence = result.getAssigned().stream()
+                .mapToDouble(EnhancedTransactionAssignmentService.TransactionAssignment::getConfidence)
+                .average()
+                .orElse(0.0);
+            
+            long highConfidence = result.getAssigned().stream()
+                .filter(ta -> ta.getConfidence() > 0.8)
+                .count();
+            
+            long mediumConfidence = result.getAssigned().stream()
+                .filter(ta -> ta.getConfidence() > 0.6 && ta.getConfidence() <= 0.8)
+                .count();
+            
+            long lowConfidence = result.getAssigned().stream()
+                .filter(ta -> ta.getConfidence() <= 0.6)
+                .count();
+            
+            confidenceStats.put("average", Math.round(avgConfidence * 100) / 100.0);
+            confidenceStats.put("high", highConfidence);
+            confidenceStats.put("medium", mediumConfidence);
+            confidenceStats.put("low", lowConfidence);
+        }
+        response.put("confidenceStats", confidenceStats);
+        
+        return ResponseEntity.ok(response);
     }
     
     /**

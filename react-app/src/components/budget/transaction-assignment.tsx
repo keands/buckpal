@@ -5,7 +5,7 @@ import type { Transaction, Budget } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { AlertTriangle, CheckCircle, Clock, Zap } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, Zap, TrendingUp, Brain, Target, BarChart3 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/advanced-select'
 
 interface TransactionAssignmentProps {
@@ -21,12 +21,26 @@ interface AssignmentStats {
   total: number
 }
 
+interface EnhancedAssignmentResult {
+  totalAssigned: number
+  totalNeedsReview: number
+  strategyBreakdown: Record<string, number>
+  confidenceStats: {
+    average: number
+    high: number
+    medium: number
+    low: number
+  }
+}
+
 export function TransactionAssignment({ budget, onAssignmentComplete }: TransactionAssignmentProps) {
   const { t } = useTranslation()
   const [unassignedTransactions, setUnassignedTransactions] = useState<Transaction[]>([])
   const [needsReviewTransactions, setNeedsReviewTransactions] = useState<Transaction[]>([])
   const [stats, setStats] = useState<AssignmentStats | null>(null)
   const [loading, setLoading] = useState(false)
+  const [enhancedResult, setEnhancedResult] = useState<EnhancedAssignmentResult | null>(null)
+  const [showEnhancedResults, setShowEnhancedResults] = useState(false)
   
   const loadTransactions = useCallback(async () => {
     try {
@@ -64,6 +78,26 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
       onAssignmentComplete?.()
     } catch (error) {
       console.error('Auto-assignment failed:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEnhancedAutoAssign = async () => {
+    setLoading(true)
+    try {
+      const result = await apiClient.enhancedAutoAssignTransactions(budget.id)
+      setEnhancedResult({
+        totalAssigned: result.totalAssigned,
+        totalNeedsReview: result.totalNeedsReview,
+        strategyBreakdown: result.strategyBreakdown,
+        confidenceStats: result.confidenceStats
+      })
+      setShowEnhancedResults(true)
+      await loadTransactions()
+      onAssignmentComplete?.()
+    } catch (error) {
+      console.error('Enhanced auto-assignment failed:', error)
     } finally {
       setLoading(false)
     }
@@ -199,13 +233,110 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
               </div>
             </div>
             
-            <Button 
-              onClick={handleAutoAssign} 
-              disabled={loading || stats.unassigned === 0}
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleAutoAssign} 
+                disabled={loading || stats.unassigned === 0}
+                variant="outline"
+                className="flex-1"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                {loading ? t('budget.assignment.processing') : t('budget.assignment.basicAutoAssign')}
+              </Button>
+              
+              <Button 
+                onClick={handleEnhancedAutoAssign} 
+                disabled={loading || stats.unassigned === 0}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                {loading ? t('budget.assignment.processing') : t('budget.assignment.smartAutoAssign')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Enhanced Assignment Results */}
+      {showEnhancedResults && enhancedResult && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-purple-600" />
+              {t('budget.assignment.enhancedResults')}
+            </CardTitle>
+            <CardDescription>
+              {t('budget.assignment.enhancedResultsDescription')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Assignment Summary */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="text-3xl font-bold text-green-600">{enhancedResult.totalAssigned}</div>
+                <div className="text-sm text-green-700">{t('budget.assignment.successfullyAssigned')}</div>
+              </div>
+              <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
+                <div className="text-3xl font-bold text-orange-600">{enhancedResult.totalNeedsReview}</div>
+                <div className="text-sm text-orange-700">{t('budget.assignment.stillNeedsReview')}</div>
+              </div>
+            </div>
+
+            {/* Confidence Statistics */}
+            {enhancedResult.confidenceStats.average > 0 && (
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  {t('budget.assignment.confidenceStats')}
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-lg font-semibold text-gray-600">{Math.round(enhancedResult.confidenceStats.average * 100)}%</div>
+                    <div className="text-xs text-gray-500">{t('budget.assignment.avgConfidence')}</div>
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="text-lg font-semibold text-green-600">{enhancedResult.confidenceStats.high}</div>
+                    <div className="text-xs text-green-500">{t('budget.assignment.highConfidence')} (&gt;80%)</div>
+                  </div>
+                  <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                    <div className="text-lg font-semibold text-yellow-600">{enhancedResult.confidenceStats.medium}</div>
+                    <div className="text-xs text-yellow-500">{t('budget.assignment.mediumConfidence')} (60-80%)</div>
+                  </div>
+                  <div className="text-center p-3 bg-red-50 rounded-lg">
+                    <div className="text-lg font-semibold text-red-600">{enhancedResult.confidenceStats.low}</div>
+                    <div className="text-xs text-red-500">{t('budget.assignment.lowConfidence')} (&lt;60%)</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Strategy Breakdown */}
+            {Object.keys(enhancedResult.strategyBreakdown).length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  {t('budget.assignment.strategyBreakdown')}
+                </h4>
+                <div className="space-y-2">
+                  {Object.entries(enhancedResult.strategyBreakdown).map(([strategy, count]) => (
+                    <div key={strategy} className="flex justify-between items-center p-2 bg-blue-50 rounded">
+                      <span className="text-sm font-medium capitalize">
+                        {t(`budget.assignment.strategies.${strategy}`, strategy)}
+                      </span>
+                      <Badge variant="secondary">{count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowEnhancedResults(false)}
               className="w-full"
             >
-              <Zap className="w-4 h-4 mr-2" />
-              {loading ? t('budget.assignment.processing') : t('budget.assignment.autoAssign')}
+              {t('common.close')}
             </Button>
           </CardContent>
         </Card>

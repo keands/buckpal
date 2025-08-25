@@ -307,6 +307,23 @@ class ApiClient {
     return response.data
   }
 
+  async enhancedAutoAssignTransactions(budgetId: number): Promise<{
+    message: string
+    status: string
+    totalAssigned: number
+    totalNeedsReview: number
+    strategyBreakdown: Record<string, number>
+    confidenceStats: {
+      average: number
+      high: number
+      medium: number
+      low: number
+    }
+  }> {
+    const response = await this.client.post(`/transaction-assignments/enhanced-auto-assign/${budgetId}`)
+    return response.data
+  }
+
   async manuallyAssignTransaction(transactionId: number, budgetCategoryId: number): Promise<{ message: string; status: string }> {
     const response: AxiosResponse<{ message: string; status: string }> = await this.client.post('/transaction-assignments/manual-assign', {
       transactionId,

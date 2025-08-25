@@ -10,6 +10,7 @@ import com.buckpal.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -147,4 +148,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("budgetCategory") BudgetCategory budgetCategory,
         @Param("startDate") LocalDate startDate, 
         @Param("endDate") LocalDate endDate);
+    
+    // Bulk unassign transactions from budget categories before budget deletion
+    @Modifying
+    @Query("UPDATE Transaction t SET t.budgetCategory = NULL, t.assignmentStatus = 'UNASSIGNED' " +
+           "WHERE t.budgetCategory IN (SELECT bc FROM BudgetCategory bc WHERE bc.budget.id = :budgetId)")
+    void unassignTransactionsFromBudget(@Param("budgetId") Long budgetId);
 }

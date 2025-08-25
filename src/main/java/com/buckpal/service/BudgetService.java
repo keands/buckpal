@@ -122,6 +122,13 @@ public class BudgetService {
             throw new RuntimeException("Budget not found or access denied");
         }
         
+        Budget budget = existingBudget.get();
+        
+        // First, unassign all transactions that are assigned to this budget's categories
+        // Use bulk update for better performance
+        transactionRepository.unassignTransactionsFromBudget(budgetId);
+        
+        // Now safe to delete the budget (cascades will handle budget categories)
         budgetRepository.deleteById(budgetId);
     }
     

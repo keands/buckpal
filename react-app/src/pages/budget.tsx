@@ -322,6 +322,14 @@ export default function BudgetPage() {
           onBudgetChange={(budgetId) => {
             setSelectedBudgetId(budgetId)
           }}
+          onBudgetDelete={async (budgetId) => {
+            // Refresh budgets after deletion
+            await loadBudgets()
+            // If deleted budget was selected, clear selection to trigger auto-selection
+            if (budgetId === selectedBudgetId) {
+              setSelectedBudgetId(null)
+            }
+          }}
         />
       )}
 

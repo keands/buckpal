@@ -1,9 +1,13 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/advanced-select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { formatCurrencyI18n } from '@/lib/i18n-utils'
+import { apiClient } from '@/lib/api'
 import { 
   PieChart, 
   Pie, 
@@ -25,7 +29,8 @@ import {
   DollarSign,
   Target,
   Calendar,
-  PieChartIcon
+  PieChartIcon,
+  Trash2
 } from 'lucide-react'
 
 interface BudgetData {
@@ -60,6 +65,7 @@ interface BudgetProgressDashboardProps {
   availableBudgets?: BudgetData[]
   onCategoryClick?: (category: CategoryData) => void
   onBudgetChange?: (budgetId: number) => void
+  onBudgetDelete?: (budgetId: number) => void
 }
 
 const COLORS = [
@@ -79,9 +85,28 @@ export default function BudgetProgressDashboard({
   budget, 
   availableBudgets = [],
   onCategoryClick,
-  onBudgetChange
+  onBudgetChange,
+  onBudgetDelete
 }: BudgetProgressDashboardProps) {
   const { t } = useTranslation()
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDeleteBudget = async () => {
+    if (!onBudgetDelete) return
+    
+    setIsDeleting(true)
+    try {
+      await apiClient.deleteBudget(budget.id)
+      onBudgetDelete(budget.id)
+      setShowDeleteDialog(false)
+    } catch (error) {
+      console.error('Failed to delete budget:', error)
+      // TODO: Show error toast/notification
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   const formatBudgetOption = (budget: BudgetData) => {
     const monthName = t(`months.${getMonthKey(budget.budgetMonth)}`)
@@ -194,28 +219,42 @@ export default function BudgetProgressDashboard({
               </p>
             </div>
             
-            {availableBudgets.length > 1 && (
-              <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-gray-700">
-                  {t('budget.selectPeriod')}:
-                </label>
-                <Select
-                  value={budget.id.toString()}
-                  onValueChange={(value) => onBudgetChange?.(parseInt(value))}
+            <div className="flex items-center space-x-2">
+              {availableBudgets.length > 1 && (
+                <>
+                  <label className="text-sm font-medium text-gray-700">
+                    {t('budget.selectPeriod')}:
+                  </label>
+                  <Select
+                    value={budget.id.toString()}
+                    onValueChange={(value) => onBudgetChange?.(parseInt(value))}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue selectedValue={formatBudgetOption(budget)} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableBudgets.map((b) => (
+                        <SelectItem key={b.id} value={b.id.toString()}>
+                          {formatBudgetOption(b)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
+              
+              {onBudgetDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <SelectTrigger className="w-48">
-                    <SelectValue selectedValue={formatBudgetOption(budget)} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableBudgets.map((b) => (
-                      <SelectItem key={b.id} value={b.id.toString()}>
-                        {formatBudgetOption(b)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  {t('common.delete')}
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -477,6 +516,42 @@ export default function BudgetProgressDashboard({
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-red-600">
+              <Trash2 className="w-5 h-5" />
+              <span>{t('budget.deleteBudget')}</span>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 mt-2">
+              {t('budget.deleteBudgetConfirmation', { 
+                budget: formatBudgetOption(budget) 
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex items-center space-x-2 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={isDeleting}
+              className="flex-1"
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteBudget}
+              disabled={isDeleting}
+              className="flex-1"
+            >
+              {isDeleting ? t('common.deleting') : t('common.delete')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

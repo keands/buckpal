@@ -4,6 +4,7 @@ import com.buckpal.dto.BudgetDto;
 import com.buckpal.dto.BudgetCategoryDto;
 import com.buckpal.entity.Budget;
 import com.buckpal.entity.BudgetCategory;
+import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.repository.BudgetRepository;
 import com.buckpal.repository.BudgetCategoryRepository;
@@ -340,9 +341,20 @@ public class BudgetService {
      * Calculate spent amount for a budget category from assigned transactions
      */
     private BigDecimal calculateSpentAmountForCategory(BudgetCategory category) {
-        // Sum up all EXPENSE transactions assigned to this budget category
-        return category.getTransactions().stream()
-            .filter(transaction -> "EXPENSE".equals(transaction.getTransactionType().name()))
+        // Use direct database query to avoid lazy loading issues
+        // Sum up all EXPENSE transactions assigned to this budget category for the budget's month
+        Budget budget = category.getBudget();
+        
+        // Calculate date range for the budget month
+        LocalDate startDate = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        
+        // Query transactions directly from repository
+        List<Transaction> assignedTransactions = transactionRepository.findByBudgetCategoryAndDateRange(
+            category, startDate, endDate);
+        
+        return assignedTransactions.stream()
+            .filter(transaction -> Transaction.TransactionType.EXPENSE.equals(transaction.getTransactionType()))
             .map(transaction -> transaction.getAmount().abs()) // Ensure positive amounts
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

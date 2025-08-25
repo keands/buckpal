@@ -71,12 +71,7 @@ public class BudgetCategory {
     @JsonIgnore
     private Set<BudgetCategory> subCategories = new HashSet<>();
     
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "budget_category_transactions",
-        joinColumns = @JoinColumn(name = "budget_category_id"),
-        inverseJoinColumns = @JoinColumn(name = "transaction_id")
-    )
+    @OneToMany(mappedBy = "budgetCategory", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Transaction> transactions = new HashSet<>();
     

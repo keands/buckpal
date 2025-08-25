@@ -28,11 +28,7 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
   const [stats, setStats] = useState<AssignmentStats | null>(null)
   const [loading, setLoading] = useState(false)
   
-  useEffect(() => {
-    loadTransactions()
-  }, [budget.id]) // Reload when budget changes
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     try {
       const [unassigned, needsReview] = await Promise.all([
         apiClient.getUnassignedTransactions(budget.id),
@@ -54,7 +50,11 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
     } catch (error) {
       console.error('Failed to load transactions:', error)
     }
-  }
+  }, [budget.id]) // Depend on budget.id
+  
+  useEffect(() => {
+    loadTransactions()
+  }, [loadTransactions]) // Reload when loadTransactions changes (which happens when budget.id changes)
 
   const handleAutoAssign = async () => {
     setLoading(true)

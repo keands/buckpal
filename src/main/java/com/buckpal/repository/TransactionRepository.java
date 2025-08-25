@@ -1,6 +1,7 @@
 package com.buckpal.repository;
 
 import com.buckpal.entity.Account;
+import com.buckpal.entity.BudgetCategory;
 import com.buckpal.entity.Category;
 import com.buckpal.entity.ProjectCategory;
 import com.buckpal.entity.Transaction;
@@ -139,4 +140,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     @Query("SELECT t FROM Transaction t WHERE t.id = :id AND t.account.user = :user")
     Optional<Transaction> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
+    
+    // Budget category assignment queries
+    @Query("SELECT t FROM Transaction t WHERE t.budgetCategory = :budgetCategory AND t.transactionDate BETWEEN :startDate AND :endDate")
+    List<Transaction> findByBudgetCategoryAndDateRange(
+        @Param("budgetCategory") BudgetCategory budgetCategory,
+        @Param("startDate") LocalDate startDate, 
+        @Param("endDate") LocalDate endDate);
 }

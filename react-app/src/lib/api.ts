@@ -16,6 +16,7 @@ import type {
   Budget,
   BudgetCategory,
   ProjectCategory,
+  BudgetCategoryTemplate,
 } from '@/types/api'
 
 class ApiClient {
@@ -358,6 +359,85 @@ class ApiClient {
   // Budget Category Templates
   async getBudgetCategoryTemplates(): Promise<BudgetCategoryTemplate[]> {
     const response: AxiosResponse<BudgetCategoryTemplate[]> = await this.client.get('/budgets/category-templates')
+    return response.data
+  }
+
+  // Smart Transaction Assignment
+  async getSmartCategorySuggestion(transactionId: number): Promise<{
+    transactionId: number
+    suggestedCategory: string
+    confidence: number
+    strategy: string
+    alternativeCategories: string[]
+    merchantText: string
+  }> {
+    const response = await this.client.post(`/transaction-assignments/smart-suggest/${transactionId}`)
+    return response.data
+  }
+
+  async submitSmartFeedback(transactionId: number, feedback: {
+    suggestedCategory: string
+    userChosenCategory: string
+    wasAccepted: boolean
+    patternUsed?: string
+  }): Promise<{ message: string; transactionId: number }> {
+    const response = await this.client.post(`/transaction-assignments/smart-feedback/${transactionId}`, feedback)
+    return response.data
+  }
+
+  async getSmartSuggestionsBatch(transactionIds: number[]): Promise<{
+    suggestions: Record<number, {
+      suggestedCategory: string
+      confidence: number
+      strategy: string
+      alternativeCategories: string[]
+    }>
+  }> {
+    const response = await this.client.post('/transaction-assignments/smart-suggest-batch', {
+      transactionIds
+    })
+    return response.data
+  }
+
+  // Transaction Revision
+  async getRecentlyAssignedTransactions(): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get('/transaction-assignments/recently-assigned')
+    return response.data
+  }
+
+  async detectTransactionsNeedingRevision(): Promise<{
+    suspiciousTransactions: Transaction[]
+    count: number
+  }> {
+    const response = await this.client.get('/transaction-assignments/detect-revision-needed')
+    return response.data
+  }
+
+  async autoDetectAndMarkForRevision(): Promise<{
+    message: string
+    totalSuspicious: number
+    markedForRevision: number
+    revisedTransactions: Transaction[]
+  }> {
+    const response = await this.client.post('/transaction-assignments/auto-detect-revision')
+    return response.data
+  }
+
+  async markTransactionsForRevision(transactionIds: number[]): Promise<{
+    message: string
+    count: number
+  }> {
+    const response = await this.client.post('/transaction-assignments/mark-for-revision', {
+      transactionIds
+    })
+    return response.data
+  }
+
+  async markTransactionForRevision(transactionId: number): Promise<{
+    message: string
+    transactionId: number
+  }> {
+    const response = await this.client.post(`/transaction-assignments/mark-for-revision/${transactionId}`)
     return response.data
   }
 }

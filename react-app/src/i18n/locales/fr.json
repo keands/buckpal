@@ -21,7 +21,8 @@
     "confirm": "Confirmer",
     "optional": "Optionnel",
     "required": "Requis",
-    "export": "Exporter"
+    "export": "Exporter",
+    "dismiss": "Ignorer"
   },
   "navigation": {
     "dashboard": "Tableau de bord",
@@ -263,8 +264,47 @@
         "historical": "Apprentissage historique",
         "pattern": "Reconnaissance de motifs",
         "amount": "Analyse des montants",
-        "similarity": "Correspondance par similarité"
-      }
+        "similarity": "Correspondance par similarité",
+        "SPECIFICITY_WEIGHTED": "Correspondance spécifique",
+        "USER_FEEDBACK_HISTORY": "Apprentissage utilisateur",
+        "ACCURACY_HISTORY": "Historique de précision",
+        "AMOUNT_VALIDATION": "Validation par montant",
+        "FALLBACK_SPECIFICITY": "Correspondance de base"
+      },
+      "smartWithFeedback": "IA avec Feedback",
+      "smartFeedback": {
+        "title": "Suggestions intelligentes avec feedback",
+        "instructions": "Vérifiez ces suggestions d'IA et aidez le système à apprendre en acceptant ou corrigeant les catégories proposées.",
+        "pendingReview": "En attente de révision",
+        "aiSuggestion": "Suggestion IA",
+        "confidence": "confiance",
+        "alternatives": "Alternatives",
+        "accept": "Accepter",
+        "reject": "Corriger",
+        "selectAlternative": "Choisir une catégorie...",
+        "completed": "Feedback terminé",
+        "accepted": "Accepté",
+        "corrected": "Corrigé",
+        "acceptedSuggestion": "Suggestion acceptée",
+        "rejectedFor": "Corrigé vers",
+        "noSuggestions": "Aucune suggestion disponible",
+        "noSuggestionsDescription": "Le système d'IA n'a pas pu générer de suggestions pour ces transactions.",
+        "strategies": {
+          "SPECIFICITY_WEIGHTED": "Correspondance par spécificité",
+          "USER_FEEDBACK_HISTORY": "Basé sur vos préférences",
+          "ACCURACY_HISTORY": "Basé sur l'historique de précision",
+          "AMOUNT_VALIDATION": "Validé par le montant",
+          "FALLBACK_SPECIFICITY": "Correspondance générale"
+        }
+      },
+      "reviseAssignments": "Réviser attributions",
+      "recentlyAssigned": "Récemment attribuées",
+      "recentlyAssignedDescription": "Transactions attribuées dans les dernières 24h - vous pouvez les réviser si nécessaire",
+      "revise": "Réviser",
+      "revisionDetected": "Attributions suspectes détectées",
+      "revisionDetectedDescription": "Le système a détecté {{count}} attribution(s) de faible qualité et les a marquées pour révision.",
+      "transactionsMarkedForRevision": "transactions marquées pour révision",
+      "checkNeedsReviewSection": "Vérifiez la section 'Révision requise' ci-dessous."
     },
     "currentMonthPrompt": {
       "title": "Aucun budget pour {{month}} {{year}}",

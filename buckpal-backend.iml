@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/flutter-app/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/flutter-app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/flutter-app/.pub" />
     </content>
   </component>
   <component name="FacetManager">

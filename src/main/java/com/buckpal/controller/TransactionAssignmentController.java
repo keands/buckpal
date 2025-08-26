@@ -4,6 +4,11 @@ import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.service.TransactionAssignmentService;
 import com.buckpal.service.EnhancedTransactionAssignmentService;
+import com.buckpal.service.SmartTransactionAssignmentService;
+import com.buckpal.service.SmartTransactionAssignmentService.SmartAssignmentResult;
+import com.buckpal.service.TransactionRevisionService;
+import com.buckpal.service.TransactionRevisionService.RevisionResult;
+import com.buckpal.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transaction-assignments")
@@ -19,13 +25,22 @@ public class TransactionAssignmentController {
     
     private final TransactionAssignmentService transactionAssignmentService;
     private final EnhancedTransactionAssignmentService enhancedTransactionAssignmentService;
+    private final SmartTransactionAssignmentService smartAssignmentService;
+    private final TransactionRevisionService revisionService;
+    private final TransactionRepository transactionRepository;
     
     @Autowired
     public TransactionAssignmentController(
             TransactionAssignmentService transactionAssignmentService,
-            EnhancedTransactionAssignmentService enhancedTransactionAssignmentService) {
+            EnhancedTransactionAssignmentService enhancedTransactionAssignmentService,
+            SmartTransactionAssignmentService smartAssignmentService,
+            TransactionRevisionService revisionService,
+            TransactionRepository transactionRepository) {
         this.transactionAssignmentService = transactionAssignmentService;
         this.enhancedTransactionAssignmentService = enhancedTransactionAssignmentService;
+        this.smartAssignmentService = smartAssignmentService;
+        this.revisionService = revisionService;
+        this.transactionRepository = transactionRepository;
     }
     
     /**
@@ -184,5 +199,259 @@ public class TransactionAssignmentController {
         List<Transaction> transactions = transactionAssignmentService.getUnassignedTransactions(user);
         
         return ResponseEntity.ok(transactions);
+    }
+    
+    // ==================== SMART ASSIGNMENT API ENDPOINTS ====================
+    
+    /**
+     * Get smart category suggestion for a specific transaction
+     */
+    @PostMapping("/smart-suggest/{transactionId}")
+    public ResponseEntity<?> suggestSmartCategory(@PathVariable Long transactionId, Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            
+            Optional<Transaction> transactionOpt = transactionRepository.findByIdAndUser(transactionId, currentUser);
+            if (transactionOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Transaction transaction = transactionOpt.get();
+            SmartAssignmentResult result = smartAssignmentService.assignCategoryToTransaction(transaction, currentUser);
+            
+            return ResponseEntity.ok(Map.of(
+                "transactionId", transactionId,
+                "suggestedCategory", result.categoryName != null ? result.categoryName : "",
+                "confidence", result.confidence,
+                "strategy", result.strategy,
+                "alternativeCategories", result.alternativeCategories,
+                "merchantText", buildMerchantText(transaction)
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Submit user feedback for smart assignment learning
+     */
+    @PostMapping("/smart-feedback/{transactionId}")
+    public ResponseEntity<?> submitSmartFeedback(@PathVariable Long transactionId,
+                                               @RequestBody FeedbackRequest request,
+                                               Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            
+            Optional<Transaction> transactionOpt = transactionRepository.findByIdAndUser(transactionId, currentUser);
+            if (transactionOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Transaction transaction = transactionOpt.get();
+            
+            smartAssignmentService.recordFeedback(
+                transaction,
+                currentUser,
+                request.getSuggestedCategory(),
+                request.getUserChosenCategory(),
+                request.isWasAccepted(),
+                request.getPatternUsed()
+            );
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Feedback enregistré avec succès",
+                "transactionId", transactionId
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Get smart category suggestions for multiple transactions (batch)
+     */
+    @PostMapping("/smart-suggest-batch")
+    public ResponseEntity<?> suggestSmartCategoriesForTransactions(@RequestBody BatchSuggestionRequest request,
+                                                                 Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            
+            Map<Long, SmartAssignmentResult> results = new HashMap<>();
+            
+            for (Long transactionId : request.getTransactionIds()) {
+                Optional<Transaction> transactionOpt = transactionRepository.findByIdAndUser(transactionId, currentUser);
+                if (transactionOpt.isPresent()) {
+                    Transaction transaction = transactionOpt.get();
+                    SmartAssignmentResult result = smartAssignmentService.assignCategoryToTransaction(transaction, currentUser);
+                    results.put(transactionId, result);
+                }
+            }
+            
+            return ResponseEntity.ok(Map.of(
+                "suggestions", results.entrySet().stream().collect(
+                    java.util.stream.Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> Map.of(
+                            "suggestedCategory", entry.getValue().categoryName != null ? entry.getValue().categoryName : "",
+                            "confidence", entry.getValue().confidence,
+                            "strategy", entry.getValue().strategy,
+                            "alternativeCategories", entry.getValue().alternativeCategories
+                        )
+                    )
+                )
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    private String buildMerchantText(Transaction transaction) {
+        StringBuilder merchantText = new StringBuilder();
+        
+        if (transaction.getMerchantName() != null && !transaction.getMerchantName().trim().isEmpty()) {
+            merchantText.append(transaction.getMerchantName().trim());
+        }
+        
+        if (transaction.getDescription() != null && !transaction.getDescription().trim().isEmpty()) {
+            String description = transaction.getDescription().trim();
+            if (merchantText.length() > 0 && !description.equals(merchantText.toString())) {
+                merchantText.append(" - ").append(description);
+            } else if (merchantText.length() == 0) {
+                merchantText.append(description);
+            }
+        }
+        
+        return merchantText.toString();
+    }
+    
+    // Request DTOs for smart assignment endpoints
+    public static class FeedbackRequest {
+        private String suggestedCategory;
+        private String userChosenCategory;
+        private boolean wasAccepted;
+        private String patternUsed;
+        
+        // Getters and Setters
+        public String getSuggestedCategory() { return suggestedCategory; }
+        public void setSuggestedCategory(String suggestedCategory) { this.suggestedCategory = suggestedCategory; }
+        
+        public String getUserChosenCategory() { return userChosenCategory; }
+        public void setUserChosenCategory(String userChosenCategory) { this.userChosenCategory = userChosenCategory; }
+        
+        public boolean isWasAccepted() { return wasAccepted; }
+        public void setWasAccepted(boolean wasAccepted) { this.wasAccepted = wasAccepted; }
+        
+        public String getPatternUsed() { return patternUsed; }
+        public void setPatternUsed(String patternUsed) { this.patternUsed = patternUsed; }
+    }
+    
+    public static class BatchSuggestionRequest {
+        private List<Long> transactionIds;
+        
+        public List<Long> getTransactionIds() { return transactionIds; }
+        public void setTransactionIds(List<Long> transactionIds) { this.transactionIds = transactionIds; }
+    }
+    
+    // ==================== TRANSACTION REVISION API ENDPOINTS ====================
+    
+    /**
+     * Get recently assigned transactions that can be revised
+     */
+    @GetMapping("/recently-assigned")
+    public ResponseEntity<List<Transaction>> getRecentlyAssignedTransactions(Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            List<Transaction> recentTransactions = revisionService.getRecentlyAssignedTransactions(currentUser);
+            return ResponseEntity.ok(recentTransactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    /**
+     * Detect transactions that need revision based on confidence analysis
+     */
+    @GetMapping("/detect-revision-needed")
+    public ResponseEntity<?> detectTransactionsNeedingRevision(Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            List<Transaction> suspiciousTransactions = revisionService.detectTransactionsNeedingRevision(currentUser);
+            
+            return ResponseEntity.ok(Map.of(
+                "suspiciousTransactions", suspiciousTransactions,
+                "count", suspiciousTransactions.size()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Automatically detect and mark suspicious assignments for revision
+     */
+    @PostMapping("/auto-detect-revision")
+    public ResponseEntity<?> autoDetectAndMarkForRevision(Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            RevisionResult result = revisionService.autoDetectAndMarkForRevision(currentUser);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Détection automatique terminée",
+                "totalSuspicious", result.getTotalSuspicious(),
+                "markedForRevision", result.getMarkedForRevision(),
+                "revisedTransactions", result.getRevisedTransactions()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Mark specific transactions for revision
+     */
+    @PostMapping("/mark-for-revision")
+    public ResponseEntity<?> markTransactionsForRevision(@RequestBody BatchRevisionRequest request,
+                                                        Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            revisionService.markForRevision(request.getTransactionIds(), currentUser);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Transactions marquées pour révision",
+                "count", request.getTransactionIds().size()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Mark a single transaction for revision
+     */
+    @PostMapping("/mark-for-revision/{transactionId}")
+    public ResponseEntity<?> markTransactionForRevision(@PathVariable Long transactionId,
+                                                       Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            revisionService.markForRevision(transactionId, currentUser);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Transaction marquée pour révision",
+                "transactionId", transactionId
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    // Request DTO for batch revision
+    public static class BatchRevisionRequest {
+        private List<Long> transactionIds;
+        
+        public List<Long> getTransactionIds() { return transactionIds; }
+        public void setTransactionIds(List<Long> transactionIds) { this.transactionIds = transactionIds; }
     }
 }

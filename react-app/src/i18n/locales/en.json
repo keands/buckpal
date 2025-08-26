@@ -263,8 +263,47 @@
         "historical": "Historical Learning",
         "pattern": "Pattern Matching", 
         "amount": "Amount Analysis",
-        "similarity": "Similarity Matching"
-      }
+        "similarity": "Similarity Matching",
+        "SPECIFICITY_WEIGHTED": "Specificity Matching",
+        "USER_FEEDBACK_HISTORY": "User Learning",
+        "ACCURACY_HISTORY": "Accuracy History",
+        "AMOUNT_VALIDATION": "Amount Validation",
+        "FALLBACK_SPECIFICITY": "Basic Matching"
+      },
+      "smartWithFeedback": "AI with Feedback",
+      "smartFeedback": {
+        "title": "Smart suggestions with feedback",
+        "instructions": "Review these AI suggestions and help the system learn by accepting or correcting the proposed categories.",
+        "pendingReview": "Pending Review",
+        "aiSuggestion": "AI Suggestion",
+        "confidence": "confidence",
+        "alternatives": "Alternatives",
+        "accept": "Accept",
+        "reject": "Correct",
+        "selectAlternative": "Choose category...",
+        "completed": "Feedback Complete",
+        "accepted": "Accepted",
+        "corrected": "Corrected",
+        "acceptedSuggestion": "Accepted suggestion",
+        "rejectedFor": "Corrected to",
+        "noSuggestions": "No suggestions available",
+        "noSuggestionsDescription": "The AI system could not generate suggestions for these transactions.",
+        "strategies": {
+          "SPECIFICITY_WEIGHTED": "Specificity-based match",
+          "USER_FEEDBACK_HISTORY": "Based on your preferences",
+          "ACCURACY_HISTORY": "Based on accuracy history",
+          "AMOUNT_VALIDATION": "Amount-validated",
+          "FALLBACK_SPECIFICITY": "General match"
+        }
+      },
+      "reviseAssignments": "Revise Assignments",
+      "recentlyAssigned": "Recently Assigned",
+      "recentlyAssignedDescription": "Transactions assigned in the last 24 hours - you can revise them if needed",
+      "revise": "Revise",
+      "revisionDetected": "Suspicious assignments detected",
+      "revisionDetectedDescription": "The system detected {{count}} low-quality assignment(s) and marked them for revision.",
+      "transactionsMarkedForRevision": "transactions marked for revision",
+      "checkNeedsReviewSection": "Check the 'Needs Review' section below."
     },
     "currentMonthPrompt": {
       "title": "No budget for {{month}} {{year}}",
@@ -293,7 +332,8 @@
     "forbidden": "Access Denied",
     "notFound": "Not Found",
     "validationError": "Validation Error",
-    "serverError": "Server Error"
+    "serverError": "Server Error",
+    "dismiss": "Dismiss"
   },
   "categories": {
     "salary": "Salary",

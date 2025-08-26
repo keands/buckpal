@@ -80,7 +80,8 @@ public class Transaction {
         UNASSIGNED,     // Not assigned to any budget category
         AUTO_ASSIGNED,  // Automatically assigned based on category matching
         MANUALLY_ASSIGNED, // Manually assigned by user
-        NEEDS_REVIEW    // Requires user review
+        NEEDS_REVIEW,   // Requires user review
+        RECENTLY_ASSIGNED // Recently assigned, available for revision
     }
     
     @PrePersist

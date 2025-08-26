@@ -125,6 +125,34 @@ export default function BudgetPage() {
       }
     }
 
+  // Optimized function to refresh only the current budget without full reload
+  const refreshCurrentBudgetOnly = async () => {
+    if (!selectedBudgetId || !isAuthenticated) return
+    
+    try {
+      // Fetch only the current budget data
+      const updatedBudget = await apiClient.getBudget(selectedBudgetId)
+      const transformedBudget = transformBudgetData([updatedBudget])[0]
+      
+      // Update budgets list with the refreshed budget
+      setBudgets(prev => prev.map(budget => 
+        budget.id === selectedBudgetId ? transformedBudget : budget
+      ))
+      
+      // Update current month budget if it's the selected one
+      const currentInfo = getCurrentMonthInfo()
+      if (transformedBudget.budgetMonth === currentInfo.month && 
+          transformedBudget.budgetYear === currentInfo.year) {
+        setCurrentMonthBudget(transformedBudget)
+      }
+      
+    } catch (error) {
+      console.error('Failed to refresh current budget:', error)
+      // Fallback to full reload only if targeted refresh fails
+      await loadBudgets()
+    }
+  }
+
   useEffect(() => {
     loadBudgets()
   }, [isAuthenticated])
@@ -338,8 +366,7 @@ export default function BudgetPage() {
         <TransactionAssignment
           budget={selectedBudget}
           onAssignmentComplete={() => {
-            // Refresh budget data after assignment
-            loadBudgets()
+            // No reload needed - local state updates are sufficient for smooth UX
           }}
         />
       )}

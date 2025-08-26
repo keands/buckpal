@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { apiClient } from '@/lib/api'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { PieChart, Plus, Settings } from 'lucide-react'
+import { PieChart, Plus } from 'lucide-react'
 import BudgetSetupWizard from '@/components/budget/budget-setup-wizard'
 import BudgetProgressDashboard from '@/components/budget/budget-progress-dashboard'
 import CategoryTransactionsModal from '@/components/budget/category-transactions-modal'
@@ -290,10 +290,6 @@ export default function BudgetPage() {
                 <PieChart className="w-4 h-4 mr-2" />
                 {showDashboard ? 'Hide Dashboard' : 'Show Dashboard'}
               </Button>
-              <Button variant="outline">
-                <Settings className="w-4 h-4 mr-2" />
-                {t('budget.budgetModels')}
-              </Button>
               <Button onClick={() => setShowWizard(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 {t('budget.createBudget')}
@@ -361,12 +357,14 @@ export default function BudgetPage() {
         />
       )}
 
+
       {/* Transaction Assignment */}
       {selectedBudget && (
         <TransactionAssignment
           budget={selectedBudget}
           onAssignmentComplete={() => {
-            // No reload needed - local state updates are sufficient for smooth UX
+            // Refresh only the current budget to update dashboard data without scroll issues
+            refreshCurrentBudgetOnly()
           }}
         />
       )}

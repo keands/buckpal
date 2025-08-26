@@ -71,6 +71,11 @@ public class Transaction {
     @JoinColumn(name = "budget_category_id")
     private BudgetCategory budgetCategory;
     
+    // Income category assignment (for income tracking)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "income_category_id")
+    private IncomeCategory incomeCategory;
+    
     // Assignment status for hybrid approach
     @Enumerated(EnumType.STRING)
     @Column(name = "assignment_status")
@@ -148,6 +153,9 @@ public class Transaction {
     
     public BudgetCategory getBudgetCategory() { return budgetCategory; }
     public void setBudgetCategory(BudgetCategory budgetCategory) { this.budgetCategory = budgetCategory; }
+    
+    public IncomeCategory getIncomeCategory() { return incomeCategory; }
+    public void setIncomeCategory(IncomeCategory incomeCategory) { this.incomeCategory = incomeCategory; }
     
     public AssignmentStatus getAssignmentStatus() { return assignmentStatus; }
     public void setAssignmentStatus(AssignmentStatus assignmentStatus) { this.assignmentStatus = assignmentStatus; }

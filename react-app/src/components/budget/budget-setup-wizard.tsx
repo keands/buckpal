@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { apiClient } from '@/lib/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { formatCurrencyI18n } from '@/lib/i18n-utils'
-import { ArrowLeft, ArrowRight, Check, PieChart, TrendingUp, Settings } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, PieChart, TrendingUp, Settings, Clock, DollarSign } from 'lucide-react'
+import { HistoricalIncomeAnalysis } from '@/types/api'
 
 interface BudgetSetupWizardProps {
   onComplete: (budgetData: any) => void
@@ -35,6 +37,57 @@ export default function BudgetSetupWizard({
       savings: 20
     }
   })
+  
+  // Historical income detection
+  const [historicalAnalysis, setHistoricalAnalysis] = useState<HistoricalIncomeAnalysis | null>(null)
+  const [showHistoricalPrompt, setShowHistoricalPrompt] = useState(false)
+  const [useHistoricalIncome, setUseHistoricalIncome] = useState(false)
+  const [usePartialIncome, setUsePartialIncome] = useState(false)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+
+  // Detect historical income when month/year changes
+  useEffect(() => {
+    const detectHistoricalIncome = async () => {
+      // Only analyze if it's a past month or current month with actual income = 0
+      const currentMonth = new Date().getMonth() + 1
+      const currentYear = new Date().getFullYear()
+      
+      const isPastBudget = budgetData.year < currentYear || 
+                          (budgetData.year === currentYear && budgetData.month < currentMonth)
+      
+      if (isPastBudget) {
+        try {
+          setIsAnalyzing(true)
+          const analysis = await apiClient.analyzeHistoricalIncome(budgetData.year, budgetData.month)
+          
+          if (analysis.hasHistoricalData && analysis.totalHistoricalIncome > 0) {
+            setHistoricalAnalysis(analysis)
+            setShowHistoricalPrompt(true)
+            // Auto-set projected income from historical data
+            setBudgetData(prev => ({
+              ...prev,
+              projectedIncome: analysis.totalHistoricalIncome
+            }))
+          }
+        } catch (error) {
+          console.error('Error analyzing historical income:', error)
+        } finally {
+          setIsAnalyzing(false)
+        }
+      }
+    }
+
+    detectHistoricalIncome()
+  }, [budgetData.month, budgetData.year])
+
+  // Helper function for month names
+  const getMonthName = (monthNumber: number) => {
+    const months = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ]
+    return months[monthNumber - 1] || 'Unknown'
+  }
 
   const budgetModels = [
     {
@@ -98,7 +151,14 @@ export default function BudgetSetupWizard({
   }
 
   const handleComplete = () => {
-    onComplete(budgetData)
+    const completeBudgetData = {
+      ...budgetData,
+      historicalIncome: useHistoricalIncome ? {
+        analysis: historicalAnalysis,
+        usePartialIncome: usePartialIncome
+      } : null
+    }
+    onComplete(completeBudgetData)
   }
 
   const updateBudgetData = (field: string, value: any) => {
@@ -367,6 +427,102 @@ export default function BudgetSetupWizard({
 
       <CardContent className="min-h-[400px]">
         {step === 1 && renderStep1()}
+        
+        {/* Historical Analysis Loading */}
+        {isAnalyzing && (
+          <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              <span className="text-sm text-gray-600">
+                Analyse des revenus historiques en cours...
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* Historical Income Prompt */}
+        {showHistoricalPrompt && historicalAnalysis && (
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <Clock className="w-6 h-6 text-blue-600 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-blue-900 mb-2">
+                  Revenus historiques détectés
+                </h3>
+                <p className="text-blue-800 text-sm mb-3">
+                  Nous avons trouvé {formatCurrencyI18n(historicalAnalysis.totalHistoricalIncome)} 
+                  de revenus pour {getMonthName(budgetData.month)} {budgetData.year}.
+                  Voulez-vous utiliser ces données ?
+                </p>
+                
+                {/* Income patterns preview */}
+                <div className="bg-white rounded p-3 mb-4">
+                  <h4 className="font-medium text-sm text-gray-700 mb-2">Sources détectées :</h4>
+                  <div className="space-y-1">
+                    {historicalAnalysis.patterns.slice(0, 3).map((pattern, index) => (
+                      <div key={index} className="flex justify-between text-sm">
+                        <span className="text-gray-600">{pattern.patternName}</span>
+                        <span className="font-medium">{formatCurrencyI18n(pattern.totalAmount)}</span>
+                      </div>
+                    ))}
+                    {historicalAnalysis.patterns.length > 3 && (
+                      <div className="text-xs text-gray-500">
+                        +{historicalAnalysis.patterns.length - 3} autres sources
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Options */}
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={useHistoricalIncome}
+                      onChange={(e) => setUseHistoricalIncome(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Utiliser ces revenus historiques</span>
+                  </label>
+                  
+                  {useHistoricalIncome && (
+                    <label className="flex items-center space-x-2 ml-6">
+                      <input
+                        type="checkbox"
+                        checked={usePartialIncome}
+                        onChange={(e) => setUsePartialIncome(e.target.checked)}
+                        className="rounded"
+                      />
+                      <span className="text-sm text-gray-600">Utiliser seulement une partie (je peux ajuster)</span>
+                    </label>
+                  )}
+                </div>
+                
+                <div className="flex justify-end space-x-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowHistoricalPrompt(false)}
+                  >
+                    Ignorer
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setShowHistoricalPrompt(false)
+                      if (useHistoricalIncome) {
+                        setStep(2) // Skip income entry since we have historical data
+                      }
+                    }}
+                  >
+                    Continuer
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {step === 2 && renderStep2()}
         {step === 3 && renderStep3()}
         {step === 4 && renderStep4()}

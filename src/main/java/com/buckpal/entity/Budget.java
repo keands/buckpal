@@ -64,6 +64,10 @@ public class Budget {
     @JsonIgnore
     private Set<BudgetCategory> budgetCategories = new HashSet<>();
     
+    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<IncomeCategory> incomeCategories = new HashSet<>();
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -151,6 +155,37 @@ public class Budget {
     
     public Set<BudgetCategory> getBudgetCategories() { return budgetCategories; }
     public void setBudgetCategories(Set<BudgetCategory> budgetCategories) { this.budgetCategories = budgetCategories; }
+    
+    public Set<IncomeCategory> getIncomeCategories() { return incomeCategories; }
+    public void setIncomeCategories(Set<IncomeCategory> incomeCategories) { this.incomeCategories = incomeCategories; }
+    
+    // Income utility methods
+    public BigDecimal getTotalBudgetedIncome() {
+        return incomeCategories.stream()
+                .map(IncomeCategory::getBudgetedAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    
+    public BigDecimal getTotalActualIncome() {
+        return incomeCategories.stream()
+                .map(IncomeCategory::getActualAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    
+    public BigDecimal getIncomeVarianceByCategories() {
+        return getTotalActualIncome().subtract(getTotalBudgetedIncome());
+    }
+    
+    // Method to add income category
+    public void addIncomeCategory(IncomeCategory incomeCategory) {
+        incomeCategories.add(incomeCategory);
+        incomeCategory.setBudget(this);
+    }
+    
+    public void removeIncomeCategory(IncomeCategory incomeCategory) {
+        incomeCategories.remove(incomeCategory);
+        incomeCategory.setBudget(null);
+    }
     
     public enum BudgetModel {
         RULE_50_30_20,    // 50% needs, 30% wants, 20% savings

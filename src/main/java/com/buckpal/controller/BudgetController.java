@@ -5,6 +5,7 @@ import com.buckpal.entity.Budget;
 import com.buckpal.entity.User;
 import com.buckpal.service.BudgetService;
 import com.buckpal.service.CategoryInitializationService;
+import com.buckpal.service.HistoricalIncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,10 +25,12 @@ import java.util.Optional;
 public class BudgetController {
     
     private final BudgetService budgetService;
+    private final HistoricalIncomeService historicalIncomeService;
     
     @Autowired
-    public BudgetController(BudgetService budgetService) {
+    public BudgetController(BudgetService budgetService, HistoricalIncomeService historicalIncomeService) {
         this.budgetService = budgetService;
+        this.historicalIncomeService = historicalIncomeService;
     }
     
     @PostMapping
@@ -57,6 +61,16 @@ public class BudgetController {
     public ResponseEntity<BudgetDto> getPreviousMonthBudget(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Optional<BudgetDto> budget = budgetService.getPreviousMonthBudget(user);
+        return budget.map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<BudgetDto> getBudgetById(
+            @PathVariable Long id,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Optional<BudgetDto> budget = budgetService.getBudgetById(user, id);
         return budget.map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
     }
@@ -181,5 +195,145 @@ public class BudgetController {
     public ResponseEntity<List<CategoryInitializationService.BudgetCategoryTemplate>> getBudgetCategoryTemplates() {
         List<CategoryInitializationService.BudgetCategoryTemplate> templates = budgetService.getBudgetCategoryTemplates();
         return ResponseEntity.ok(templates);
+    }
+    
+    // ====== HISTORICAL INCOME ENDPOINTS ======
+    
+    /**
+     * Analyze historical income for a budget period
+     */
+    @GetMapping("/historical-income/{year}/{month}")
+    public ResponseEntity<HistoricalIncomeService.HistoricalIncomeAnalysis> analyzeHistoricalIncome(
+            @PathVariable Integer year,
+            @PathVariable Integer month,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            HistoricalIncomeService.HistoricalIncomeAnalysis analysis = 
+                    historicalIncomeService.analyzeHistoricalIncome(user, month, year);
+            
+            return ResponseEntity.ok(analysis);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Check if budget should detect historical income
+     */
+    @GetMapping("/{budgetId}/should-detect-historical-income")
+    public ResponseEntity<Map<String, Boolean>> shouldDetectHistoricalIncome(
+            @PathVariable Long budgetId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            Optional<BudgetDto> budgetDto = budgetService.getBudgetById(user, budgetId);
+            if (budgetDto.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Convert DTO to entity for service call
+            Budget budget = new Budget();
+            budget.setId(budgetDto.get().getId());
+            budget.setBudgetMonth(budgetDto.get().getBudgetMonth());
+            budget.setBudgetYear(budgetDto.get().getBudgetYear());
+            budget.setActualIncome(budgetDto.get().getActualIncome());
+            
+            boolean shouldDetect = historicalIncomeService.shouldDetectHistoricalIncome(user, budget);
+            
+            return ResponseEntity.ok(Map.of("shouldDetect", shouldDetect));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Apply historical income to budget
+     */
+    @PostMapping("/{budgetId}/apply-historical-income")
+    public ResponseEntity<BudgetDto> applyHistoricalIncome(
+            @PathVariable Long budgetId,
+            @RequestBody Map<String, Object> request,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            // Get budget
+            Optional<BudgetDto> budgetDto = budgetService.getBudgetById(user, budgetId);
+            if (budgetDto.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Extract request parameters
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> suggestionsData = 
+                    (List<Map<String, Object>>) request.get("suggestions");
+            Boolean usePartialIncome = (Boolean) request.getOrDefault("usePartialIncome", false);
+            
+            // Convert DTO to entity
+            Budget budget = new Budget();
+            budget.setId(budgetDto.get().getId());
+            budget.setBudgetMonth(budgetDto.get().getBudgetMonth());
+            budget.setBudgetYear(budgetDto.get().getBudgetYear());
+            budget.setUser(user);
+            
+            // Convert suggestions (simplified for demo - in real implementation, 
+            // you'd properly deserialize the suggestions)
+            List<HistoricalIncomeService.IncomeCategorySuggestion> suggestions = new ArrayList<>();
+            // TODO: Properly convert suggestions from request data
+            
+            // Apply historical income
+            historicalIncomeService.applyHistoricalIncome(user, budget, suggestions, usePartialIncome);
+            
+            // Return updated budget
+            BudgetDto updated = budgetService.getBudgetById(user, budgetId).orElse(budgetDto.get());
+            return ResponseEntity.ok(updated);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    /**
+     * Get income comparison with previous months
+     */
+    @GetMapping("/income-comparison/{year}/{month}")
+    public ResponseEntity<HistoricalIncomeService.IncomeComparison> getIncomeComparison(
+            @PathVariable Integer year,
+            @PathVariable Integer month,
+            @RequestParam(defaultValue = "6") Integer monthsBack,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            HistoricalIncomeService.IncomeComparison comparison = 
+                    historicalIncomeService.getIncomeComparison(user, month, year, monthsBack);
+            
+            return ResponseEntity.ok(comparison);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Find recurring income patterns
+     */
+    @GetMapping("/recurring-patterns/{year}/{month}")
+    public ResponseEntity<List<HistoricalIncomeService.IncomePattern>> getRecurringIncomePatterns(
+            @PathVariable Integer year,
+            @PathVariable Integer month,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            List<HistoricalIncomeService.IncomePattern> patterns = 
+                    historicalIncomeService.findRecurringIncomePatterns(user, month, year);
+            
+            return ResponseEntity.ok(patterns);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

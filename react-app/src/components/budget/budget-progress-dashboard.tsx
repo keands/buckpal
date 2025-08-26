@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import IncomeManagement from './income-management'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -345,9 +346,14 @@ export default function BudgetProgressDashboard({
         </Card>
       </div>
 
-      {/* Charts Row */}
+      {/* Income Management - Above Charts */}
+      <div className="mb-6">
+        <IncomeManagement budgetId={budget.id} />
+      </div>
+      
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Spending Distribution Pie Chart */}
+            {/* Spending Distribution Pie Chart */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">

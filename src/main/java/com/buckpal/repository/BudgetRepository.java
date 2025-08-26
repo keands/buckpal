@@ -52,4 +52,8 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
         LocalDate previousMonth = LocalDate.now().minusMonths(1);
         return findByUserAndBudgetMonthAndBudgetYear(user, previousMonth.getMonthValue(), previousMonth.getYear());
     }
+    
+    // Find budget by ID with user security check
+    @Query("SELECT b FROM Budget b WHERE b.id = :id AND b.user = :user")
+    Optional<Budget> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
 }

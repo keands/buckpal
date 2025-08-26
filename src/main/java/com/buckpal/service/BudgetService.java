@@ -2,10 +2,7 @@ package com.buckpal.service;
 
 import com.buckpal.dto.BudgetDto;
 import com.buckpal.dto.BudgetCategoryDto;
-import com.buckpal.entity.Budget;
-import com.buckpal.entity.BudgetCategory;
-import com.buckpal.entity.Transaction;
-import com.buckpal.entity.User;
+import com.buckpal.entity.*;
 import com.buckpal.repository.BudgetRepository;
 import com.buckpal.repository.BudgetCategoryRepository;
 import com.buckpal.repository.TransactionRepository;
@@ -30,16 +27,19 @@ public class BudgetService {
     private final BudgetCategoryRepository budgetCategoryRepository;
     private final TransactionRepository transactionRepository;
     private final CategoryInitializationService categoryInitializationService;
+    private final IncomeService incomeService;
     
     @Autowired
     public BudgetService(BudgetRepository budgetRepository, 
                         BudgetCategoryRepository budgetCategoryRepository,
                         TransactionRepository transactionRepository,
-                        CategoryInitializationService categoryInitializationService) {
+                        CategoryInitializationService categoryInitializationService,
+                        IncomeService incomeService) {
         this.budgetRepository = budgetRepository;
         this.budgetCategoryRepository = budgetCategoryRepository;
         this.transactionRepository = transactionRepository;
         this.categoryInitializationService = categoryInitializationService;
+        this.incomeService = incomeService;
     }
     
     public BudgetDto createBudget(User user, BudgetDto budgetDto) {
@@ -95,6 +95,12 @@ public class BudgetService {
     
     public Optional<BudgetDto> getBudget(User user, Integer month, Integer year) {
         return budgetRepository.findByUserAndBudgetMonthAndBudgetYear(user, month, year)
+                              .map(this::mapEntityToDto);
+    }
+    
+    public Optional<BudgetDto> getBudgetById(User user, Long budgetId) {
+        return budgetRepository.findById(budgetId)
+                              .filter(budget -> budget.getUser().getId().equals(user.getId()))
                               .map(this::mapEntityToDto);
     }
     
@@ -409,6 +415,9 @@ public class BudgetService {
             
             budgetCategoryRepository.save(category);
         }
+        
+        // Create default income categories
+        incomeService.createDefaultIncomeCategories(budget);
     }
     
     /**
@@ -416,5 +425,83 @@ public class BudgetService {
      */
     public List<BudgetCategoryTemplate> getBudgetCategoryTemplates() {
         return categoryInitializationService.getPredefinedBudgetCategoryTemplates();
+    }
+    
+    // ====== INCOME INTEGRATION METHODS ======
+    
+    /**
+     * Get income categories for a budget
+     */
+    public List<IncomeCategory> getBudgetIncomeCategories(User user, Long budgetId) {
+        Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        return incomeService.getIncomeCategories(budget);
+    }
+    
+    /**
+     * Update budget after income transaction changes
+     */
+    public void updateBudgetAfterIncomeChange(Long budgetId) {
+        Budget budget = budgetRepository.findById(budgetId)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        // Recalculate total budgeted and actual income from categories
+        BigDecimal totalBudgetedIncome = budget.getTotalBudgetedIncome();
+        BigDecimal totalActualIncome = budget.getTotalActualIncome();
+        
+        // Update budget income fields if they differ significantly
+        if (totalBudgetedIncome.compareTo(BigDecimal.ZERO) > 0) {
+            budget.setProjectedIncome(totalBudgetedIncome);
+        }
+        if (totalActualIncome.compareTo(BigDecimal.ZERO) > 0) {
+            budget.setActualIncome(totalActualIncome);
+        }
+        
+        budgetRepository.save(budget);
+    }
+    
+    /**
+     * Check if budget has income categories configured
+     */
+    public boolean hasIncomeCategories(User user, Long budgetId) {
+        Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        return !budget.getIncomeCategories().isEmpty();
+    }
+    
+    /**
+     * Get income variance for budget (actual vs budgeted income)
+     */
+    public BigDecimal getIncomeVariance(User user, Long budgetId) {
+        Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        return budget.getIncomeVarianceByCategories();
+    }
+    
+    /**
+     * Get total income statistics for budget
+     */
+    public Map<String, BigDecimal> getIncomeStatistics(User user, Long budgetId) {
+        Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        BigDecimal totalBudgeted = budget.getTotalBudgetedIncome();
+        BigDecimal totalActual = budget.getTotalActualIncome();
+        BigDecimal variance = totalActual.subtract(totalBudgeted);
+        BigDecimal variancePercentage = totalBudgeted.compareTo(BigDecimal.ZERO) > 0 
+            ? variance.divide(totalBudgeted, 4, RoundingMode.HALF_UP).multiply(new BigDecimal("100"))
+            : BigDecimal.ZERO;
+        
+        Map<String, BigDecimal> stats = Map.of(
+            "totalBudgeted", totalBudgeted,
+            "totalActual", totalActual,
+            "variance", variance,
+            "variancePercentage", variancePercentage
+        );
+        
+        return stats;
     }
 }

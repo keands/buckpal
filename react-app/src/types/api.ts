@@ -224,3 +224,98 @@ export interface BudgetCategoryTemplate {
   iconName: string
   suggestedPercentage: number
 }
+
+// ====== INCOME TYPES ======
+
+export interface IncomeCategory {
+  id: number
+  name: string
+  description?: string
+  budgetedAmount: number
+  actualAmount: number
+  color: string
+  icon: string
+  displayOrder: number
+  isDefault: boolean
+  incomeType: IncomeType
+  budgetId: number
+  // Calculated fields
+  variance: number
+  usagePercentage: number
+  isOverBudget: boolean
+  isUnderBudget: boolean
+  incomeTransactions?: IncomeTransaction[]
+}
+
+export interface IncomeTransaction {
+  id: number
+  description: string
+  amount: number
+  transactionDate: string
+  notes?: string
+  source: string
+  sourceReference?: string
+  recurrenceType: RecurrenceType
+  isRecurring: boolean
+  incomeCategoryId: number
+  // Display fields
+  incomeCategoryName?: string
+  incomeCategoryColor?: string
+  incomeCategoryIcon?: string
+  userId: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type IncomeType = 'SALARY' | 'BUSINESS' | 'INVESTMENT' | 'OTHER'
+
+export type RecurrenceType = 'ONE_TIME' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY'
+
+// ====== HISTORICAL INCOME TYPES ======
+
+export interface HistoricalIncomeAnalysis {
+  hasHistoricalData: boolean
+  totalHistoricalIncome: number
+  patterns: IncomePattern[]
+  suggestions: IncomeCategorySuggestion[]
+}
+
+export interface IncomePattern {
+  patternName: string
+  frequency: number
+  totalAmount: number
+  averageAmount: number
+  suggestedType: IncomeType
+  transactions: IncomeTransaction[]
+}
+
+export interface IncomeCategorySuggestion {
+  categoryName: string
+  description: string
+  incomeType: IncomeType
+  suggestedAmount: number
+  actualAmount: number
+  averageAmount: number
+  frequency: number
+  sourceTransactions: IncomeTransaction[]
+}
+
+export interface IncomeComparison {
+  monthlyData: MonthlyIncomeData[]
+  averageIncome: number
+  variance: number
+  variancePercentage: number
+}
+
+export interface MonthlyIncomeData {
+  month: number
+  year: number
+  totalIncome: number
+}
+
+export interface IncomeStatistics {
+  totalBudgeted: number
+  totalActual: number
+  variance: number
+  variancePercentage: number
+}

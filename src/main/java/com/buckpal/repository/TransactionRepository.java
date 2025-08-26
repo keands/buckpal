@@ -3,6 +3,7 @@ package com.buckpal.repository;
 import com.buckpal.entity.Account;
 import com.buckpal.entity.BudgetCategory;
 import com.buckpal.entity.Category;
+import com.buckpal.entity.IncomeCategory;
 import com.buckpal.entity.ProjectCategory;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.Transaction.TransactionType;
@@ -154,4 +155,59 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("UPDATE Transaction t SET t.budgetCategory = NULL, t.assignmentStatus = 'UNASSIGNED' " +
            "WHERE t.budgetCategory IN (SELECT bc FROM BudgetCategory bc WHERE bc.budget.id = :budgetId)")
     void unassignTransactionsFromBudget(@Param("budgetId") Long budgetId);
+    
+    // Find income transactions not yet linked to income categories
+    @Query("""
+        SELECT t FROM Transaction t 
+        WHERE t.account.user = :user 
+        AND t.transactionType = 'INCOME' 
+        AND t.id NOT IN (
+            SELECT it.sourceTransaction.id FROM IncomeTransaction it 
+            WHERE it.sourceTransaction IS NOT NULL AND it.user = :user
+        )
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Transaction> findUnlinkedIncomeTransactionsByUser(@Param("user") User user);
+    
+    // Find income transactions by user and date range (for historical analysis)
+    @Query("""
+        SELECT t FROM Transaction t 
+        WHERE t.account.user = :user 
+        AND t.transactionType = 'INCOME'
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Transaction> findIncomeTransactionsByUserAndDateRange(
+        @Param("user") User user,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+    
+    // Find income transactions by category
+    @Query("""
+        SELECT t FROM Transaction t 
+        WHERE t.incomeCategory = :incomeCategory
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Transaction> findByIncomeCategory(@Param("incomeCategory") IncomeCategory incomeCategory);
+    
+    // Find income transactions by category and date range
+    @Query("""
+        SELECT t FROM Transaction t 
+        WHERE t.incomeCategory = :incomeCategory
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Transaction> findByIncomeCategoryAndDateRange(
+        @Param("incomeCategory") IncomeCategory incomeCategory,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+    
+    // Calculate total income for category
+    @Query("""
+        SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t 
+        WHERE t.incomeCategory = :incomeCategory
+        """)
+    BigDecimal sumAmountByIncomeCategory(@Param("incomeCategory") IncomeCategory incomeCategory);
 }

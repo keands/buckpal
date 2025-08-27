@@ -51,6 +51,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     List<Transaction> findByAccountAndTransactionType(Account account, TransactionType transactionType);
     
+    @Query("SELECT t FROM Transaction t WHERE t.account.user = :user AND t.transactionType = :transactionType ORDER BY t.transactionDate DESC")
+    List<Transaction> findByUserAndTransactionType(@Param("user") User user, @Param("transactionType") TransactionType transactionType);
+    
     Optional<Transaction> findByPlaidTransactionId(String plaidTransactionId);
     
     @Query("SELECT t FROM Transaction t JOIN FETCH t.account LEFT JOIN FETCH t.category WHERE t.account IN :accounts ORDER BY t.transactionDate DESC")
@@ -161,10 +164,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         SELECT t FROM Transaction t 
         WHERE t.account.user = :user 
         AND t.transactionType = 'INCOME' 
-        AND t.id NOT IN (
-            SELECT it.sourceTransaction.id FROM IncomeTransaction it 
-            WHERE it.sourceTransaction IS NOT NULL AND it.user = :user
-        )
+        AND t.incomeCategory IS NULL
         ORDER BY t.transactionDate DESC
         """)
     List<Transaction> findUnlinkedIncomeTransactionsByUser(@Param("user") User user);

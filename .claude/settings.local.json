@@ -27,7 +27,8 @@
       "Bash(npm install:*)",
       "Bash(curl:*)",
       "Bash(/bashes)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

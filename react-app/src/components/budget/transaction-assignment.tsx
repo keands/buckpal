@@ -393,7 +393,7 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
   return (
     <div className="space-y-6">
       {/* Assignment Stats */}
-      {stats && (
+      {stats && (stats.unassigned > 0 || stats.needsReview > 0) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

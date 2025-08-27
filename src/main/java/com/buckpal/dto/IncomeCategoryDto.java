@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public class IncomeCategoryDto {
     
@@ -40,8 +39,8 @@ public class IncomeCategoryDto {
     private Boolean isOverBudget;
     private Boolean isUnderBudget;
     
-    // Income transactions associated with this category
-    private List<IncomeTransactionDto> incomeTransactions;
+    // Count of linked transactions
+    private Integer linkedTransactions;
     
     // Constructors
     public IncomeCategoryDto() {}
@@ -103,8 +102,8 @@ public class IncomeCategoryDto {
     public Boolean getIsUnderBudget() { return isUnderBudget; }
     public void setIsUnderBudget(Boolean isUnderBudget) { this.isUnderBudget = isUnderBudget; }
     
-    public List<IncomeTransactionDto> getIncomeTransactions() { return incomeTransactions; }
-    public void setIncomeTransactions(List<IncomeTransactionDto> incomeTransactions) { 
-        this.incomeTransactions = incomeTransactions; 
+    public Integer getLinkedTransactions() { return linkedTransactions; }
+    public void setLinkedTransactions(Integer linkedTransactions) { 
+        this.linkedTransactions = linkedTransactions; 
     }
 }

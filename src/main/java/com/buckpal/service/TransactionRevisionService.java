@@ -25,22 +25,26 @@ public class TransactionRevisionService {
     
     /**
      * Detect transactions that need revision based on confidence and assignment quality
+     * Only processes EXPENSE transactions - income transactions use separate income management system
      */
     public List<Transaction> detectTransactionsNeedingRevision(User user) {
         List<Transaction> allUserTransactions = transactionRepository.findByUser(user);
         
         return allUserTransactions.stream()
+            .filter(t -> t.getTransactionType() == Transaction.TransactionType.EXPENSE)
             .filter(this::shouldReviseTransaction)
             .collect(Collectors.toList());
     }
     
     /**
      * Get recently assigned transactions (last 24 hours) that can be revised
+     * Only processes EXPENSE transactions - income transactions use separate income management system
      */
     public List<Transaction> getRecentlyAssignedTransactions(User user) {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         
         return transactionRepository.findByUser(user).stream()
+            .filter(t -> t.getTransactionType() == Transaction.TransactionType.EXPENSE)
             .filter(t -> t.getUpdatedAt() != null && t.getUpdatedAt().isAfter(yesterday))
             .filter(t -> t.getAssignmentStatus() == AssignmentStatus.AUTO_ASSIGNED || 
                         t.getAssignmentStatus() == AssignmentStatus.RECENTLY_ASSIGNED)

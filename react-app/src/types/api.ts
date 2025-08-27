@@ -244,28 +244,10 @@ export interface IncomeCategory {
   usagePercentage: number
   isOverBudget: boolean
   isUnderBudget: boolean
-  incomeTransactions?: IncomeTransaction[]
+  linkedTransactions?: number // Count of linked transactions
 }
 
-export interface IncomeTransaction {
-  id: number
-  description: string
-  amount: number
-  transactionDate: string
-  notes?: string
-  source: string
-  sourceReference?: string
-  recurrenceType: RecurrenceType
-  isRecurring: boolean
-  incomeCategoryId: number
-  // Display fields
-  incomeCategoryName?: string
-  incomeCategoryColor?: string
-  incomeCategoryIcon?: string
-  userId: number
-  createdAt: string
-  updatedAt: string
-}
+// IncomeTransaction interface removed - now using Transaction directly with incomeCategory field
 
 export type IncomeType = 'SALARY' | 'BUSINESS' | 'INVESTMENT' | 'OTHER'
 
@@ -286,7 +268,7 @@ export interface IncomePattern {
   totalAmount: number
   averageAmount: number
   suggestedType: IncomeType
-  transactions: IncomeTransaction[]
+  transactions: any[] // Historical transactions
 }
 
 export interface IncomeCategorySuggestion {
@@ -297,7 +279,7 @@ export interface IncomeCategorySuggestion {
   actualAmount: number
   averageAmount: number
   frequency: number
-  sourceTransactions: IncomeTransaction[]
+  sourceTransactions: any[] // Source transactions
 }
 
 export interface IncomeComparison {

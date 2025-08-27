@@ -18,7 +18,8 @@ import {
   ShoppingCart,
   TrendingUp,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Clock
 } from 'lucide-react'
 
 interface Transaction {

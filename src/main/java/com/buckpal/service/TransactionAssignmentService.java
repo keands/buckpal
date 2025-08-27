@@ -228,16 +228,22 @@ public class TransactionAssignmentService {
     
     /**
      * Get unassigned transactions (all months) - kept for backward compatibility
+     * Only returns EXPENSE transactions - income transactions use separate income management system
      */
     public List<Transaction> getUnassignedTransactions(User user) {
-        return transactionRepository.findByUserAndAssignmentStatus(
+        List<Transaction> unassigned = transactionRepository.findByUserAndAssignmentStatus(
             user, 
             Transaction.AssignmentStatus.UNASSIGNED
         );
+        
+        return unassigned.stream()
+            .filter(transaction -> transaction.getTransactionType() == Transaction.TransactionType.EXPENSE)
+            .collect(Collectors.toList());
     }
     
     /**
      * Get unassigned transactions for a specific month/year
+     * Only returns EXPENSE transactions - income transactions use separate income management system
      */
     public List<Transaction> getUnassignedTransactionsForMonth(User user, Integer month, Integer year) {
         List<Transaction> allUnassigned = transactionRepository.findByUserAndAssignmentStatus(
@@ -245,6 +251,7 @@ public class TransactionAssignmentService {
         );
         
         return allUnassigned.stream()
+            .filter(transaction -> transaction.getTransactionType() == Transaction.TransactionType.EXPENSE)
             .filter(transaction -> {
                 int transactionMonth = transaction.getTransactionDate().getMonthValue();
                 int transactionYear = transaction.getTransactionDate().getYear();
@@ -265,6 +272,7 @@ public class TransactionAssignmentService {
     
     /**
      * Get transactions needing review for a specific month/year
+     * Only returns EXPENSE transactions - income transactions use separate income management system
      */
     public List<Transaction> getTransactionsNeedingReviewForMonth(User user, Integer month, Integer year) {
         List<Transaction> allNeedingReview = transactionRepository.findByUserAndAssignmentStatus(
@@ -272,6 +280,7 @@ public class TransactionAssignmentService {
         );
         
         return allNeedingReview.stream()
+            .filter(transaction -> transaction.getTransactionType() == Transaction.TransactionType.EXPENSE)
             .filter(transaction -> {
                 int transactionMonth = transaction.getTransactionDate().getMonthValue();
                 int transactionYear = transaction.getTransactionDate().getYear();

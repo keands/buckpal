@@ -346,6 +346,49 @@ export default function BudgetProgressDashboard({
         </Card>
       </div>
 
+      {/* Budget Alerts - Moved to top for immediate visibility */}
+      {(overBudgetCategories.length > 0 || nearLimitCategories.length > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <AlertTriangle className="w-5 h-5 text-orange-600" />
+              <span>{t('budget.budgetAlerts')}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {overBudgetCategories.map((category) => (
+                <div key={`over-${category.id}`} className="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                  <div className="flex-1">
+                    <p className="font-medium text-red-800">
+                      {t('budget.categoryOverBudget', { category: category.name })}
+                    </p>
+                    <p className="text-sm text-red-600">
+                      {formatCurrencyI18n(category.spentAmount - category.allocatedAmount)} {t('budget.overLimit')}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              
+              {nearLimitCategories.map((category) => (
+                <div key={`near-${category.id}`} className="flex items-center space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-yellow-600" />
+                  <div className="flex-1">
+                    <p className="font-medium text-yellow-800">
+                      {t('budget.categoryNearLimit', { category: category.name })}
+                    </p>
+                    <p className="text-sm text-yellow-600">
+                      {formatCurrencyI18n(category.remainingAmount)} {t('budget.remaining')} ({category.usagePercentage.toFixed(1)}% {t('budget.used')})
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Income Management - Above Charts */}
       <div className="mb-6">
         <IncomeManagement budgetId={budget.id} />
@@ -480,48 +523,6 @@ export default function BudgetProgressDashboard({
         </CardContent>
       </Card>
 
-      {/* Alerts Section */}
-      {(overBudgetCategories.length > 0 || nearLimitCategories.length > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <AlertTriangle className="w-5 h-5 text-orange-600" />
-              <span>{t('budget.budgetAlerts')}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {overBudgetCategories.map((category) => (
-                <div key={`over-${category.id}`} className="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-red-800">
-                      {t('budget.categoryOverBudget', { category: category.name })}
-                    </p>
-                    <p className="text-sm text-red-600">
-                      {formatCurrencyI18n(category.spentAmount - category.allocatedAmount)} {t('budget.overLimit')}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              
-              {nearLimitCategories.map((category) => (
-                <div key={`near-${category.id}`} className="flex items-center space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-yellow-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-yellow-800">
-                      {t('budget.categoryNearLimit', { category: category.name })}
-                    </p>
-                    <p className="text-sm text-yellow-600">
-                      {formatCurrencyI18n(category.remainingAmount)} {t('budget.remaining')} ({category.usagePercentage.toFixed(1)}% {t('budget.used')})
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

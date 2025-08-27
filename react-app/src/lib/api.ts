@@ -18,7 +18,6 @@ import type {
   ProjectCategory,
   BudgetCategoryTemplate,
   IncomeCategory,
-  IncomeTransaction,
   HistoricalIncomeAnalysis,
   IncomeComparison,
   IncomePattern,
@@ -474,48 +473,14 @@ class ApiClient {
     return response.data
   }
 
-  // Income Transactions
-  async getIncomeTransactions(page = 0, size = 20): Promise<{
-    content: IncomeTransaction[]
-    totalElements: number
-    totalPages: number
-    size: number
-    number: number
-  }> {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      size: size.toString(),
-    })
-    const response = await this.client.get(`/income/transactions?${params}`)
-    return response.data
-  }
-
-  async getIncomeTransactionsForMonth(year: number, month: number): Promise<IncomeTransaction[]> {
-    const response: AxiosResponse<IncomeTransaction[]> = await this.client.get(`/income/transactions/month/${year}/${month}`)
+  // Income Transactions (now using Transaction entity directly)
+  async getIncomeTransactionsForCategory(categoryId: number): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get(`/income/categories/${categoryId}/transactions`)
     return response.data
   }
 
   async getTotalIncomeForMonth(year: number, month: number): Promise<{ totalIncome: number }> {
     const response = await this.client.get(`/income/transactions/month/${year}/${month}/total`)
-    return response.data
-  }
-
-  async createIncomeTransaction(categoryId: number, transaction: Partial<IncomeTransaction>): Promise<IncomeTransaction> {
-    const response: AxiosResponse<IncomeTransaction> = await this.client.post(`/income/categories/${categoryId}/transactions`, transaction)
-    return response.data
-  }
-
-  async updateIncomeTransaction(transactionId: number, transaction: Partial<IncomeTransaction>): Promise<IncomeTransaction> {
-    const response: AxiosResponse<IncomeTransaction> = await this.client.put(`/income/transactions/${transactionId}`, transaction)
-    return response.data
-  }
-
-  async deleteIncomeTransaction(transactionId: number): Promise<void> {
-    await this.client.delete(`/income/transactions/${transactionId}`)
-  }
-
-  async getIncomeTransactionsForCategory(categoryId: number): Promise<IncomeTransaction[]> {
-    const response: AxiosResponse<IncomeTransaction[]> = await this.client.get(`/income/categories/${categoryId}/transactions`)
     return response.data
   }
 
@@ -562,18 +527,18 @@ class ApiClient {
 
   // ====== TRANSACTION LINKING ======
 
-  async getAvailableIncomeTransactions(): Promise<any[]> {
-    const response = await this.client.get('/income/available-transactions')
+  async getAvailableIncomeTransactions(): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get('/income/available-transactions')
     return response.data
   }
 
-  async getSuggestedTransactionsForCategory(categoryId: number): Promise<any[]> {
-    const response = await this.client.get(`/income/categories/${categoryId}/suggested-transactions`)
+  async getSuggestedTransactionsForCategory(categoryId: number): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get(`/income/categories/${categoryId}/suggested-transactions`)
     return response.data
   }
 
-  async linkHistoricalTransactions(categoryId: number, transactionIds: number[]): Promise<IncomeTransaction[]> {
-    const response = await this.client.post(`/income/categories/${categoryId}/link-transactions`, {
+  async linkHistoricalTransactions(categoryId: number, transactionIds: number[]): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.post(`/income/categories/${categoryId}/link-transactions`, {
       transactionIds
     })
     return response.data

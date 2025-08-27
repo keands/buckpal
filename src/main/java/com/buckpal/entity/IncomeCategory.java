@@ -48,7 +48,7 @@ public class IncomeCategory {
     private Budget budget;
     
     @OneToMany(mappedBy = "incomeCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<IncomeTransaction> incomeTransactions = new ArrayList<>();
+    private List<Transaction> incomeTransactions = new ArrayList<>();
     
     // Constructors
     public IncomeCategory() {}
@@ -81,13 +81,13 @@ public class IncomeCategory {
     }
     
     // Method to add income transaction and update actual amount
-    public void addIncomeTransaction(IncomeTransaction transaction) {
+    public void addIncomeTransaction(Transaction transaction) {
         incomeTransactions.add(transaction);
         transaction.setIncomeCategory(this);
         updateActualAmount();
     }
     
-    public void removeIncomeTransaction(IncomeTransaction transaction) {
+    public void removeIncomeTransaction(Transaction transaction) {
         incomeTransactions.remove(transaction);
         transaction.setIncomeCategory(null);
         updateActualAmount();
@@ -95,7 +95,7 @@ public class IncomeCategory {
     
     private void updateActualAmount() {
         this.actualAmount = incomeTransactions.stream()
-                .map(IncomeTransaction::getAmount)
+                .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     
@@ -162,8 +162,8 @@ public class IncomeCategory {
     public Budget getBudget() { return budget; }
     public void setBudget(Budget budget) { this.budget = budget; }
     
-    public List<IncomeTransaction> getIncomeTransactions() { return incomeTransactions; }
-    public void setIncomeTransactions(List<IncomeTransaction> incomeTransactions) { 
+    public List<Transaction> getIncomeTransactions() { return incomeTransactions; }
+    public void setIncomeTransactions(List<Transaction> incomeTransactions) {
         this.incomeTransactions = incomeTransactions; 
     }
 }

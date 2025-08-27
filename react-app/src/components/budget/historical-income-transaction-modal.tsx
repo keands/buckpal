@@ -13,18 +13,7 @@ import {
   AlertCircle,
   Sparkles
 } from 'lucide-react'
-import { IncomeCategory } from '@/types/api'
-
-interface HistoricalTransaction {
-  id: number
-  description: string
-  amount: number
-  transactionDate: string
-  transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER'
-  accountName?: string
-  categoryName?: string
-}
-
+import { IncomeCategory, Transaction } from '@/types/api'
 interface HistoricalIncomeTransactionModalProps {
   incomeCategory: IncomeCategory
   isOpen: boolean
@@ -38,8 +27,8 @@ export default function HistoricalIncomeTransactionModal({
   onClose,
   onSuccess
 }: HistoricalIncomeTransactionModalProps) {
-  const [availableTransactions, setAvailableTransactions] = useState<HistoricalTransaction[]>([])
-  const [suggestedTransactions, setSuggestedTransactions] = useState<HistoricalTransaction[]>([])
+  const [availableTransactions, setAvailableTransactions] = useState<Transaction[]>([])
+  const [suggestedTransactions, setSuggestedTransactions] = useState<Transaction[]>([])
   const [selectedTransactionIds, setSelectedTransactionIds] = useState<number[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -114,7 +103,7 @@ export default function HistoricalIncomeTransactionModal({
   }
 
   const filteredTransactions = availableTransactions.filter(transaction =>
-    transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (transaction.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
     transaction.accountName?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
@@ -203,7 +192,7 @@ export default function HistoricalIncomeTransactionModal({
                     />
                     <Calendar className="w-4 h-4 text-gray-400" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{transaction.description}</div>
+                      <div className="text-sm font-medium truncate">{transaction.description || 'Sans description'}</div>
                       <div className="text-xs text-gray-500">
                         {formatDate(transaction.transactionDate)} • {transaction.accountName}
                       </div>
@@ -260,7 +249,7 @@ export default function HistoricalIncomeTransactionModal({
                   />
                   <Calendar className="w-4 h-4 text-gray-400" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{transaction.description}</div>
+                    <div className="text-sm font-medium truncate">{transaction.description || 'Sans description'}</div>
                     <div className="text-xs text-gray-500">
                       {formatDate(transaction.transactionDate)} • {transaction.accountName}
                       {transaction.categoryName && ` • ${transaction.categoryName}`}

@@ -2,11 +2,11 @@ package com.buckpal.service;
 
 import com.buckpal.entity.Budget;
 import com.buckpal.entity.IncomeCategory;
-import com.buckpal.entity.IncomeTransaction;
+import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.repository.BudgetRepository;
 import com.buckpal.repository.IncomeCategoryRepository;
-import com.buckpal.repository.IncomeTransactionRepository;
+import com.buckpal.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +21,15 @@ public class HistoricalIncomeService {
     
     private final BudgetRepository budgetRepository;
     private final IncomeCategoryRepository incomeCategoryRepository;
-    private final IncomeTransactionRepository incomeTransactionRepository;
+    private final TransactionRepository transactionRepository;
     
     @Autowired
     public HistoricalIncomeService(BudgetRepository budgetRepository,
                                   IncomeCategoryRepository incomeCategoryRepository,
-                                  IncomeTransactionRepository incomeTransactionRepository) {
+                                  TransactionRepository transactionRepository) {
         this.budgetRepository = budgetRepository;
         this.incomeCategoryRepository = incomeCategoryRepository;
-        this.incomeTransactionRepository = incomeTransactionRepository;
+        this.transactionRepository = transactionRepository;
     }
     
     /**
@@ -38,8 +38,11 @@ public class HistoricalIncomeService {
      */
     public HistoricalIncomeAnalysis analyzeHistoricalIncome(User user, Integer targetMonth, Integer targetYear) {
         // Get all income transactions for the target month
-        List<IncomeTransaction> historicalTransactions = incomeTransactionRepository
-                .findByUserAndMonth(user, targetMonth, targetYear);
+        LocalDate startDate = LocalDate.of(targetYear, targetMonth, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        
+        List<Transaction> historicalTransactions = transactionRepository
+                .findIncomeTransactionsByUserAndDateRange(user, startDate, endDate);
         
         if (historicalTransactions.isEmpty()) {
             return new HistoricalIncomeAnalysis(false, BigDecimal.ZERO, new ArrayList<>(), new ArrayList<>());
@@ -47,7 +50,7 @@ public class HistoricalIncomeService {
         
         // Calculate total historical income
         BigDecimal totalHistoricalIncome = historicalTransactions.stream()
-                .map(IncomeTransaction::getAmount)
+                .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         // Group transactions by pattern/source for categorization
@@ -69,8 +72,11 @@ public class HistoricalIncomeService {
         }
         
         // Check if there are income transactions for that period
-        List<IncomeTransaction> transactions = incomeTransactionRepository
-                .findByUserAndMonth(user, budget.getBudgetMonth(), budget.getBudgetYear());
+        LocalDate startDate = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        
+        List<Transaction> transactions = transactionRepository
+                .findIncomeTransactionsByUserAndDateRange(user, startDate, endDate);
         
         return !transactions.isEmpty();
     }
@@ -108,15 +114,19 @@ public class HistoricalIncomeService {
         List<MonthlyIncomeData> monthlyData = new ArrayList<>();
         
         // Current target month
-        BigDecimal targetIncome = incomeTransactionRepository.getTotalIncomeForMonth(user, targetMonth, targetYear);
+        LocalDate targetStart = LocalDate.of(targetYear, targetMonth, 1);
+        LocalDate targetEnd = targetStart.withDayOfMonth(targetStart.lengthOfMonth());
+        BigDecimal targetIncome = getTotalIncomeForMonth(user, targetStart, targetEnd);
         monthlyData.add(new MonthlyIncomeData(targetMonth, targetYear, targetIncome));
         
         // Previous months
         LocalDate currentDate = LocalDate.of(targetYear, targetMonth, 1);
         for (int i = 1; i <= monthsBack; i++) {
             LocalDate previousMonth = currentDate.minusMonths(i);
-            BigDecimal income = incomeTransactionRepository.getTotalIncomeForMonth(
-                    user, previousMonth.getMonthValue(), previousMonth.getYear());
+            LocalDate previousStart = previousMonth.withDayOfMonth(1);
+            LocalDate previousEnd = previousMonth.withDayOfMonth(previousMonth.lengthOfMonth());
+            
+            BigDecimal income = getTotalIncomeForMonth(user, previousStart, previousEnd);
             monthlyData.add(new MonthlyIncomeData(previousMonth.getMonthValue(), previousMonth.getYear(), income));
         }
         
@@ -140,10 +150,12 @@ public class HistoricalIncomeService {
      */
     public List<IncomePattern> findRecurringIncomePatterns(User user, Integer targetMonth, Integer targetYear) {
         // Look for same month in previous years
-        List<IncomeTransaction> sameMonthPreviousYears = new ArrayList<>();
+        List<Transaction> sameMonthPreviousYears = new ArrayList<>();
         for (int year = targetYear - 3; year < targetYear; year++) {
+            LocalDate startDate = LocalDate.of(year, targetMonth, 1);
+            LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
             sameMonthPreviousYears.addAll(
-                    incomeTransactionRepository.findByUserAndMonth(user, targetMonth, year));
+                    transactionRepository.findIncomeTransactionsByUserAndDateRange(user, startDate, endDate));
         }
         
         return analyzeIncomePatterns(sameMonthPreviousYears);
@@ -151,17 +163,24 @@ public class HistoricalIncomeService {
     
     // ====== PRIVATE HELPER METHODS ======
     
-    private List<IncomePattern> analyzeIncomePatterns(List<IncomeTransaction> transactions) {
-        Map<String, List<IncomeTransaction>> groupedBySource = transactions.stream()
+    private BigDecimal getTotalIncomeForMonth(User user, LocalDate startDate, LocalDate endDate) {
+        List<Transaction> transactions = transactionRepository.findIncomeTransactionsByUserAndDateRange(user, startDate, endDate);
+        return transactions.stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    
+    private List<IncomePattern> analyzeIncomePatterns(List<Transaction> transactions) {
+        Map<String, List<Transaction>> groupedBySource = transactions.stream()
                 .collect(Collectors.groupingBy(t -> normalizeIncomeSource(t.getDescription())));
         
         return groupedBySource.entrySet().stream()
                 .map(entry -> {
                     String pattern = entry.getKey();
-                    List<IncomeTransaction> transactionGroup = entry.getValue();
+                    List<Transaction> transactionGroup = entry.getValue();
                     
                     BigDecimal totalAmount = transactionGroup.stream()
-                            .map(IncomeTransaction::getAmount)
+                            .map(Transaction::getAmount)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     
                     BigDecimal averageAmount = totalAmount.divide(
@@ -349,11 +368,11 @@ public class HistoricalIncomeService {
         private final BigDecimal totalAmount;
         private final BigDecimal averageAmount;
         private final IncomeCategory.IncomeType suggestedType;
-        private final List<IncomeTransaction> transactions;
+        private final List<Transaction> transactions;
         
         public IncomePattern(String patternName, int frequency, BigDecimal totalAmount, 
                            BigDecimal averageAmount, IncomeCategory.IncomeType suggestedType,
-                           List<IncomeTransaction> transactions) {
+                           List<Transaction> transactions) {
             this.patternName = patternName;
             this.frequency = frequency;
             this.totalAmount = totalAmount;
@@ -368,7 +387,7 @@ public class HistoricalIncomeService {
         public BigDecimal getTotalAmount() { return totalAmount; }
         public BigDecimal getAverageAmount() { return averageAmount; }
         public IncomeCategory.IncomeType getSuggestedType() { return suggestedType; }
-        public List<IncomeTransaction> getTransactions() { return transactions; }
+        public List<Transaction> getTransactions() { return transactions; }
     }
     
     public static class IncomeCategorySuggestion {
@@ -379,13 +398,13 @@ public class HistoricalIncomeService {
         private final BigDecimal actualAmount;
         private final BigDecimal averageAmount;
         private final int frequency;
-        private final List<IncomeTransaction> sourceTransactions;
+        private final List<Transaction> sourceTransactions;
         
         public IncomeCategorySuggestion(String categoryName, String description, 
                                        IncomeCategory.IncomeType incomeType,
                                        BigDecimal suggestedAmount, BigDecimal actualAmount,
                                        BigDecimal averageAmount, int frequency,
-                                       List<IncomeTransaction> sourceTransactions) {
+                                       List<Transaction> sourceTransactions) {
             this.categoryName = categoryName;
             this.description = description;
             this.incomeType = incomeType;
@@ -404,7 +423,7 @@ public class HistoricalIncomeService {
         public BigDecimal getActualAmount() { return actualAmount; }
         public BigDecimal getAverageAmount() { return averageAmount; }
         public int getFrequency() { return frequency; }
-        public List<IncomeTransaction> getSourceTransactions() { return sourceTransactions; }
+        public List<Transaction> getSourceTransactions() { return sourceTransactions; }
     }
     
     public static class IncomeComparison {

@@ -27,14 +27,14 @@ public class BudgetService {
     private final BudgetCategoryRepository budgetCategoryRepository;
     private final TransactionRepository transactionRepository;
     private final CategoryInitializationService categoryInitializationService;
-    private final IncomeService incomeService;
+    private final IncomeManagementService incomeService;
     
     @Autowired
     public BudgetService(BudgetRepository budgetRepository, 
                         BudgetCategoryRepository budgetCategoryRepository,
                         TransactionRepository transactionRepository,
                         CategoryInitializationService categoryInitializationService,
-                        IncomeService incomeService) {
+                        IncomeManagementService incomeService) {
         this.budgetRepository = budgetRepository;
         this.budgetCategoryRepository = budgetCategoryRepository;
         this.transactionRepository = transactionRepository;

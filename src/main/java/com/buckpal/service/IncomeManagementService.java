@@ -44,7 +44,6 @@ public class IncomeManagementService {
                 .orElseThrow(() -> new RuntimeException("Budget not found"));
         
         category.setBudget(budget);
-        category.setUser(user);
         
         return incomeCategoryRepository.save(category);
     }
@@ -248,5 +247,39 @@ public class IncomeManagementService {
                 .findByUserAndIncomeType(user, IncomeCategory.IncomeType.OTHER);
         
         return otherCategories.isEmpty() ? null : otherCategories.get(0);
+    }
+    
+    // ====== BUDGET INTEGRATION METHODS ======
+    
+    /**
+     * Create default income categories for a new budget
+     */
+    public void createDefaultIncomeCategories(Budget budget) {
+        // Create default income categories for each income type
+        IncomeCategory.IncomeType[] types = IncomeCategory.IncomeType.values();
+        
+        for (int i = 0; i < types.length; i++) {
+            IncomeCategory.IncomeType type = types[i];
+            IncomeCategory category = new IncomeCategory();
+            category.setName(type.getDisplayName());
+            category.setDescription(type.getDescription());
+            category.setBudgetedAmount(BigDecimal.ZERO);
+            category.setActualAmount(BigDecimal.ZERO);
+            category.setColor(type.getDefaultColor());
+            category.setIcon(type.getDefaultIcon());
+            category.setDisplayOrder(i + 1);
+            category.setIsDefault(true);
+            category.setIncomeType(type);
+            category.setBudget(budget);
+            
+            incomeCategoryRepository.save(category);
+        }
+    }
+    
+    /**
+     * Get income categories for a budget
+     */
+    public List<IncomeCategory> getIncomeCategories(Budget budget) {
+        return incomeCategoryRepository.findByBudgetIdOrderByDisplayOrderAsc(budget.getId());
     }
 }

@@ -21,6 +21,7 @@ export default function IncomeManagement({ budgetId, onIncomeChange }: IncomeMan
   const [editingCategory, setEditingCategory] = useState<IncomeCategory | null>(null)
   const [showLinkTransactions, setShowLinkTransactions] = useState(false)
   const [selectedCategoryForLinking, setSelectedCategoryForLinking] = useState<IncomeCategory | null>(null)
+  const [initialModalTab, setInitialModalTab] = useState<'add' | 'manage'>('add')
 
   // Load income data
   const loadIncomeData = async () => {

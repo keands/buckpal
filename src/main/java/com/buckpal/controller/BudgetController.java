@@ -336,4 +336,26 @@ public class BudgetController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    
+    /**
+     * Get transactions for a specific budget category
+     */
+    @GetMapping("/{budgetId}/categories/{categoryId}/transactions")
+    public ResponseEntity<List<com.buckpal.entity.Transaction>> getBudgetCategoryTransactions(
+            @PathVariable Long budgetId,
+            @PathVariable Long categoryId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            List<com.buckpal.entity.Transaction> transactions = 
+                    budgetService.getBudgetCategoryTransactions(user, budgetId, categoryId);
+            
+            return ResponseEntity.ok(transactions);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

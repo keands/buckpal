@@ -504,4 +504,19 @@ public class BudgetService {
         
         return stats;
     }
+    
+    /**
+     * Get transactions for a specific budget category
+     */
+    public List<Transaction> getBudgetCategoryTransactions(User user, Long budgetId, Long categoryId) {
+        Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        
+        // Find the category by ID and verify it belongs to the user's budget
+        BudgetCategory category = budgetCategoryRepository.findById(categoryId)
+                .filter(c -> c.getBudget().getId().equals(budgetId) && c.getBudget().getUser().getId().equals(user.getId()))
+                .orElseThrow(() -> new RuntimeException("Budget category not found"));
+        
+        return transactionRepository.findByBudgetCategory(category);
+    }
 }

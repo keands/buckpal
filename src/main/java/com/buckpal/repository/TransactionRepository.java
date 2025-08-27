@@ -147,6 +147,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
     
     // Budget category assignment queries
+    @Query("SELECT t FROM Transaction t WHERE t.budgetCategory = :budgetCategory")
+    List<Transaction> findByBudgetCategory(@Param("budgetCategory") BudgetCategory budgetCategory);
+    
     @Query("SELECT t FROM Transaction t WHERE t.budgetCategory = :budgetCategory AND t.transactionDate BETWEEN :startDate AND :endDate")
     List<Transaction> findByBudgetCategoryAndDateRange(
         @Param("budgetCategory") BudgetCategory budgetCategory,

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Transaction } from '@/types/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,16 +23,7 @@ import {
   Clock
 } from 'lucide-react'
 
-interface Transaction {
-  id: number
-  date: string
-  description: string
-  merchant?: string
-  amount: number
-  type: 'INCOME' | 'EXPENSE' | 'TRANSFER'
-  isPending?: boolean
-  account?: string
-}
+// Transaction interface is now imported from @/types/api
 
 interface CategoryData {
   id: number
@@ -49,6 +41,7 @@ interface CategoryTransactionsModalProps {
   category: CategoryData
   transactions: Transaction[]
   isOpen: boolean
+  isLoading?: boolean
   onClose: () => void
   onEditTransaction?: (transaction: Transaction) => void
   onAddTransaction?: () => void
@@ -59,6 +52,7 @@ export default function CategoryTransactionsModal({
   category,
   transactions,
   isOpen,
+  isLoading = false,
   onClose,
   onEditTransaction,
   onAddTransaction,
@@ -74,21 +68,21 @@ export default function CategoryTransactionsModal({
   // Filter and sort transactions
   const filteredTransactions = transactions
     .filter(transaction => 
-      transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (transaction.merchant && transaction.merchant.toLowerCase().includes(searchTerm.toLowerCase()))
+      (transaction.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+      (transaction.merchantName?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
     )
     .sort((a, b) => {
       let comparison = 0
       
       switch (sortBy) {
         case 'date':
-          comparison = new Date(a.date).getTime() - new Date(b.date).getTime()
+          comparison = new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime()
           break
         case 'amount':
           comparison = a.amount - b.amount
           break
         case 'description':
-          comparison = a.description.localeCompare(b.description)
+          comparison = (a.description || '').localeCompare(b.description || '')
           break
       }
       
@@ -109,9 +103,36 @@ export default function CategoryTransactionsModal({
 
   const getTransactionIcon = (transaction: Transaction) => {
     if (transaction.isPending) return <Clock className="w-4 h-4 text-yellow-600" />
-    if (transaction.type === 'INCOME') return <TrendingUp className="w-4 h-4 text-green-600" />
-    if (transaction.type === 'EXPENSE') return <ShoppingCart className="w-4 h-4 text-red-600" />
+    if (transaction.transactionType === 'INCOME') return <TrendingUp className="w-4 h-4 text-green-600" />
+    if (transaction.transactionType === 'EXPENSE') return <ShoppingCart className="w-4 h-4 text-red-600" />
     return <DollarSign className="w-4 h-4 text-blue-600" />
+  }
+
+  const exportTransactions = () => {
+    const csvContent = [
+      // Header
+      ['Date', 'Description', 'Merchant', 'Amount', 'Type', 'Account'],
+      // Data
+      ...filteredTransactions.map(t => [
+        formatDate(t.transactionDate),
+        t.description || '',
+        t.merchantName || '',
+        t.amount.toString(),
+        t.transactionType,
+        t.accountName || ''
+      ])
+    ]
+    .map(row => row.map(field => `"${field}"`).join(','))
+    .join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `transactions_${category.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   const getStatusColor = (usagePercentage: number, isOverBudget: boolean) => {
@@ -223,7 +244,8 @@ export default function CategoryTransactionsModal({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {/* TODO: Export transactions */}}
+                onClick={exportTransactions}
+                disabled={filteredTransactions.length === 0}
               >
                 <Download className="w-4 h-4 mr-2" />
                 {t('common.export')}
@@ -275,7 +297,12 @@ export default function CategoryTransactionsModal({
 
         {/* Transaction List */}
         <div className="flex-1 overflow-auto max-h-96">
-          {filteredTransactions.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Chargement des transactions...</span>
+            </div>
+          ) : filteredTransactions.length > 0 ? (
             <div className="divide-y">
               {filteredTransactions.map((transaction) => (
                 <div
@@ -298,25 +325,25 @@ export default function CategoryTransactionsModal({
                         <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
                           <span className="flex items-center">
                             <Calendar className="w-3 h-3 mr-1" />
-                            {formatDate(transaction.date)}
+                            {formatDate(transaction.transactionDate)}
                           </span>
-                          {transaction.merchant && (
-                            <span>{transaction.merchant}</span>
+                          {transaction.merchantName && (
+                            <span>{transaction.merchantName}</span>
                           )}
-                          {transaction.account && (
-                            <span>{transaction.account}</span>
+                          {transaction.accountName && (
+                            <span>{transaction.accountName}</span>
                           )}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className={`font-semibold ${
-                        transaction.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
+                        transaction.transactionType === 'INCOME' ? 'text-green-600' : 'text-red-600'
                       }`}>
-                        {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrencyI18n(Math.abs(transaction.amount))}
+                        {transaction.transactionType === 'INCOME' ? '+' : '-'}{formatCurrencyI18n(Math.abs(transaction.amount))}
                       </p>
                       <p className="text-xs text-gray-500 capitalize">
-                        {t(`transactions.transactionTypes.${transaction.type}`)}
+                        {t(`transactions.transactionTypes.${transaction.transactionType}`)}
                       </p>
                     </div>
                   </div>

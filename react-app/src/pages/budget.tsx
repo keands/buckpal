@@ -18,12 +18,30 @@ export default function BudgetPage() {
   const [selectedBudgetId, setSelectedBudgetId] = useState<number | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<any>(null)
   const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [categoryTransactions, setCategoryTransactions] = useState<any[]>([])
+  const [loadingCategoryTransactions, setLoadingCategoryTransactions] = useState(false)
   const [budgets, setBudgets] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [previousMonthIncome, setPreviousMonthIncome] = useState<number>(0)
   const [, setCurrentMonthBudget] = useState<any>(null)
   const [showCurrentMonthPrompt, setShowCurrentMonthPrompt] = useState(false)
+
+  // Load transactions for a specific category
+  const loadCategoryTransactions = async (category: any) => {
+    if (!selectedBudgetId) return
+    
+    try {
+      setLoadingCategoryTransactions(true)
+      const transactions = await apiClient.getTransactionsByCategory(selectedBudgetId, category.id)
+      setCategoryTransactions(transactions)
+    } catch (error: any) {
+      console.error('Error loading category transactions:', error)
+      setCategoryTransactions([])
+    } finally {
+      setLoadingCategoryTransactions(false)
+    }
+  }
 
   // Helper functions
   const getMonthName = (monthNumber: number) => {
@@ -339,9 +357,10 @@ export default function BudgetPage() {
         <BudgetProgressDashboard 
           budget={selectedBudget}
           availableBudgets={availableBudgets}
-          onCategoryClick={(category) => {
+          onCategoryClick={async (category) => {
             setSelectedCategory(category)
             setShowCategoryModal(true)
+            await loadCategoryTransactions(category)
           }}
           onBudgetChange={(budgetId) => {
             setSelectedBudgetId(budgetId)
@@ -373,11 +392,13 @@ export default function BudgetPage() {
       {showCategoryModal && selectedCategory && (
         <CategoryTransactionsModal
           category={selectedCategory}
-          transactions={[]} // TODO: Fetch real transactions from API
+          transactions={categoryTransactions}
           isOpen={showCategoryModal}
+          isLoading={loadingCategoryTransactions}
           onClose={() => {
             setShowCategoryModal(false)
             setSelectedCategory(null)
+            setCategoryTransactions([])
           }}
           onEditTransaction={(transaction) => {
             console.log('Edit transaction:', transaction)

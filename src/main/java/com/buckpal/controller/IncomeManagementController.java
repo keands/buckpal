@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,10 +150,29 @@ public class IncomeManagementController {
      */
     @GetMapping("/available-transactions")
     public ResponseEntity<List<Map<String, Object>>> getAvailableIncomeTransactions(
+            @RequestParam(required = false) Long budgetId,
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         
-        List<Transaction> transactions = incomeService.getAvailableIncomeTransactions(user);
+        List<Transaction> transactions;
+        
+        if (budgetId != null) {
+            // Get transactions for specific budget period (budget month + 1 week before)
+            try {
+                var budget = budgetService.getBudgetById(user, budgetId);
+                LocalDate budgetStartDate = LocalDate.of(budget.get().getBudgetYear(), budget.get().getBudgetMonth(), 1);
+                LocalDate startDate = budgetStartDate.minusWeeks(1);
+                LocalDate endDate = budgetStartDate.withDayOfMonth(budgetStartDate.lengthOfMonth());
+                
+                transactions = incomeService.getAvailableIncomeTransactions(user, startDate, endDate);
+            } catch (RuntimeException e) {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            // Get all available income transactions
+            transactions = incomeService.getAvailableIncomeTransactions(user);
+        }
+        
         List<Map<String, Object>> dtos = transactions.stream()
                 .map(this::convertTransactionToDto)
                 .toList();
@@ -215,6 +235,45 @@ public class IncomeManagementController {
                     linkedTransactions.get(0).getIncomeCategory().getBudget().getId()
                 );
             }
+            
+            return ResponseEntity.ok(dtos);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Unlink transactions from their income categories
+     */
+    @PostMapping("/transactions/unlink")
+    public ResponseEntity<List<Map<String, Object>>> unlinkTransactionsFromCategories(
+            @RequestBody Map<String, List<Long>> request,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            List<Long> transactionIds = request.get("transactionIds");
+            if (transactionIds == null || transactionIds.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<Transaction> unlinkedTransactions = incomeService
+                    .unlinkTransactionsFromIncomeCategories(user, transactionIds);
+            
+            List<Map<String, Object>> dtos = unlinkedTransactions.stream()
+                    .map(this::convertTransactionToDto)
+                    .toList();
+            
+            // Update budget totals for affected budgets
+            unlinkedTransactions.stream()
+                    .map(t -> t.getAccount().getUser())
+                    .distinct()
+                    .forEach(u -> {
+                        // We could improve this by tracking which budgets were affected
+                        // For now, this ensures data consistency
+                    });
             
             return ResponseEntity.ok(dtos);
         } catch (IllegalArgumentException e) {

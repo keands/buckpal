@@ -121,6 +121,14 @@ public class IncomeManagementService {
     }
     
     /**
+     * Get available income transactions within a date range (for budget period)
+     * These are transactions with INCOME type that haven't been linked to income categories yet
+     */
+    public List<Transaction> getAvailableIncomeTransactions(User user, LocalDate startDate, LocalDate endDate) {
+        return transactionRepository.findUnlinkedIncomeTransactionsByUserAndDateRange(user, startDate, endDate);
+    }
+    
+    /**
      * Link historical transaction to income category
      */
     public Transaction linkTransactionToIncomeCategory(User user, Long categoryId, Long transactionId) {
@@ -162,10 +170,50 @@ public class IncomeManagementService {
     }
     
     /**
+     * Unlink transaction from income category
+     */
+    public Transaction unlinkTransactionFromIncomeCategory(User user, Long transactionId) {
+        // Verify the transaction belongs to the user
+        Transaction transaction = transactionRepository.findByIdAndUser(transactionId, user)
+                .orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+        
+        if (transaction.getIncomeCategory() == null) {
+            throw new IllegalArgumentException("Transaction is not linked to any income category");
+        }
+        
+        // Store the category to update its actual amounts later
+        IncomeCategory previousCategory = transaction.getIncomeCategory();
+        
+        // Unlink the transaction
+        transaction.setIncomeCategory(null);
+        Transaction saved = transactionRepository.save(transaction);
+        
+        // Update category actual amount
+        updateIncomeCategoryActualAmounts(previousCategory);
+        
+        return saved;
+    }
+    
+    /**
+     * Bulk unlink multiple transactions from their income categories
+     */
+    @Transactional
+    public List<Transaction> unlinkTransactionsFromIncomeCategories(User user, List<Long> transactionIds) {
+        return transactionIds.stream()
+                .map(transactionId -> unlinkTransactionFromIncomeCategory(user, transactionId))
+                .toList();
+    }
+    
+    /**
      * Suggest income transactions for a category based on description patterns
      */
     public List<Transaction> suggestIncomeTransactionsForCategory(User user, IncomeCategory category) {
-        List<Transaction> availableTransactions = getAvailableIncomeTransactions(user);
+        // Calculate date range for budget period (1 week before budget month to end of budget month)
+        LocalDate budgetStartDate = LocalDate.of(category.getBudget().getBudgetYear(), category.getBudget().getBudgetMonth(), 1);
+        LocalDate startDate = budgetStartDate.minusWeeks(1); // 1 week before budget month
+        LocalDate endDate = budgetStartDate.withDayOfMonth(budgetStartDate.lengthOfMonth()); // Last day of budget month
+        
+        List<Transaction> availableTransactions = getAvailableIncomeTransactions(user, startDate, endDate);
         
         // Simple pattern matching based on category name and type
         String categoryName = category.getName().toLowerCase();

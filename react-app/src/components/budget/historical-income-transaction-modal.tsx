@@ -29,8 +29,11 @@ export default function HistoricalIncomeTransactionModal({
 }: HistoricalIncomeTransactionModalProps) {
   const [availableTransactions, setAvailableTransactions] = useState<Transaction[]>([])
   const [suggestedTransactions, setSuggestedTransactions] = useState<Transaction[]>([])
+  const [assignedTransactions, setAssignedTransactions] = useState<Transaction[]>([])
   const [selectedTransactionIds, setSelectedTransactionIds] = useState<number[]>([])
+  const [selectedAssignedIds, setSelectedAssignedIds] = useState<number[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [activeTab, setActiveTab] = useState<'add' | 'manage'>('add')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
@@ -49,9 +52,13 @@ export default function HistoricalIncomeTransactionModal({
       const suggested = await apiClient.getSuggestedTransactionsForCategory(incomeCategory.id)
       setSuggestedTransactions(suggested)
 
-      // Load all available income transactions
-      const available = await apiClient.getAvailableIncomeTransactions()
+      // Load available income transactions for this budget period
+      const available = await apiClient.getAvailableIncomeTransactions(incomeCategory.budgetId)
       setAvailableTransactions(available)
+
+      // Load already assigned transactions for this category
+      const assigned = await apiClient.getTransactionsForIncomeCategory(incomeCategory.id)
+      setAssignedTransactions(assigned)
       
       setShowSuggestions(suggested.length > 0)
     } catch (error) {
@@ -63,6 +70,14 @@ export default function HistoricalIncomeTransactionModal({
 
   const handleTransactionToggle = (transactionId: number) => {
     setSelectedTransactionIds(prev => 
+      prev.includes(transactionId)
+        ? prev.filter(id => id !== transactionId)
+        : [...prev, transactionId]
+    )
+  }
+
+  const handleAssignedTransactionToggle = (transactionId: number) => {
+    setSelectedAssignedIds(prev => 
       prev.includes(transactionId)
         ? prev.filter(id => id !== transactionId)
         : [...prev, transactionId]
@@ -102,7 +117,30 @@ export default function HistoricalIncomeTransactionModal({
     }
   }
 
+  const handleUnlinkTransactions = async () => {
+    if (selectedAssignedIds.length === 0) return
+    
+    setIsSubmitting(true)
+    try {
+      await apiClient.unlinkTransactionsFromCategories(selectedAssignedIds)
+      // Reload transactions to refresh both lists
+      await loadTransactions()
+      setSelectedAssignedIds([])
+      onSuccess() // Notify parent to refresh data
+    } catch (error) {
+      console.error('Error unlinking transactions:', error)
+      // TODO: Show error toast
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const filteredTransactions = availableTransactions.filter(transaction =>
+    (transaction.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    transaction.accountName?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const filteredAssignedTransactions = assignedTransactions.filter(transaction =>
     (transaction.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
     transaction.accountName?.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -138,7 +176,7 @@ export default function HistoricalIncomeTransactionModal({
               >
                 <DollarSign className="w-4 h-4" />
               </div>
-              <span>Ajouter des transactions à "{incomeCategory.name}"</span>
+              <span>Gérer les transactions - "{incomeCategory.name}"</span>
             </DialogTitle>
             <Button 
               variant="ghost" 
@@ -151,8 +189,35 @@ export default function HistoricalIncomeTransactionModal({
           </div>
         </DialogHeader>
 
+        {/* Tabs */}
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+          <button
+            className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              activeTab === 'add' 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setActiveTab('add')}
+          >
+            Ajouter des transactions
+          </button>
+          <button
+            className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              activeTab === 'manage' 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setActiveTab('manage')}
+          >
+            Gérer assignées ({assignedTransactions.length})
+          </button>
+        </div>
+
         <div className="space-y-6">
-          {/* Instructions */}
+          {/* Add Transactions Tab */}
+          {activeTab === 'add' && (
+            <>
+              {/* Instructions */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -279,6 +344,119 @@ export default function HistoricalIncomeTransactionModal({
               </div>
             </div>
           )}
+            </>
+          )}
+
+          {/* Manage Assigned Transactions Tab */}
+          {activeTab === 'manage' && (
+            <>
+              {/* Instructions for manage tab */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5" />
+                  <div className="text-sm text-orange-800">
+                    <p className="font-medium mb-1">Gérer les transactions déjà assignées</p>
+                    <p>Sélectionnez les transactions que vous souhaitez délier de cette catégorie de revenus. Elles redeviendront disponibles pour être assignées ailleurs.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher dans les transactions assignées..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Assigned Transactions List */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-gray-900">
+                    Transactions assignées ({filteredAssignedTransactions.length})
+                  </h3>
+                </div>
+
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : filteredAssignedTransactions.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-gray-500">
+                      {assignedTransactions.length === 0 
+                        ? "Aucune transaction assignée à cette catégorie" 
+                        : "Aucune transaction trouvée avec ces critères"}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border rounded-lg divide-y divide-gray-200 max-h-96 overflow-y-auto">
+                    {filteredAssignedTransactions.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className={`p-4 hover:bg-gray-50 transition-colors ${
+                          selectedAssignedIds.includes(transaction.id) ? 'bg-blue-50 border-blue-200' : ''
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Checkbox 
+                              checked={selectedAssignedIds.includes(transaction.id)}
+                              onCheckedChange={() => handleAssignedTransactionToggle(transaction.id)}
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <p className="font-medium text-gray-900 truncate">
+                                  {transaction.description}
+                                </p>
+                                <div className="text-right ml-4">
+                                  <p className="font-semibold text-green-600">
+                                    {formatCurrency(transaction.amount)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-4 mt-1">
+                                <div className="flex items-center space-x-1 text-sm text-gray-500">
+                                  <Calendar className="w-3 h-3" />
+                                  <span>{formatDate(transaction.transactionDate)}</span>
+                                </div>
+                                {transaction.accountName && (
+                                  <span className="text-sm text-gray-500">
+                                    {transaction.accountName}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Unlink summary */}
+              {selectedAssignedIds.length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-red-900">
+                        {selectedAssignedIds.length} transaction{selectedAssignedIds.length > 1 ? 's' : ''} à délier
+                      </p>
+                      <p className="text-sm text-red-700">
+                        Ces transactions redeviendront disponibles pour être assignées ailleurs
+                      </p>
+                    </div>
+                    <X className="w-5 h-5 text-red-600" />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Actions */}
@@ -288,26 +466,51 @@ export default function HistoricalIncomeTransactionModal({
             onClick={onClose}
             disabled={isSubmitting}
           >
-            Annuler
+            Fermer
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={selectedTransactionIds.length === 0 || isSubmitting}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Association...</span>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Check className="w-4 h-4" />
-                <span>
-                  Associer {selectedTransactionIds.length > 0 ? `(${selectedTransactionIds.length})` : ''}
-                </span>
-              </div>
-            )}
-          </Button>
+          
+          {activeTab === 'add' && (
+            <Button
+              onClick={handleSubmit}
+              disabled={selectedTransactionIds.length === 0 || isSubmitting}
+            >
+              {isSubmitting ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Association...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Check className="w-4 h-4" />
+                  <span>
+                    Associer {selectedTransactionIds.length > 0 ? `(${selectedTransactionIds.length})` : ''}
+                  </span>
+                </div>
+              )}
+            </Button>
+          )}
+          
+          {activeTab === 'manage' && (
+            <Button
+              onClick={handleUnlinkTransactions}
+              disabled={selectedAssignedIds.length === 0 || isSubmitting}
+              variant="destructive"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Déliaison...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <X className="w-4 h-4" />
+                  <span>
+                    Délier {selectedAssignedIds.length > 0 ? `(${selectedAssignedIds.length})` : ''}
+                  </span>
+                </div>
+              )}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

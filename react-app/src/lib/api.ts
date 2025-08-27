@@ -527,8 +527,14 @@ class ApiClient {
 
   // ====== TRANSACTION LINKING ======
 
-  async getAvailableIncomeTransactions(): Promise<Transaction[]> {
-    const response: AxiosResponse<Transaction[]> = await this.client.get('/income/available-transactions')
+  async getAvailableIncomeTransactions(budgetId?: number): Promise<Transaction[]> {
+    const params = new URLSearchParams()
+    if (budgetId) {
+      params.append('budgetId', budgetId.toString())
+    }
+    
+    const url = `/income/available-transactions${params.toString() ? `?${params.toString()}` : ''}`
+    const response: AxiosResponse<Transaction[]> = await this.client.get(url)
     return response.data
   }
 
@@ -541,6 +547,18 @@ class ApiClient {
     const response: AxiosResponse<Transaction[]> = await this.client.post(`/income/categories/${categoryId}/link-transactions`, {
       transactionIds
     })
+    return response.data
+  }
+
+  async unlinkTransactionsFromCategories(transactionIds: number[]): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.post('/income/transactions/unlink', {
+      transactionIds
+    })
+    return response.data
+  }
+
+  async getTransactionsForIncomeCategory(categoryId: number): Promise<Transaction[]> {
+    const response: AxiosResponse<Transaction[]> = await this.client.get(`/income/categories/${categoryId}/transactions`)
     return response.data
   }
 

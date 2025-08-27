@@ -169,6 +169,21 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         """)
     List<Transaction> findUnlinkedIncomeTransactionsByUser(@Param("user") User user);
     
+    // Find income transactions not yet linked to income categories within a date range
+    @Query("""
+        SELECT t FROM Transaction t 
+        WHERE t.account.user = :user 
+        AND t.transactionType = 'INCOME' 
+        AND t.incomeCategory IS NULL
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Transaction> findUnlinkedIncomeTransactionsByUserAndDateRange(
+        @Param("user") User user,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+    
     // Find income transactions by user and date range (for historical analysis)
     @Query("""
         SELECT t FROM Transaction t 

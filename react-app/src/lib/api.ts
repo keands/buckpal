@@ -14,14 +14,15 @@ import type {
   CsvImportResult,
   CsvMappingTemplate,
   Budget,
-  BudgetCategory,
-  ProjectCategory,
   BudgetCategoryTemplate,
   IncomeCategory,
   HistoricalIncomeAnalysis,
   IncomeComparison,
   IncomePattern,
   IncomeStatistics,
+  IncomeSuggestion,
+  SmartBudgetTemplate,
+  WizardInsights,
 } from '@/types/api'
 
 class ApiClient {
@@ -567,8 +568,186 @@ class ApiClient {
     return response.data
   }
 
+  // ====== INTELLIGENT BUDGET FEATURES ======
+
+  async getIncomePatterns(monthsBack: number = 12): Promise<IncomePattern[]> {
+    const response: AxiosResponse<IncomePattern[]> = await this.client.get(`/intelligent-budget/income-patterns?monthsBack=${monthsBack}`)
+    return response.data
+  }
+
+  async suggestIncomeCategoryFromDescription(description: string): Promise<IncomeSuggestion[]> {
+    const response: AxiosResponse<IncomeSuggestion[]> = await this.client.post('/intelligent-budget/suggest-income-category', {
+      description
+    })
+    return response.data
+  }
+
+  async getSmartBudgetTemplate(): Promise<SmartBudgetTemplate> {
+    const response: AxiosResponse<SmartBudgetTemplate> = await this.client.get('/intelligent-budget/smart-budget-template')
+    return response.data
+  }
+
+  async getWizardInsights(): Promise<WizardInsights> {
+    const response: AxiosResponse<WizardInsights> = await this.client.get('/intelligent-budget/wizard-insights')
+    return response.data
+  }
+
   async getRecurringIncomePatterns(year: number, month: number): Promise<IncomePattern[]> {
     const response: AxiosResponse<IncomePattern[]> = await this.client.get(`/budgets/recurring-patterns/${year}/${month}`)
+    return response.data
+  }
+
+  // Detailed Categories API
+  async getDetailedCategories(): Promise<Category[]> {
+    const response: AxiosResponse<Category[]> = await this.client.get('/budgets/detailed-categories')
+    return response.data
+  }
+
+  async getCategoryMapping(): Promise<Record<string, string>> {
+    const response: AxiosResponse<Record<string, string>> = await this.client.get('/budgets/category-mapping')
+    return response.data
+  }
+
+  async getBudgetCategoryDetailedDistribution(budgetId: number, categoryId: number): Promise<{
+    categoryId: number
+    categoryName: string
+    totalSpent: number
+    detailedDistribution: Record<string, {
+      amount: number
+      percentage: number
+      transactionCount: number
+      colorCode?: string
+      iconName?: string
+    }>
+    uncategorizedCount: number
+    categorizedPercentage: string
+  }> {
+    const response = await this.client.get(`/budgets/${budgetId}/categories/${categoryId}/detailed-distribution`)
+    return response.data
+  }
+
+  // Simplified: Only need detailed category, budget category is determined via mapping
+  async assignTransactionToDetailedCategory(transactionId: number, detailedCategoryId: number): Promise<{
+    message: string
+    status: string
+  }> {
+    const response = await this.client.post(`/transaction-assignments/assign-detailed`, {
+      transactionId,
+      detailedCategoryId
+    })
+    return response.data
+  }
+
+  // Legacy method for backward compatibility during transition
+  async assignTransactionToDetailedCategoryLegacy(transactionId: number, budgetCategoryId: number, detailedCategoryId: number): Promise<{
+    message: string
+    status: string
+  }> {
+    const response = await this.client.post(`/transaction-assignments/assign-detailed-legacy`, {
+      transactionId,
+      budgetCategoryId,
+      detailedCategoryId
+    })
+    return response.data
+  }
+
+  // ====== CATEGORY MAPPINGS ======
+  
+  // Get categories grouped by budget category
+  async getCategoriesGroupedByBudgetCategory(): Promise<Record<string, Category[]>> {
+    const response = await this.client.get('/category-mappings/grouped')
+    return response.data
+  }
+
+  // Get budget category for detailed category
+  async getBudgetCategoryForDetailed(detailedCategoryId: number): Promise<string> {
+    const response = await this.client.get(`/category-mappings/budget-category/${detailedCategoryId}`)
+    return response.data
+  }
+
+  // Update category mapping
+  async updateCategoryMapping(detailedCategoryId: number, budgetCategoryKey: string): Promise<{success: string, message: string}> {
+    const response = await this.client.put('/category-mappings/update-mapping', {
+      detailedCategoryId,
+      budgetCategoryKey
+    })
+    return response.data
+  }
+
+  // Create custom category with mapping
+  async createCustomCategory(categoryData: {
+    name: string
+    description?: string
+    budgetCategoryKey: string
+    iconName?: string
+    colorCode?: string
+  }): Promise<Category> {
+    const response = await this.client.post('/category-mappings/create-custom-category', categoryData)
+    return response.data
+  }
+
+  // Get unmapped categories
+  async getUnmappedCategories(): Promise<Category[]> {
+    const response = await this.client.get('/category-mappings/unmapped')
+    return response.data
+  }
+
+  // Initialize default mappings (admin)
+  async initializeDefaultMappings(): Promise<{success: string, message: string}> {
+    const response = await this.client.post('/category-mappings/initialize-defaults')
+    return response.data
+  }
+
+  // Delete custom category
+  async deleteCustomCategory(categoryId: number): Promise<{success: string, message: string}> {
+    const response = await this.client.delete(`/category-mappings/delete-custom-category/${categoryId}`)
+    return response.data
+  }
+
+  // Update custom category
+  async updateCustomCategory(categoryId: number, categoryData: {
+    name: string
+    description?: string
+    budgetCategoryKey: string
+    iconName?: string
+    colorCode?: string
+  }): Promise<Category> {
+    const response = await this.client.put(`/category-mappings/update-custom-category/${categoryId}`, categoryData)
+    return response.data
+  }
+
+  // Category Management (Legacy)
+  async createCategory(categoryData: {
+    name: string
+    description?: string
+    iconName?: string
+    colorCode?: string
+  }): Promise<Category> {
+    const response: AxiosResponse<Category> = await this.client.post('/categories', categoryData)
+    return response.data
+  }
+
+  async updateCategory(id: number, categoryData: {
+    name: string
+    description?: string
+    iconName?: string
+    colorCode?: string
+  }): Promise<Category> {
+    const response: AxiosResponse<Category> = await this.client.put(`/categories/${id}`, categoryData)
+    return response.data
+  }
+
+  async deleteCategory(id: number): Promise<void> {
+    await this.client.delete(`/categories/${id}`)
+  }
+
+  async getAvailableIcons(): Promise<string[]> {
+    const response: AxiosResponse<string[]> = await this.client.get('/categories/icons')
+    return response.data
+  }
+
+  async getAvailableColors(): Promise<string[]> {
+    const response: AxiosResponse<string[]> = await this.client.get('/categories/colors')
     return response.data
   }
 }

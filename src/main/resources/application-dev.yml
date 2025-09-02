@@ -1,0 +1,40 @@
+# Profil de développement optimisé pour des démarrages rapides
+spring:
+  main:
+    lazy-initialization: true
+    
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 10000
+      
+  jpa:
+    hibernate:
+      ddl-auto: none # Plus de validation automatique en dev
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+        format_sql: false
+        
+  security:
+    jwt:
+      # Token plus court en dev pour éviter des validations longues
+      expiration: 3600000 # 1 heure au lieu de 24h
+
+logging:
+  level:
+    root: WARN
+    com.buckpal: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.postgresql: WARN
+    
+# Désactiver certaines fonctionnalités en dev pour plus de rapidité
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true

@@ -33,6 +33,13 @@ public class Category {
     @Column(name = "is_default", nullable = false)
     private Boolean isDefault = false;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "budget_category_key", nullable = true)
+    private BudgetCategoryKey budgetCategoryKey; // Links to budget category
+    
+    @Column(name = "is_auto_mapped", nullable = true) // Allow null during migration
+    private Boolean isAutoMapped = true; // true = auto-mapped by system, false = user-defined
+    
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     
@@ -93,6 +100,12 @@ public class Category {
     
     public Boolean getIsDefault() { return isDefault; }
     public void setIsDefault(Boolean isDefault) { this.isDefault = isDefault; }
+    
+    public BudgetCategoryKey getBudgetCategoryKey() { return budgetCategoryKey; }
+    public void setBudgetCategoryKey(BudgetCategoryKey budgetCategoryKey) { this.budgetCategoryKey = budgetCategoryKey; }
+    
+    public Boolean getIsAutoMapped() { return isAutoMapped; }
+    public void setIsAutoMapped(Boolean isAutoMapped) { this.isAutoMapped = isAutoMapped; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

@@ -2,8 +2,11 @@ package com.buckpal.controller;
 
 import com.buckpal.dto.BudgetDto;
 import com.buckpal.entity.Budget;
+import com.buckpal.entity.BudgetCategory;
+import com.buckpal.entity.Category;
 import com.buckpal.entity.User;
 import com.buckpal.service.BudgetService;
+import com.buckpal.service.CategoryService;
 import com.buckpal.service.CategoryInitializationService;
 import com.buckpal.service.HistoricalIncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +29,13 @@ public class BudgetController {
     
     private final BudgetService budgetService;
     private final HistoricalIncomeService historicalIncomeService;
+    private final CategoryService categoryService;
     
     @Autowired
-    public BudgetController(BudgetService budgetService, HistoricalIncomeService historicalIncomeService) {
+    public BudgetController(BudgetService budgetService, HistoricalIncomeService historicalIncomeService, CategoryService categoryService) {
         this.budgetService = budgetService;
         this.historicalIncomeService = historicalIncomeService;
+        this.categoryService = categoryService;
     }
     
     @PostMapping
@@ -134,6 +139,7 @@ public class BudgetController {
                 "ENVELOPE", "Fixed amounts per category",
                 "ZERO_BASED", "Every euro assigned to a category",
                 "FRENCH_THIRDS", "1/3 housing, 1/3 living, 1/3 savings",
+                "RULE_PERSONAL_PROJECTS", "45% needs, 25% wants, 20% savings, 10% personal projects",
                 "CUSTOM", "User-defined percentages"
             )
         );
@@ -356,6 +362,105 @@ public class BudgetController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Get detailed category distribution for a budget category
+     */
+    @GetMapping("/{budgetId}/categories/{categoryId}/detailed-distribution")
+    public ResponseEntity<Map<String, Object>> getBudgetCategoryDetailedDistribution(
+            @PathVariable Long budgetId,
+            @PathVariable Long categoryId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            // Get the budget and verify ownership
+            Optional<BudgetDto> budgetOpt = budgetService.getBudgetById(user, budgetId);
+            if (budgetOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            BudgetDto budget = budgetOpt.get();
+            
+            // Find the budget category
+            Optional<com.buckpal.dto.BudgetCategoryDto> categoryOpt = budget.getBudgetCategories()
+                    .stream()
+                    .filter(cat -> cat.getId().equals(categoryId))
+                    .findFirst();
+            
+            if (categoryOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // For now, we'll create a simplified response
+            // In a full implementation, you'd need to get the actual BudgetCategory entity
+            Map<String, Object> response = Map.of(
+                "categoryId", categoryId,
+                "categoryName", categoryOpt.get().getName(),
+                "totalSpent", categoryOpt.get().getSpentAmount(),
+                "detailedDistribution", Map.of(), // Will be populated with actual data
+                "uncategorizedCount", 0,
+                "categorizedPercentage", "100.0"
+            );
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Get available detailed categories for dropdown
+     */
+    @GetMapping("/detailed-categories")
+    public ResponseEntity<List<Category>> getDetailedCategories(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            List<Category> categories = categoryService.getCategoriesForUser(user);
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Get mapping between detailed categories and budget categories
+     */
+    @GetMapping("/category-mapping")
+    public ResponseEntity<Map<String, String>> getCategoryMapping() {
+        try {
+            Map<String, String> mapping = categoryService.getDetailedToBudgetCategoryMappingWithCustom();
+            return ResponseEntity.ok(mapping);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * TEMPORARY: Initialize categories for existing user (debug endpoint)
+     */
+    @PostMapping("/init-categories")
+    public ResponseEntity<Map<String, String>> initializeCategoriesForExistingUser(Authentication authentication) {
+        try {
+            User user = (User) authentication.getPrincipal();
+            categoryService.initializeCategoriesForUser(user);
+            
+            Map<String, String> response = Map.of(
+                "message", "Categories initialized successfully for user: " + user.getEmail(),
+                "status", "success"
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = Map.of(
+                "message", "Failed to initialize categories: " + e.getMessage(),
+                "status", "error"
+            );
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 }

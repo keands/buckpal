@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/advanced-select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { formatCurrencyI18n } from '@/lib/i18n-utils'
+import { translateBudgetCategoryName } from '@/lib/budget-utils'
 import { apiClient } from '@/lib/api'
 import { 
   PieChart, 
@@ -141,7 +142,7 @@ export default function BudgetProgressDashboard({
   const pieChartData = budget.categories
     .filter(cat => cat.spentAmount > 0)
     .map((category, index) => ({
-      name: category.name,
+      name: translateBudgetCategoryName(category.name, t),
       value: category.spentAmount,
       percentage: ((category.spentAmount / budget.totalSpentAmount) * 100).toFixed(1),
       color: category.colorCode || DEFAULT_CATEGORY_COLORS[category.categoryType] || COLORS[index % COLORS.length],
@@ -149,13 +150,16 @@ export default function BudgetProgressDashboard({
     }))
 
   // Prepare data for budget vs actual bar chart
-  const barChartData = budget.categories.map(category => ({
-    name: category.name.length > 10 ? category.name.substring(0, 10) + '...' : category.name,
-    allocated: category.allocatedAmount,
-    spent: category.spentAmount,
-    remaining: category.remainingAmount,
-    fullName: category.name
-  }))
+  const barChartData = budget.categories.map(category => {
+    const translatedName = translateBudgetCategoryName(category.name, t);
+    return {
+      name: translatedName.length > 10 ? translatedName.substring(0, 10) + '...' : translatedName,
+      allocated: category.allocatedAmount,
+      spent: category.spentAmount,
+      remaining: category.remainingAmount,
+      fullName: translatedName
+    };
+  })
 
   const overBudgetCategories = budget.categories.filter(cat => cat.isOverBudget)
   const nearLimitCategories = budget.categories.filter(cat => 
@@ -346,7 +350,6 @@ export default function BudgetProgressDashboard({
         </Card>
       </div>
 
-      {/* Budget Alerts - Moved to top for immediate visibility */}
       {(overBudgetCategories.length > 0 || nearLimitCategories.length > 0) && (
         <Card>
           <CardHeader>
@@ -362,7 +365,7 @@ export default function BudgetProgressDashboard({
                   <AlertTriangle className="w-5 h-5 text-red-600" />
                   <div className="flex-1">
                     <p className="font-medium text-red-800">
-                      {t('budget.categoryOverBudget', { category: category.name })}
+                      {t('budget.categoryOverBudget', { category: translateBudgetCategoryName(category.name, t) })}
                     </p>
                     <p className="text-sm text-red-600">
                       {formatCurrencyI18n(category.spentAmount - category.allocatedAmount)} {t('budget.overLimit')}
@@ -376,7 +379,7 @@ export default function BudgetProgressDashboard({
                   <TrendingUp className="w-5 h-5 text-yellow-600" />
                   <div className="flex-1">
                     <p className="font-medium text-yellow-800">
-                      {t('budget.categoryNearLimit', { category: category.name })}
+                      {t('budget.categoryNearLimit', { category: translateBudgetCategoryName(category.name, t) })}
                     </p>
                     <p className="text-sm text-yellow-600">
                       {formatCurrencyI18n(category.remainingAmount)} {t('budget.remaining')} ({category.usagePercentage.toFixed(1)}% {t('budget.used')})
@@ -485,7 +488,7 @@ export default function BudgetProgressDashboard({
               >
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">{category.name}</h4>
+                    <h4 className="font-medium">{translateBudgetCategoryName(category.name, t)}</h4>
                     <div className="flex items-center space-x-2">
                       {category.isOverBudget && (
                         <Badge variant="destructive" className="text-xs">

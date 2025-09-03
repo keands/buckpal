@@ -12,7 +12,8 @@ import {
   LogOut,
   User,
   Calendar,
-  PieChart
+  PieChart,
+  Tags
 } from 'lucide-react'
 
 export default function Navbar() {
@@ -25,6 +26,7 @@ export default function Navbar() {
     { name: t('navigation.accounts'), href: '/accounts', icon: CreditCard },
     { name: t('navigation.calendar'), href: '/calendar', icon: Calendar },
     { name: t('navigation.budget'), href: '/budget', icon: PieChart },
+    { name: 'Catégories', href: '/categories', icon: Tags },
     { name: t('navigation.csvImport'), href: '/csv-import', icon: Upload },
     { name: t('navigation.settings'), href: '/settings', icon: Settings },
   ]

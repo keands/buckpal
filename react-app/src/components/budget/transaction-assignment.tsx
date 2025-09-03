@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CheckCircle, Clock, Zap, TrendingUp, Brain, Target, BarChart3, Sparkles } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/advanced-select'
 import { SmartFeedbackModal } from './smart-feedback-modal'
+import { SimpleCategorySelect } from './simple-category-select'
 
 interface TransactionAssignmentProps {
   budget: Budget
@@ -123,17 +123,18 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
     }
   }
 
-  const handleManualAssign = async (transactionId: number, budgetCategoryId: number) => {
+
+  const handleDetailedAssign = async (transactionId: number, detailedCategoryId: number) => {
     try {
-      await apiClient.manuallyAssignTransaction(transactionId, budgetCategoryId)
+      await apiClient.assignTransactionToDetailedCategory(transactionId, detailedCategoryId)
       
-      // Update local state without full reload - much better UX!
+      // Update local state without full reload
       updateTransactionLocally(transactionId)
       
       // Only notify parent for stats/dashboard update
       onAssignmentComplete?.()
     } catch (error) {
-      console.error('Manual assignment failed:', error)
+      console.error('Detailed assignment failed:', error)
       // On error, fallback to full reload
       await loadTransactions()
     }
@@ -351,36 +352,15 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
               </div>
               
               {showCategorySelector && (
-                <div className="w-64">
-                  <Select
-                    onValueChange={(value) => {
-                      if (value) {
-                        const categoryId = parseInt(value)
-                        if (transaction.assignmentStatus === 'NEEDS_REVIEW') {
-                          handleOverrideAssignment(transaction.id, categoryId)
-                        } else {
-                          handleManualAssign(transaction.id, categoryId)
-                        }
-                      }
+                <div className="w-80">
+                  <SimpleCategorySelect
+                    onSelectionChange={(detailedCategoryId) => {
+                      // Simplified: only use detailed category, budget category determined by mapping
+                      handleDetailedAssign(transaction.id, detailedCategoryId)
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('budget.assignment.selectCategory')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {budget.budgetCategories.map((category) => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: category.colorCode || '#6366f1' }}
-                            />
-                            {category.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder={t('budget.assignment.selectCategory')}
+                    className="w-full"
+                  />
                 </div>
               )}
             </div>

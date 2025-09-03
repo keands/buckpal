@@ -24,13 +24,38 @@ interface SelectItemProps {
 const Select = ({ value, onValueChange, children }: SelectProps) => {
   const [open, setOpen] = React.useState(false)
   const [selectedValue, setSelectedValue] = React.useState(value || "")
+  const selectRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     setSelectedValue(value || "")
   }, [value])
 
+  // Close dropdown when clicking outside or pressing Escape
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
+    }
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleEscapeKey)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+        document.removeEventListener('keydown', handleEscapeKey)
+      }
+    }
+  }, [open])
+
   return (
-    <div className="relative">
+    <div ref={selectRef} className="relative">
       {React.Children.map(children, child => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child as React.ReactElement<any>, {
@@ -76,8 +101,8 @@ const SelectContent = ({ children, open, selectedValue, onValueChange, setOpen}:
   if (!open) return null
 
   return (
-    <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-96 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
-      <div className="p-1">
+    <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-60 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
+      <div className="max-h-60 overflow-y-auto p-1">
         {React.Children.map(children, child => {
           if (React.isValidElement(child)) {
             return React.cloneElement(child as React.ReactElement<any>, {

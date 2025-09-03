@@ -28,7 +28,10 @@
       "Bash(curl:*)",
       "Bash(/bashes)",
       "Bash(npx tsc:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(npx vite:*)",
+      "Bash(psql:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

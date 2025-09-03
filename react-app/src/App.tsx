@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, ProtectedRoute } from '@/contexts/auth-context'
-import Navbar from '@/components/layout/navbar'
+import { ProtectedLayout } from '@/components/layout/protected-layout'
 
 // Pages
 import LoginPage from '@/pages/login'
@@ -12,6 +12,7 @@ import CalendarPage from '@/pages/calendar'
 import BudgetPage from '@/pages/budget'
 import DebugAuthPage from '@/pages/debug-auth'
 import ResetAuthPage from '@/pages/reset-auth'
+import { CategoryManagement } from '@/components/budget/category-management'
 
 function App() {
   return (
@@ -29,12 +30,9 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <DashboardPage />
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <DashboardPage />
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
@@ -43,12 +41,9 @@ function App() {
               path="/accounts"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <AccountsPage />
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <AccountsPage />
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
@@ -57,12 +52,9 @@ function App() {
               path="/csv-import"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <CsvImportPage />
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <CsvImportPage />
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
@@ -71,12 +63,9 @@ function App() {
               path="/calendar"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <CalendarPage />
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <CalendarPage />
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
@@ -85,12 +74,20 @@ function App() {
               path="/budget"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <BudgetPage />
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <BudgetPage />
+                  </ProtectedLayout>
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/categories"
+              element={
+                <ProtectedRoute>
+                  <ProtectedLayout>
+                    <CategoryManagement />
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
@@ -99,15 +96,12 @@ function App() {
               path="/settings"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <div className="text-center py-12">
-                        <h1 className="text-2xl font-bold">Paramètres</h1>
-                        <p className="text-gray-600 mt-2">Cette page sera implémentée prochainement</p>
-                      </div>
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <div className="text-center py-12">
+                      <h1 className="text-2xl font-bold">Paramètres</h1>
+                      <p className="text-gray-600 mt-2">Cette page sera implémentée prochainement</p>
+                    </div>
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
@@ -116,12 +110,9 @@ function App() {
               path="/debug-auth"
               element={
                 <ProtectedRoute>
-                  <div>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                      <DebugAuthPage />
-                    </main>
-                  </div>
+                  <ProtectedLayout>
+                    <DebugAuthPage />
+                  </ProtectedLayout>
                 </ProtectedRoute>
               }
             />

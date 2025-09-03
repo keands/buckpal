@@ -28,18 +28,21 @@ public class BudgetService {
     private final TransactionRepository transactionRepository;
     private final CategoryInitializationService categoryInitializationService;
     private final IncomeManagementService incomeService;
+    private final IntelligentBudgetService intelligentBudgetService;
     
     @Autowired
     public BudgetService(BudgetRepository budgetRepository, 
                         BudgetCategoryRepository budgetCategoryRepository,
                         TransactionRepository transactionRepository,
                         CategoryInitializationService categoryInitializationService,
-                        IncomeManagementService incomeService) {
+                        IncomeManagementService incomeService,
+                        IntelligentBudgetService intelligentBudgetService) {
         this.budgetRepository = budgetRepository;
         this.budgetCategoryRepository = budgetCategoryRepository;
         this.transactionRepository = transactionRepository;
         this.categoryInitializationService = categoryInitializationService;
         this.incomeService = incomeService;
+        this.intelligentBudgetService = intelligentBudgetService;
     }
     
     public BudgetDto createBudget(User user, BudgetDto budgetDto) {
@@ -53,6 +56,10 @@ public class BudgetService {
         }
         
         Budget savedBudget = budgetRepository.save(budget);
+        
+        // Auto-create income categories based on historical patterns
+        createIncomeCategoriesFromHistory(user, savedBudget);
+        
         return mapEntityToDto(savedBudget);
     }
     
@@ -141,23 +148,29 @@ public class BudgetService {
     public Map<String, BigDecimal> getBudgetModelPercentages(Budget.BudgetModel model) {
         return switch (model) {
             case RULE_50_30_20 -> Map.of(
-                "needs", new BigDecimal("50.0"),
-                "wants", new BigDecimal("30.0"),
-                "savings", new BigDecimal("20.0")
+                "budgetCategories.needs", new BigDecimal("50.0"),
+                "budgetCategories.wants", new BigDecimal("30.0"),
+                "budgetCategories.savings", new BigDecimal("20.0")
             );
             case RULE_60_20_20 -> Map.of(
-                "needs", new BigDecimal("60.0"),
-                "wants", new BigDecimal("20.0"),
-                "savings", new BigDecimal("20.0")
+                "budgetCategories.needs", new BigDecimal("60.0"),
+                "budgetCategories.wants", new BigDecimal("20.0"),
+                "budgetCategories.savings", new BigDecimal("20.0")
             );
             case RULE_80_20 -> Map.of(
-                "expenses", new BigDecimal("80.0"),
-                "savings", new BigDecimal("20.0")
+                "budgetCategories.expenses", new BigDecimal("80.0"),
+                "budgetCategories.savings", new BigDecimal("20.0")
             );
             case FRENCH_THIRDS -> Map.of(
-                "housing", new BigDecimal("33.33"),
-                "living", new BigDecimal("33.33"),
-                "savings", new BigDecimal("33.34")
+                "budgetCategories.housing", new BigDecimal("33.33"),
+                "budgetCategories.living", new BigDecimal("33.33"),
+                "budgetCategories.savings", new BigDecimal("33.34")
+            );
+            case RULE_PERSONAL_PROJECTS -> Map.of(
+                "budgetCategories.needs", new BigDecimal("45.0"),
+                "budgetCategories.wants", new BigDecimal("25.0"),
+                "budgetCategories.savings", new BigDecimal("20.0"),
+                "budgetCategories.personalProjects", new BigDecimal("10.0")
             );
             default -> Map.of();
         };
@@ -183,17 +196,37 @@ public class BudgetService {
         budget.getBudgetCategories().clear();
         
         for (Map.Entry<String, BigDecimal> entry : percentages.entrySet()) {
-            String categoryName = capitalizeFirst(entry.getKey());
+            String categoryName = entry.getKey();
             BigDecimal percentage = entry.getValue();
             BigDecimal amount = income.multiply(percentage.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))
                                     .setScale(2, RoundingMode.HALF_UP);
             
-            BudgetCategory category = new BudgetCategory();
-            category.setName(categoryName);
-            category.setBudget(budget);
+            // Try to find the corresponding enum key
+            BudgetCategoryKey categoryKey = BudgetCategoryKey.fromI18nKey(categoryName);
+            
+            BudgetCategory category;
+            if (categoryKey != null) {
+                // Use enum-based constructor for standardized categories
+                category = new BudgetCategory(categoryKey, budget);
+            } else {
+                // Fallback to legacy constructor for custom categories
+                // Validate that custom name doesn't conflict with reserved keys
+                category = new BudgetCategory();
+                category.setName(categoryName);
+                category.setBudget(budget);
+                category.setCategoryType(getCategoryType(categoryName));
+                
+                // Double-check validation
+                if (!category.isValidCustomCategoryName(categoryName)) {
+                    throw new IllegalArgumentException(
+                        "Custom category name '" + categoryName + 
+                        "' conflicts with reserved i18n key. Please use a different name."
+                    );
+                }
+            }
+            
             category.setAllocatedAmount(amount);
             category.setPercentage(percentage);
-            category.setCategoryType(getCategoryType(entry.getKey()));
             category.setSortOrder(getSortOrder(entry.getKey()));
             
             budget.getBudgetCategories().add(category);
@@ -416,8 +449,8 @@ public class BudgetService {
             budgetCategoryRepository.save(category);
         }
         
-        // Create default income categories
-        incomeService.createDefaultIncomeCategories(budget);
+        // Note: Income categories are now created automatically via createIncomeCategoriesFromHistory()
+        // No need for default categories here
     }
     
     /**
@@ -518,5 +551,50 @@ public class BudgetService {
                 .orElseThrow(() -> new RuntimeException("Budget category not found"));
         
         return transactionRepository.findByBudgetCategory(category);
+    }
+    
+    /**
+     * Auto-create income categories based on historical patterns
+     */
+    private void createIncomeCategoriesFromHistory(User user, Budget budget) {
+        try {
+            // Get smart template with historical income categories
+            IntelligentBudgetService.SmartBudgetTemplate template = 
+                intelligentBudgetService.generateSmartBudgetTemplate(user);
+            
+            // Check if we have historical data
+            if (!template.getSuggestedCategories().isEmpty()) {
+                // Create income categories based on historical patterns
+                for (IntelligentBudgetService.SuggestedIncomeCategory suggestedCategory : template.getSuggestedCategories()) {
+                    IncomeCategory incomeCategory = new IncomeCategory();
+                    incomeCategory.setName(suggestedCategory.getCategoryName());
+                    incomeCategory.setDescription("Auto-créé basé sur l'historique");
+                    incomeCategory.setIncomeType(suggestedCategory.getIncomeType());
+                    incomeCategory.setBudgetedAmount(suggestedCategory.getSuggestedAmount());
+                    incomeCategory.setActualAmount(BigDecimal.ZERO);
+                    incomeCategory.setColor(suggestedCategory.getColor());
+                    incomeCategory.setIcon(suggestedCategory.getIcon());
+                    incomeCategory.setDisplayOrder(template.getSuggestedCategories().indexOf(suggestedCategory));
+                    incomeCategory.setIsDefault(false);
+                    incomeCategory.setBudget(budget);
+                    
+                    incomeService.createIncomeCategory(user, budget.getId(), incomeCategory);
+                }
+                
+                // Update projected income based on historical data
+                if (template.getTotalSuggestedIncome().compareTo(BigDecimal.ZERO) > 0) {
+                    budget.setProjectedIncome(template.getTotalSuggestedIncome());
+                    budgetRepository.save(budget);
+                }
+            } else {
+                // No historical data - create default categories
+                incomeService.createDefaultIncomeCategories(budget);
+            }
+            
+        } catch (Exception e) {
+            // If intelligent creation fails, fall back to default categories
+            System.err.println("Failed to create income categories from history: " + e.getMessage());
+            incomeService.createDefaultIncomeCategories(budget);
+        }
     }
 }

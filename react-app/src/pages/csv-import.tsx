@@ -277,7 +277,7 @@ export default function CsvImportPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-4">
-            {Object.entries(stepNames).map(([key, name], index) => (
+            {Object.entries(stepNames).map(([key, _], index) => (
               <div key={key} className="flex items-center">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
                   stepIndex[currentStep] >= index 

@@ -48,14 +48,14 @@ public class SmartTransactionAssignmentService {
         List<MerchantPattern> matchingPatterns = findMatchingPatterns(merchantText);
         
         if (matchingPatterns.isEmpty()) {
-            return new SmartAssignmentResult(null, BigDecimal.ZERO, "NO_PATTERN_MATCH", Collections.emptyList());
+            return new SmartAssignmentResult((Long) null, BigDecimal.ZERO, "NO_PATTERN_MATCH", Collections.emptyList());
         }
         
         // Apply conflict resolution
         PatternMatchResult bestMatch = resolvePatternConflicts(matchingPatterns, transaction, user);
         
         if (bestMatch == null) {
-            return new SmartAssignmentResult(null, BigDecimal.ZERO, "CONFLICT_RESOLUTION_FAILED", 
+            return new SmartAssignmentResult((Long) null, BigDecimal.ZERO, "CONFLICT_RESOLUTION_FAILED", 
                 getAlternativeCategoryIds(matchingPatterns));
         }
         

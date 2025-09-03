@@ -200,12 +200,15 @@
       "rule80_20_desc": "80% dépenses, 20% épargne - Approche simple",
       "frenchThirds": "Règle des tiers française",
       "frenchThirds_desc": "1/3 logement, 1/3 vie courante, 1/3 épargne - Approche française",
+      "rulePersonalProjects": "Règle 45/25/20/10",
+      "rulePersonalProjects_desc": "45% besoins, 25% envies, 20% épargne, 10% projets perso - Idéal pour entrepreneurs",
       "custom_desc": "Définissez vos propres pourcentages"
     },
     "categories": {
       "needs": "Besoins",
-      "wants": "Envies", 
+      "wants": "Loisirs", 
       "savings": "Épargne",
+      "personalProjects": "Projets Perso",
       "expenses": "Dépenses",
       "housing": "Logement",
       "living": "Vie courante"
@@ -363,6 +366,12 @@
     "miscellaneous": "Divers"
   },
   "budgetCategories": {
+    "needs": "Besoins",
+    "wants": "Loisirs", 
+    "savings": "Épargne",
+    "personalProjects": "Projets Perso",
+    "expenses": "Dépenses",
+    "living": "Vie courante",
     "housing": "Logement & Loyer",
     "utilities": "Services publics",
     "groceries": "Alimentation",

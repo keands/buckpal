@@ -153,7 +153,11 @@ public class CategoryInitializationService {
             new BudgetCategoryTemplate("budgetCategories.businessExpenses", "budgetCategories.businessExpenses.description", 
                 BudgetCategoryTemplate.CategoryType.NEEDS, "#374151", "📊", 1.0),
             new BudgetCategoryTemplate("budgetCategories.miscellaneous", "budgetCategories.miscellaneous.description", 
-                BudgetCategoryTemplate.CategoryType.WANTS, "#6b7280", "❓", 1.0)
+                BudgetCategoryTemplate.CategoryType.WANTS, "#6b7280", "❓", 1.0),
+                
+            // PROJETS PERSO - For custom user projects
+            new BudgetCategoryTemplate("budgetCategories.personalProjects", "budgetCategories.personalProjects.description", 
+                BudgetCategoryTemplate.CategoryType.PERSONAL_PROJECTS, "#9333ea", "🚀", 10.0)
         );
     }
     
@@ -207,7 +211,11 @@ public class CategoryInitializationService {
             new BudgetCategoryTemplate("Business Expenses", "Work-related costs", 
                 BudgetCategoryTemplate.CategoryType.NEEDS, "#374151", "📊", 1.0),
             new BudgetCategoryTemplate("Miscellaneous", "Other uncategorized expenses", 
-                BudgetCategoryTemplate.CategoryType.WANTS, "#6b7280", "❓", 1.0)
+                BudgetCategoryTemplate.CategoryType.WANTS, "#6b7280", "❓", 1.0),
+                
+            // PERSONAL PROJECTS - For custom user projects
+            new BudgetCategoryTemplate("Personal Projects", "Custom user projects and goals", 
+                BudgetCategoryTemplate.CategoryType.PERSONAL_PROJECTS, "#9333ea", "🚀", 10.0)
         );
     }
     
@@ -229,7 +237,7 @@ public class CategoryInitializationService {
     
     public static class BudgetCategoryTemplate {
         public enum CategoryType {
-            NEEDS, WANTS, SAVINGS
+            NEEDS, WANTS, SAVINGS, PERSONAL_PROJECTS
         }
         
         public final String name;

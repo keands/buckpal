@@ -11,9 +11,11 @@ import {
   DollarSign,
   Check,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Brain,
+  Lightbulb
 } from 'lucide-react'
-import { IncomeCategory, Transaction } from '@/types/api'
+import { IncomeCategory, Transaction, IncomeSuggestion } from '@/types/api'
 interface HistoricalIncomeTransactionModalProps {
   incomeCategory: IncomeCategory
   isOpen: boolean
@@ -37,6 +39,8 @@ export default function HistoricalIncomeTransactionModal({
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
+  const [intelligentSuggestions, setIntelligentSuggestions] = useState<{[key: string]: IncomeSuggestion[]}>({})
+  const [loadingSuggestions, setLoadingSuggestions] = useState<{[key: string]: boolean}>({})
 
   // Load transactions when modal opens
   useEffect(() => {
@@ -132,6 +136,27 @@ export default function HistoricalIncomeTransactionModal({
       // TODO: Show error toast
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  // Load intelligent suggestions for a transaction
+  const loadIntelligentSuggestions = async (transaction: Transaction) => {
+    if (!transaction.description || intelligentSuggestions[transaction.id] || loadingSuggestions[transaction.id]) {
+      return
+    }
+
+    setLoadingSuggestions(prev => ({ ...prev, [transaction.id]: true }))
+    
+    try {
+      const suggestions = await apiClient.suggestIncomeCategoryFromDescription(transaction.description)
+      setIntelligentSuggestions(prev => ({ 
+        ...prev, 
+        [transaction.id]: suggestions.slice(0, 2) // Top 2 suggestions
+      }))
+    } catch (error) {
+      console.error('Error loading intelligent suggestions:', error)
+    } finally {
+      setLoadingSuggestions(prev => ({ ...prev, [transaction.id]: false }))
     }
   }
 
@@ -304,25 +329,66 @@ export default function HistoricalIncomeTransactionModal({
               filteredTransactions.map((transaction) => (
                 <div 
                   key={transaction.id} 
-                  className={`flex items-center space-x-3 p-3 border-b last:border-b-0 hover:bg-gray-50 ${
+                  className={`border-b last:border-b-0 hover:bg-gray-50 ${
                     selectedTransactionIds.includes(transaction.id) ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <Checkbox
-                    checked={selectedTransactionIds.includes(transaction.id)}
-                    onCheckedChange={() => handleTransactionToggle(transaction.id)}
-                  />
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{transaction.description || 'Sans description'}</div>
-                    <div className="text-xs text-gray-500">
-                      {formatDate(transaction.transactionDate)} • {transaction.accountName}
-                      {transaction.categoryName && ` • ${transaction.categoryName}`}
+                  {/* Main transaction row */}
+                  <div className="flex items-center space-x-3 p-3">
+                    <Checkbox
+                      checked={selectedTransactionIds.includes(transaction.id)}
+                      onCheckedChange={() => handleTransactionToggle(transaction.id)}
+                    />
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium truncate">
+                          {transaction.description || 'Sans description'}
+                        </span>
+                        {/* Button to load intelligent suggestions */}
+                        {!intelligentSuggestions[transaction.id] && !loadingSuggestions[transaction.id] && (
+                          <button
+                            onClick={() => loadIntelligentSuggestions(transaction)}
+                            className="p-1 text-purple-500 hover:bg-purple-50 rounded"
+                            title="Suggestions intelligentes"
+                          >
+                            <Brain className="w-3 h-3" />
+                          </button>
+                        )}
+                        {loadingSuggestions[transaction.id] && (
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {formatDate(transaction.transactionDate)} • {transaction.accountName}
+                        {transaction.categoryName && ` • ${transaction.categoryName}`}
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold">
+                      {formatCurrency(transaction.amount)}
                     </div>
                   </div>
-                  <div className="text-sm font-semibold">
-                    {formatCurrency(transaction.amount)}
-                  </div>
+
+                  {/* Intelligent suggestions */}
+                  {intelligentSuggestions[transaction.id] && intelligentSuggestions[transaction.id].length > 0 && (
+                    <div className="px-3 pb-2 bg-purple-50 border-t">
+                      <div className="flex items-center space-x-1 mb-1 pt-2">
+                        <Lightbulb className="w-3 h-3 text-purple-500" />
+                        <span className="text-xs font-medium text-purple-600">Suggestions IA :</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {intelligentSuggestions[transaction.id].map((suggestion, index) => (
+                          <button
+                            key={index}
+                            className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
+                            title={`${suggestion.reasoning} (Confiance: ${Math.round(suggestion.confidenceScore * 100)}%)`}
+                          >
+                            {suggestion.categoryName} ({Math.round(suggestion.confidenceScore * 100)}%)
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
             )}

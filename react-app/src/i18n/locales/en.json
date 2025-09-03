@@ -199,12 +199,15 @@
       "rule80_20_desc": "80% expenses, 20% savings - Simple approach",
       "frenchThirds": "French Thirds",
       "frenchThirds_desc": "1/3 housing, 1/3 living, 1/3 savings - French approach",
+      "rulePersonalProjects": "45/25/20/10 Rule",
+      "rulePersonalProjects_desc": "45% needs, 25% wants, 20% savings, 10% personal projects - Perfect for entrepreneurs",
       "custom_desc": "Define your own percentages"
     },
     "categories": {
       "needs": "Needs",
       "wants": "Wants", 
       "savings": "Savings",
+      "personalProjects": "Personal Projects",
       "expenses": "Expenses",
       "housing": "Housing",
       "living": "Living"
@@ -363,6 +366,12 @@
     "miscellaneous": "Miscellaneous"
   },
   "budgetCategories": {
+    "needs": "Needs",
+    "wants": "Wants", 
+    "savings": "Savings",
+    "personalProjects": "Personal Projects",
+    "expenses": "Expenses",
+    "living": "Living",
     "housing": "Housing & Rent",
     "utilities": "Utilities",
     "groceries": "Groceries",

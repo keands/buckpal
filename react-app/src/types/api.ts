@@ -301,3 +301,45 @@ export interface IncomeStatistics {
   variance: number
   variancePercentage: number
 }
+
+// ====== INTELLIGENT BUDGET TYPES ======
+
+export interface IncomePattern {
+  transactionPattern: string
+  mostLikelyCategoryName: string
+  mostLikelyCategoryType: IncomeType
+  confidenceScore: number
+  averageAmount: number
+  occurrenceCount: number
+}
+
+export interface IncomeSuggestion {
+  categoryName: string
+  categoryType: IncomeType
+  confidenceScore: number
+  suggestedAmount: number
+  reasoning: string
+}
+
+export interface SuggestedIncomeCategory {
+  categoryName: string
+  incomeType: IncomeType
+  suggestedAmount: number
+  averageBudgetedAmount: number
+  historicalOccurrences: number
+  color: string
+  icon: string
+}
+
+export interface SmartBudgetTemplate {
+  suggestedCategories: SuggestedIncomeCategory[]
+  totalSuggestedIncome: number
+}
+
+export interface WizardInsights {
+  hasHistoricalData: boolean
+  suggestedTemplate: SmartBudgetTemplate
+  recentPatterns: IncomePattern[]
+  confidence: number
+  message: string
+}

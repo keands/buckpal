@@ -194,6 +194,7 @@ public class Budget {
         ENVELOPE,         // Fixed amounts per category
         ZERO_BASED,       // Every euro assigned
         FRENCH_THIRDS,    // 1/3 housing, 1/3 living, 1/3 savings
+        RULE_PERSONAL_PROJECTS, // 45% needs, 25% wants, 20% savings, 10% personal projects
         CUSTOM            // User-defined percentages
     }
 }

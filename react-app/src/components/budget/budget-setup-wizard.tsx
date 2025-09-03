@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { formatCurrencyI18n } from '@/lib/i18n-utils'
-import { ArrowLeft, ArrowRight, Check, PieChart, TrendingUp, Settings, Clock, DollarSign } from 'lucide-react'
-import { HistoricalIncomeAnalysis } from '@/types/api'
+import { ArrowLeft, ArrowRight, Check, PieChart, TrendingUp, Settings, Clock, Sparkles, Brain, Lightbulb, Rocket } from 'lucide-react'
+import { HistoricalIncomeAnalysis, WizardInsights, SmartBudgetTemplate } from '@/types/api'
 
 interface BudgetSetupWizardProps {
   onComplete: (budgetData: any) => void
@@ -34,7 +34,8 @@ export default function BudgetSetupWizard({
     customPercentages: {
       needs: 50,
       wants: 30,
-      savings: 20
+      savings: 20,
+      personalProjects: 0
     }
   })
   
@@ -44,6 +45,40 @@ export default function BudgetSetupWizard({
   const [useHistoricalIncome, setUseHistoricalIncome] = useState(false)
   const [usePartialIncome, setUsePartialIncome] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+
+  // Intelligent suggestions
+  const [wizardInsights, setWizardInsights] = useState<WizardInsights | null>(null)
+  const [smartTemplate, setSmartTemplate] = useState<SmartBudgetTemplate | null>(null)
+  const [showSmartSuggestions, setShowSmartSuggestions] = useState(false)
+  const [useSmartTemplate, setUseSmartTemplate] = useState(false)
+
+  // Load intelligent insights when component mounts
+  useEffect(() => {
+    const loadIntelligentInsights = async () => {
+      try {
+        const insights = await apiClient.getWizardInsights()
+        setWizardInsights(insights)
+        
+        if (insights.hasHistoricalData && insights.suggestedTemplate.suggestedCategories.length > 0) {
+          setSmartTemplate(insights.suggestedTemplate)
+          setShowSmartSuggestions(true)
+          
+          // Auto-suggest using smart template if confidence is high
+          if (insights.confidence > 0.7) {
+            setUseSmartTemplate(true)
+            setBudgetData(prev => ({
+              ...prev,
+              projectedIncome: insights.suggestedTemplate.totalSuggestedIncome
+            }))
+          }
+        }
+      } catch (error) {
+        console.error('Error loading intelligent insights:', error)
+      }
+    }
+    
+    loadIntelligentInsights()
+  }, [])
 
   // Detect historical income when month/year changes
   useEffect(() => {
@@ -119,6 +154,13 @@ export default function BudgetSetupWizard({
       icon: <PieChart className="w-5 h-5" />
     },
     {
+      key: 'RULE_PERSONAL_PROJECTS',
+      name: t('budget.models.rulePersonalProjects'),
+      description: t('budget.models.rulePersonalProjects_desc'),
+      percentages: { needs: 45, wants: 25, savings: 20, personalProjects: 10 },
+      icon: <Rocket className="w-5 h-5" />
+    },
+    {
       key: 'CUSTOM',
       name: t('budget.models.custom'),
       description: t('budget.models.custom_desc'),
@@ -156,13 +198,30 @@ export default function BudgetSetupWizard({
       historicalIncome: useHistoricalIncome ? {
         analysis: historicalAnalysis,
         usePartialIncome: usePartialIncome
+      } : null,
+      intelligentSuggestions: useSmartTemplate && smartTemplate ? {
+        template: smartTemplate,
+        insights: wizardInsights,
+        useSmartTemplate: true
       } : null
     }
     onComplete(completeBudgetData)
   }
 
   const updateBudgetData = (field: string, value: any) => {
-    setBudgetData(prev => ({ ...prev, [field]: value }))
+    setBudgetData(prev => {
+      const newData = { ...prev, [field]: value }
+      
+      // If changing budget model, update custom percentages to match the model
+      if (field === 'budgetModel') {
+        const selectedModel = budgetModels.find(model => model.key === value)
+        if (selectedModel && selectedModel.percentages && Object.keys(selectedModel.percentages).length > 0) {
+          newData.customPercentages = { ...selectedModel.percentages }
+        }
+      }
+      
+      return newData
+    })
   }
 
   const updateCustomPercentage = (category: string, value: number) => {
@@ -236,6 +295,83 @@ export default function BudgetSetupWizard({
                   }
                 }}
               />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Intelligent Suggestions */}
+      {showSmartSuggestions && wizardInsights && (
+        <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+          <CardContent className="p-4">
+            <div className="flex items-start space-x-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Brain className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center space-x-2 mb-2">
+                  <h4 className="font-semibold text-purple-800">Suggestions Intelligentes</h4>
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                </div>
+                <p className="text-sm text-purple-700 mb-3">
+                  {wizardInsights.message}
+                </p>
+                
+                {smartTemplate && (
+                  <div className="bg-white rounded-lg p-3 mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Revenus suggérés basés sur votre historique :</span>
+                      <span className="text-lg font-bold text-green-600">
+                        {formatCurrencyI18n(smartTemplate.totalSuggestedIncome)}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      {smartTemplate.suggestedCategories.slice(0, 3).map((category, index) => (
+                        <div key={index} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">
+                            {category.categoryName} ({category.historicalOccurrences} mois)
+                          </span>
+                          <span className="font-medium">
+                            {formatCurrencyI18n(category.suggestedAmount)}
+                          </span>
+                        </div>
+                      ))}
+                      {smartTemplate.suggestedCategories.length > 3 && (
+                        <div className="text-xs text-gray-500 text-center pt-1">
+                          +{smartTemplate.suggestedCategories.length - 3} autres catégories
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Lightbulb className="w-4 h-4 text-yellow-500" />
+                    <span className="text-xs text-purple-600">
+                      Confiance : {Math.round(wizardInsights.confidence * 100)}%
+                    </span>
+                  </div>
+                  
+                  <Switch
+                    checked={useSmartTemplate}
+                    onCheckedChange={(checked) => {
+                      setUseSmartTemplate(checked)
+                      if (checked && smartTemplate) {
+                        updateBudgetData('projectedIncome', smartTemplate.totalSuggestedIncome)
+                        updateBudgetData('useFromPrevious', false) // Disable previous month if using smart template
+                      }
+                    }}
+                  />
+                </div>
+                
+                {useSmartTemplate && (
+                  <div className="mt-2 p-2 bg-green-50 rounded text-xs text-green-700">
+                    ✨ Vos catégories de revenus seront pré-configurées avec ces suggestions !
+                  </div>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>

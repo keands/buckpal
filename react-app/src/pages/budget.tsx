@@ -9,6 +9,7 @@ import BudgetSetupWizard from '@/components/budget/budget-setup-wizard'
 import BudgetProgressDashboard from '@/components/budget/budget-progress-dashboard'
 import CategoryTransactionsModal from '@/components/budget/category-transactions-modal'
 import { TransactionAssignment } from '@/components/budget/transaction-assignment'
+import { SubcategoryDistribution } from '@/components/budget/subcategory-distribution'
 
 export default function BudgetPage() {
   const { t } = useTranslation()
@@ -376,6 +377,27 @@ export default function BudgetPage() {
         />
       )}
 
+      {/* Subcategory Distribution */}
+      {selectedBudget && selectedBudgetId && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <PieChart className="w-5 h-5" />
+            Répartition détaillée des catégories
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {selectedBudget.budgetCategories?.map((category: any) => (
+              category.spentAmount > 0 && ( // Only show categories with spending
+                <SubcategoryDistribution
+                  key={category.id}
+                  budgetId={selectedBudgetId}
+                  budgetCategory={category}
+                  className="h-fit"
+                />
+              )
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Transaction Assignment */}
       {selectedBudget && (

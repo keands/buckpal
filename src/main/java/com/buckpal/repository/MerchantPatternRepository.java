@@ -55,4 +55,20 @@ public interface MerchantPatternRepository extends JpaRepository<MerchantPattern
     List<MerchantPattern> findLowAccuracyPatterns(
         @Param("minAccuracy") BigDecimal minAccuracy,
         @Param("minMatches") Integer minMatches);
+    
+    // New methods for categoryId support
+    List<MerchantPattern> findByCategoryIdIsNull();
+    
+    Optional<MerchantPattern> findByPatternAndCategoryId(String pattern, Long categoryId);
+    
+    List<MerchantPattern> findByCategoryIdOrderBySpecificityScoreDescConfidenceScoreDesc(Long categoryId);
+    
+    @Query("SELECT DISTINCT mp.categoryId FROM MerchantPattern mp WHERE mp.categoryId IS NOT NULL ORDER BY mp.categoryId")
+    List<Long> findAllDistinctCategoryIds();
+    
+    @Query("SELECT COUNT(mp) FROM MerchantPattern mp WHERE mp.categoryId = :categoryId")
+    Long countByCategoryId(@Param("categoryId") Long categoryId);
+    
+    @Query("SELECT AVG(mp.confidenceScore) FROM MerchantPattern mp WHERE mp.categoryId = :categoryId")
+    BigDecimal getAverageConfidenceForCategoryId(@Param("categoryId") Long categoryId);
 }

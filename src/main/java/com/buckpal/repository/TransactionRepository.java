@@ -228,4 +228,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         WHERE t.incomeCategory = :incomeCategory
         """)
     BigDecimal sumAmountByIncomeCategory(@Param("incomeCategory") IncomeCategory incomeCategory);
+    
+    // Methods for intelligent assignment
+    List<Transaction> findByUserAndDetailedCategoryIsNull(User user);
+    
+    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.account.user = :user")
+    long countByUser(@Param("user") User user);
+    
+    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.account.user = :user AND t.detailedCategoryId IS NOT NULL")
+    long countByUserAndDetailedCategoryIdIsNotNull(@Param("user") User user);
+    
+    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.account.user = :user AND t.needsReview = true")
+    long countByUserAndNeedsReviewTrue(@Param("user") User user);
 }

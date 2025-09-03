@@ -19,9 +19,11 @@ public class MerchantPattern {
     @Column(name = "pattern", nullable = false)
     private String pattern;
     
-    @NotBlank
-    @Column(name = "category_name", nullable = false, length = 100)
-    private String categoryName;
+    @Column(name = "category_name", length = 100)
+    private String categoryName; // Legacy field for compatibility
+    
+    @Column(name = "category_id")
+    private Long categoryId; // New field for category mapping system
     
     @NotNull
     @Column(name = "specificity_score", nullable = false)
@@ -62,6 +64,12 @@ public class MerchantPattern {
         this.specificityScore = specificityScore;
     }
     
+    public MerchantPattern(String pattern, Long categoryId, Integer specificityScore) {
+        this.pattern = pattern;
+        this.categoryId = categoryId;
+        this.specificityScore = specificityScore;
+    }
+    
     // Business methods
     public BigDecimal getAccuracyRate() {
         if (totalMatches == 0) return BigDecimal.ZERO;
@@ -90,6 +98,9 @@ public class MerchantPattern {
     
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
     
     public Integer getSpecificityScore() { return specificityScore; }
     public void setSpecificityScore(Integer specificityScore) { this.specificityScore = specificityScore; }

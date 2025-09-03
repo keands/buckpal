@@ -81,6 +81,16 @@ public class Transaction {
     @Column(name = "assignment_status")
     private AssignmentStatus assignmentStatus = AssignmentStatus.UNASSIGNED;
     
+    // New fields for intelligent assignment with category mapping system
+    @Column(name = "detailed_category_id")
+    private Long detailedCategoryId;
+    
+    @Column(name = "assignment_confidence", precision = 3, scale = 2)
+    private BigDecimal assignmentConfidence;
+    
+    @Column(name = "needs_review")
+    private Boolean needsReview = false;
+    
     public enum AssignmentStatus {
         UNASSIGNED,     // Not assigned to any budget category
         AUTO_ASSIGNED,  // Automatically assigned based on category matching
@@ -159,6 +169,16 @@ public class Transaction {
     
     public AssignmentStatus getAssignmentStatus() { return assignmentStatus; }
     public void setAssignmentStatus(AssignmentStatus assignmentStatus) { this.assignmentStatus = assignmentStatus; }
+    
+    // New getters and setters for intelligent assignment
+    public Long getDetailedCategoryId() { return detailedCategoryId; }
+    public void setDetailedCategoryId(Long detailedCategoryId) { this.detailedCategoryId = detailedCategoryId; }
+    
+    public BigDecimal getAssignmentConfidence() { return assignmentConfidence; }
+    public void setAssignmentConfidence(BigDecimal assignmentConfidence) { this.assignmentConfidence = assignmentConfidence; }
+    
+    public Boolean getNeedsReview() { return needsReview; }
+    public void setNeedsReview(Boolean needsReview) { this.needsReview = needsReview; }
     
     public enum TransactionType {
         INCOME,

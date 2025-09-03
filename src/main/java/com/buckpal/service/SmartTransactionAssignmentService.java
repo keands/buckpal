@@ -1,9 +1,11 @@
 package com.buckpal.service;
 
+import com.buckpal.entity.Category;
 import com.buckpal.entity.MerchantPattern;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.entity.UserAssignmentFeedback;
+import com.buckpal.repository.CategoryRepository;
 import com.buckpal.repository.MerchantPatternRepository;
 import com.buckpal.repository.UserAssignmentFeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +24,25 @@ public class SmartTransactionAssignmentService {
     
     private final MerchantPatternRepository merchantPatternRepository;
     private final UserAssignmentFeedbackRepository feedbackRepository;
+    private final IntelligentAssignmentMigrationService migrationService;
+    private final CategoryRepository categoryRepository;
     
     @Autowired
     public SmartTransactionAssignmentService(MerchantPatternRepository merchantPatternRepository,
-                                           UserAssignmentFeedbackRepository feedbackRepository) {
+                                           UserAssignmentFeedbackRepository feedbackRepository,
+                                           IntelligentAssignmentMigrationService migrationService,
+                                           CategoryRepository categoryRepository) {
         this.merchantPatternRepository = merchantPatternRepository;
         this.feedbackRepository = feedbackRepository;
+        this.migrationService = migrationService;
+        this.categoryRepository = categoryRepository;
     }
     
     public SmartAssignmentResult assignCategoryToTransaction(Transaction transaction, User user) {
         String merchantText = buildMerchantText(transaction);
+        
+        // Migrate any legacy patterns first
+        migrationService.migrateAllPatterns();
         
         // Find matching patterns using specificity and confidence scoring
         List<MerchantPattern> matchingPatterns = findMatchingPatterns(merchantText);
@@ -45,15 +56,37 @@ public class SmartTransactionAssignmentService {
         
         if (bestMatch == null) {
             return new SmartAssignmentResult(null, BigDecimal.ZERO, "CONFLICT_RESOLUTION_FAILED", 
-                matchingPatterns.stream().map(MerchantPattern::getCategoryName).collect(Collectors.toList()));
+                getAlternativeCategoryIds(matchingPatterns));
+        }
+        
+        // Return categoryId instead of categoryName
+        Long categoryId = bestMatch.pattern.getCategoryId();
+        if (categoryId == null) {
+            // Fallback: try to convert categoryName to categoryId
+            categoryId = migrationService.findCategoryIdByName(bestMatch.pattern.getCategoryName()).orElse(null);
         }
         
         return new SmartAssignmentResult(
-            bestMatch.pattern.getCategoryName(),
+            categoryId,
             bestMatch.finalConfidence,
             bestMatch.strategy,
-            Arrays.asList(bestMatch.pattern.getCategoryName())
+            getAlternativeCategoryIds(matchingPatterns)
         );
+    }
+    
+    private List<Long> getAlternativeCategoryIds(List<MerchantPattern> patterns) {
+        return patterns.stream()
+            .map(pattern -> {
+                Long categoryId = pattern.getCategoryId();
+                if (categoryId == null) {
+                    // Fallback: convert categoryName to categoryId
+                    return migrationService.findCategoryIdByName(pattern.getCategoryName()).orElse(null);
+                }
+                return categoryId;
+            })
+            .filter(Objects::nonNull)
+            .distinct()
+            .collect(Collectors.toList());
     }
     
     private String buildMerchantText(Transaction transaction) {
@@ -354,18 +387,96 @@ public class SmartTransactionAssignmentService {
         return commonWords.contains(word);
     }
     
+    /**
+     * Learn from user assignment to create or update patterns
+     */
+    public void learnFromAssignment(Transaction transaction, Long categoryId, boolean wasCorrect) {
+        String merchantText = buildMerchantText(transaction);
+        
+        // Find or create pattern
+        Optional<MerchantPattern> existingPattern = merchantPatternRepository.findByPatternAndCategoryId(merchantText, categoryId);
+        
+        MerchantPattern pattern;
+        if (existingPattern.isPresent()) {
+            pattern = existingPattern.get();
+        } else {
+            // Create new pattern
+            pattern = new MerchantPattern(merchantText, categoryId, calculateSpecificityScore(merchantText));
+        }
+        
+        // Record the match result
+        pattern.recordMatch(wasCorrect);
+        merchantPatternRepository.save(pattern);
+    }
+    
+    /**
+     * Batch learn from multiple user assignments
+     */
+    public void batchLearnFromAssignments(List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            if (transaction.getDetailedCategoryId() != null) {
+                // Learn from this assignment (assume it's correct since user did it)
+                learnFromAssignment(transaction, transaction.getDetailedCategoryId(), true);
+            }
+        }
+    }
+    
+    /**
+     * Calculate specificity score based on pattern length and word count
+     */
+    private Integer calculateSpecificityScore(String pattern) {
+        if (pattern == null || pattern.trim().isEmpty()) {
+            return 1;
+        }
+        
+        String[] words = pattern.trim().split("\\s+");
+        int wordCount = words.length;
+        int totalLength = pattern.length();
+        
+        // Base score on word count (more words = more specific)
+        int score = wordCount * 10;
+        
+        // Add length bonus (longer patterns are generally more specific)
+        if (totalLength > 20) score += 5;
+        if (totalLength > 40) score += 5;
+        
+        // Bonus for specific merchant indicators
+        String upperPattern = pattern.toUpperCase();
+        if (upperPattern.contains("SARL") || upperPattern.contains("SAS") || 
+            upperPattern.contains("EURL") || upperPattern.contains("SA ")) {
+            score += 15; // Company indicators are very specific
+        }
+        
+        return Math.min(score, 100); // Cap at 100
+    }
+    
     // Result classes
     public static class SmartAssignmentResult {
-        public final String categoryName;
+        public final Long categoryId;
+        public final String categoryName; // Keep for backward compatibility
         public final BigDecimal confidence;
         public final String strategy;
-        public final List<String> alternativeCategories;
+        public final List<Long> alternativeCategoryIds;
+        public final List<String> alternativeCategories; // Keep for backward compatibility
         
+        public SmartAssignmentResult(Long categoryId, BigDecimal confidence, 
+                                   String strategy, List<Long> alternativeCategoryIds) {
+            this.categoryId = categoryId;
+            this.categoryName = null; // Legacy field
+            this.confidence = confidence;
+            this.strategy = strategy;
+            this.alternativeCategoryIds = alternativeCategoryIds;
+            this.alternativeCategories = Collections.emptyList(); // Legacy field
+        }
+        
+        // Legacy constructor for backward compatibility
         public SmartAssignmentResult(String categoryName, BigDecimal confidence, 
                                    String strategy, List<String> alternativeCategories) {
+            this.categoryId = null;
             this.categoryName = categoryName;
             this.confidence = confidence;
             this.strategy = strategy;
+            this.alternativeCategoryIds = Collections.emptyList();
             this.alternativeCategories = alternativeCategories;
         }
     }

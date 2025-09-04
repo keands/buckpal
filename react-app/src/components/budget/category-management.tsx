@@ -530,7 +530,10 @@ export function CategoryManagement() {
                 onValueChange={(value) => setCreateFormData(prev => ({ ...prev, budgetCategoryKey: value as BudgetCategoryKey }))}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <div className="flex items-center gap-2">
+                    <span>{budgetCategoryLabels[createFormData.budgetCategoryKey].icon}</span>
+                    <span>{budgetCategoryLabels[createFormData.budgetCategoryKey].label}</span>
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(budgetCategoryLabels).map(([key, label]) => (
@@ -669,7 +672,10 @@ export function CategoryManagement() {
                 onValueChange={(value) => setEditFormData(prev => ({ ...prev, budgetCategoryKey: value as BudgetCategoryKey }))}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <div className="flex items-center gap-2">
+                    <span>{budgetCategoryLabels[editFormData.budgetCategoryKey].icon}</span>
+                    <span>{budgetCategoryLabels[editFormData.budgetCategoryKey].label}</span>
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(budgetCategoryLabels).map(([key, label]) => (

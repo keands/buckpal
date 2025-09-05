@@ -215,8 +215,16 @@ When implementing mobile apps:
 1. **Ask clarifying questions** about requirements and specifications until everything is clear
 2. **Confirm understanding** of the expected behavior, edge cases, and constraints
 3. **Validate assumptions** about data structures, user flows, and business logic
-4. **Only proceed with implementation** after all specifications are well-defined
-5. **Don't make assumptions** - when in doubt, ask the user for clarification
+4. **Request explicit confirmation** before implementing any code changes
+5. **Only proceed with implementation** after all specifications are well-defined AND confirmed by the user
+6. **Don't make assumptions** - when in doubt, ask the user for clarification
+
+### Implementation Confirmation Policy
+**MANDATORY**: Before making ANY code changes:
+1. **Propose the solution** clearly with implementation details
+2. **Wait for explicit user confirmation** with phrases like "Yes, implement this" or "Go ahead"
+3. **Do not implement without confirmation** even if the solution seems obvious
+4. **Ask for clarification** if the user's approval is ambiguous
 
 ## Important Notes
 

@@ -23,6 +23,11 @@ import type {
   IncomeSuggestion,
   SmartBudgetTemplate,
   WizardInsights,
+  OnboardingStatus,
+  OnboardingProgress,
+  OnboardingConfig,
+  AiAvailabilityResponse,
+  OnboardingTips,
 } from '@/types/api'
 
 class ApiClient {
@@ -314,22 +319,6 @@ class ApiClient {
     return response.data
   }
 
-  async enhancedAutoAssignTransactions(budgetId: number): Promise<{
-    message: string
-    status: string
-    totalAssigned: number
-    totalNeedsReview: number
-    strategyBreakdown: Record<string, number>
-    confidenceStats: {
-      average: number
-      high: number
-      medium: number
-      low: number
-    }
-  }> {
-    const response = await this.client.post(`/transaction-assignments/enhanced-auto-assign/${budgetId}`)
-    return response.data
-  }
 
   async manuallyAssignTransaction(transactionId: number, budgetCategoryId: number): Promise<{ message: string; status: string }> {
     const response: AxiosResponse<{ message: string; status: string }> = await this.client.post('/transaction-assignments/manual-assign', {
@@ -638,18 +627,6 @@ class ApiClient {
     return response.data
   }
 
-  // Legacy method for backward compatibility during transition
-  async assignTransactionToDetailedCategoryLegacy(transactionId: number, budgetCategoryId: number, detailedCategoryId: number): Promise<{
-    message: string
-    status: string
-  }> {
-    const response = await this.client.post(`/transaction-assignments/assign-detailed-legacy`, {
-      transactionId,
-      budgetCategoryId,
-      detailedCategoryId
-    })
-    return response.data
-  }
 
   // ====== CATEGORY MAPPINGS ======
   
@@ -748,6 +725,37 @@ class ApiClient {
 
   async getAvailableColors(): Promise<string[]> {
     const response: AxiosResponse<string[]> = await this.client.get('/categories/colors')
+    return response.data
+  }
+
+  // Onboarding methods
+  async getOnboardingStatus(): Promise<OnboardingStatus> {
+    const response: AxiosResponse<OnboardingStatus> = await this.client.get('/onboarding/status')
+    return response.data
+  }
+
+  async getOnboardingProgress(): Promise<OnboardingProgress> {
+    const response: AxiosResponse<OnboardingProgress> = await this.client.get('/onboarding/progress')
+    return response.data
+  }
+
+  async checkAiAvailability(): Promise<AiAvailabilityResponse> {
+    const response: AxiosResponse<AiAvailabilityResponse> = await this.client.get('/onboarding/ai-availability')
+    return response.data
+  }
+
+  async getOnboardingConfig(): Promise<OnboardingConfig> {
+    const response: AxiosResponse<OnboardingConfig> = await this.client.get('/onboarding/config')
+    return response.data
+  }
+
+  async acknowledgeAiFeature(accepted: boolean = false): Promise<{ acknowledged: boolean; aiAccepted: boolean; message: string }> {
+    const response = await this.client.post(`/onboarding/acknowledge-ai?accepted=${accepted}`)
+    return response.data
+  }
+
+  async getOnboardingTips(): Promise<OnboardingTips> {
+    const response: AxiosResponse<OnboardingTips> = await this.client.get('/onboarding/tips')
     return response.data
   }
 }

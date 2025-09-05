@@ -314,7 +314,6 @@ class ApiClient {
   }
 
   // Transaction Assignment
-  // autoAssignTransactions has been removed - use smart assignment instead
 
 
   async manuallyAssignTransaction(transactionId: number, budgetCategoryId: number): Promise<{ message: string; status: string }> {

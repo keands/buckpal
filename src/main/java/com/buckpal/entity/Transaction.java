@@ -66,7 +66,6 @@ public class Transaction {
     @JsonIgnore
     private Set<ProjectCategory> projectCategories = new HashSet<>();
     
-    // Budget category assignment removed - use Category with budgetCategoryKey mapping instead
     
     // Income category assignment (for income tracking)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -158,7 +157,6 @@ public class Transaction {
     public Set<ProjectCategory> getProjectCategories() { return projectCategories; }
     public void setProjectCategories(Set<ProjectCategory> projectCategories) { this.projectCategories = projectCategories; }
     
-    // getBudgetCategory() and setBudgetCategory() removed - use category mapping system instead
     
     public IncomeCategory getIncomeCategory() { return incomeCategory; }
     public void setIncomeCategory(IncomeCategory incomeCategory) { this.incomeCategory = incomeCategory; }

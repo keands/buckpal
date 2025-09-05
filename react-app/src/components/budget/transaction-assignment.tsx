@@ -77,7 +77,6 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
     loadTransactions()
   }, [loadTransactions]) // Reload when loadTransactions changes (which happens when budget.id changes)
 
-  // handleAutoAssign has been removed - use smart assignment instead
 
 
 
@@ -360,7 +359,6 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
             </div>
             
             <div className="grid grid-cols-1 gap-2">
-              {/* Basic Auto-Assign button removed - use smart assignment instead */}
               
               <Button 
                 onClick={handleSmartFeedbackAssignment} 

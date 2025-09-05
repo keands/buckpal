@@ -354,11 +354,8 @@ public class BudgetService {
         entity.setIsActive(dto.getIsActive());
     }
     
-    // recalculateBudgetCategorySpentAmount() removed - use recalculateBudgetSpentAmountsFromCategoryMapping() instead
     
-    // recalculateBudgetTotalSpentAmount() removed - integrated into recalculateBudgetSpentAmountsFromCategoryMapping()
     
-    // recalculateAllBudgetCategories() removed - use recalculateBudgetSpentAmountsFromCategoryMapping() instead
     
     /**
      * Calculate spent amount for a budget category using modern category mapping system
@@ -387,7 +384,6 @@ public class BudgetService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     
-    // updateBudgetAfterTransactionAssignment() removed - use recalculateBudgetSpentAmountsFromCategoryMapping() instead
     
     /**
      * Create budget categories from predefined templates

@@ -75,7 +75,6 @@ public class BudgetCategory {
     @JsonIgnore
     private Set<BudgetCategory> subCategories = new HashSet<>();
     
-    // Direct transaction mapping removed - transactions now linked via Category.budgetCategoryKey mapping
     
     @PrePersist
     protected void onCreate() {
@@ -104,15 +103,10 @@ public class BudgetCategory {
         return spentAmount.compareTo(allocatedAmount) > 0;
     }
     
-    // getDetailedCategoryDistribution() removed - use BudgetService methods with SQL queries instead
     
-    // getUncategorizedTransactions() removed - use TransactionRepository queries instead
     
-    // getUncategorizedCount() removed - use TransactionRepository count queries instead
     
-    // getCategorizedPercentage() removed - use TransactionRepository queries instead
     
-    // DetailedCategoryInfo class removed - data now obtained via service layer SQL queries
     
     // Constructors
     public BudgetCategory() {}
@@ -211,7 +205,6 @@ public class BudgetCategory {
     public Set<BudgetCategory> getSubCategories() { return subCategories; }
     public void setSubCategories(Set<BudgetCategory> subCategories) { this.subCategories = subCategories; }
     
-    // getTransactions() and setTransactions() removed - transactions now accessed via SQL queries
     
     public enum BudgetCategoryType {
         INCOME,     // Revenue categories

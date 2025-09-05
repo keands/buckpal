@@ -3,12 +3,10 @@ package com.buckpal.controller;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.service.TransactionAssignmentService;
-import com.buckpal.service.EnhancedTransactionAssignmentService;
 import com.buckpal.service.SmartTransactionAssignmentService;
 import com.buckpal.service.SmartTransactionAssignmentService.SmartAssignmentResult;
 import com.buckpal.service.TransactionRevisionService;
 import com.buckpal.service.TransactionRevisionService.RevisionResult;
-import com.buckpal.service.CategoryMappingService;
 import com.buckpal.repository.TransactionRepository;
 import com.buckpal.entity.BudgetCategoryKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,25 +24,19 @@ import java.util.Optional;
 public class TransactionAssignmentController {
     
     private final TransactionAssignmentService transactionAssignmentService;
-    private final EnhancedTransactionAssignmentService enhancedTransactionAssignmentService;
     private final SmartTransactionAssignmentService smartAssignmentService;
     private final TransactionRevisionService revisionService;
-    private final CategoryMappingService categoryMappingService;
     private final TransactionRepository transactionRepository;
     
     @Autowired
     public TransactionAssignmentController(
             TransactionAssignmentService transactionAssignmentService,
-            EnhancedTransactionAssignmentService enhancedTransactionAssignmentService,
             SmartTransactionAssignmentService smartAssignmentService,
             TransactionRevisionService revisionService,
-            CategoryMappingService categoryMappingService,
             TransactionRepository transactionRepository) {
         this.transactionAssignmentService = transactionAssignmentService;
-        this.enhancedTransactionAssignmentService = enhancedTransactionAssignmentService;
         this.smartAssignmentService = smartAssignmentService;
         this.revisionService = revisionService;
-        this.categoryMappingService = categoryMappingService;
         this.transactionRepository = transactionRepository;
     }
     
@@ -65,54 +57,6 @@ public class TransactionAssignmentController {
         ));
     }
     
-    /**
-     * Enhanced auto-assign with detailed results and multiple strategies
-     */
-    @PostMapping("/enhanced-auto-assign/{budgetId}")
-    public ResponseEntity<Map<String, Object>> enhancedAutoAssignTransactions(
-            @PathVariable Long budgetId,
-            Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        
-        EnhancedTransactionAssignmentService.AssignmentResult result = 
-            enhancedTransactionAssignmentService.autoAssignTransactions(user, budgetId);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("message", "Enhanced auto-assignment completed");
-        response.put("totalAssigned", result.getTotalAssigned());
-        response.put("totalNeedsReview", result.getTotalNeedsReview());
-        response.put("strategyBreakdown", result.getStrategyBreakdown());
-        
-        // Add confidence statistics
-        Map<String, Object> confidenceStats = new HashMap<>();
-        if (!result.getAssigned().isEmpty()) {
-            double avgConfidence = result.getAssigned().stream()
-                .mapToDouble(EnhancedTransactionAssignmentService.TransactionAssignment::getConfidence)
-                .average()
-                .orElse(0.0);
-            
-            long highConfidence = result.getAssigned().stream()
-                .filter(ta -> ta.getConfidence() > 0.8)
-                .count();
-            
-            long mediumConfidence = result.getAssigned().stream()
-                .filter(ta -> ta.getConfidence() > 0.6 && ta.getConfidence() <= 0.8)
-                .count();
-            
-            long lowConfidence = result.getAssigned().stream()
-                .filter(ta -> ta.getConfidence() <= 0.6)
-                .count();
-            
-            confidenceStats.put("average", Math.round(avgConfidence * 100) / 100.0);
-            confidenceStats.put("high", highConfidence);
-            confidenceStats.put("medium", mediumConfidence);
-            confidenceStats.put("low", lowConfidence);
-        }
-        response.put("confidenceStats", confidenceStats);
-        
-        return ResponseEntity.ok(response);
-    }
     
     /**
      * Manually assign a transaction to a budget category
@@ -168,28 +112,28 @@ public class TransactionAssignmentController {
             Long transactionId = request.get("transactionId");
             Long detailedCategoryId = request.get("detailedCategoryId");
             
-            // Get the budget category from the detailed category mapping
-            Optional<BudgetCategoryKey> budgetCategoryKey = categoryMappingService.getBudgetCategoryForDetailed(detailedCategoryId);
-            
-            if (budgetCategoryKey.isEmpty()) {
+            // Validate input parameters
+            if (transactionId == null) {
                 return ResponseEntity.badRequest().body(Map.of(
-                    "message", "No budget category mapping found for detailed category " + detailedCategoryId,
+                    "message", "Missing required parameter: transactionId",
                     "status", "error"
                 ));
             }
             
-            // TODO: Find the actual BudgetCategory entity from the key
-            // For now, we'll use the manual assignment method with the budget category ID
-            // This requires extending the service to handle BudgetCategoryKey → BudgetCategory lookup
+            if (detailedCategoryId == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "message", "Missing required parameter: detailedCategoryId",
+                    "status", "error"
+                ));
+            }
             
-            // Temporary workaround: Use the legacy manual assignment
-            // In a full implementation, we'd extend TransactionAssignmentService to handle this
-            transactionAssignmentService.manuallyAssignTransaction(user, transactionId, detailedCategoryId);
+            // Assign transaction directly to the detailed category
+            transactionAssignmentService.assignTransactionToDetailedCategory(user, transactionId, detailedCategoryId);
             
             return ResponseEntity.ok(Map.of(
                 "message", "Transaction assigned successfully to detailed category", 
                 "status", "success",
-                "budgetCategoryKey", budgetCategoryKey.get().toString()
+                "detailedCategoryId", detailedCategoryId
             ));
             
         } catch (Exception e) {

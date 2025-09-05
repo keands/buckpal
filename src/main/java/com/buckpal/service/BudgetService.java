@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,8 +65,13 @@ public class BudgetService {
     }
     
     public Optional<BudgetDto> getCurrentMonthBudget(User user) {
+        System.out.println("=== getCurrentMonthBudget called for user: " + user.getEmail() + " ===");
         return budgetRepository.findCurrentMonthBudget(user)
-                             .map(this::mapEntityToDto);
+                             .map(budget -> {
+                                 System.out.println("Found current budget: " + budget.getBudgetMonth() + "/" + budget.getBudgetYear());
+                                 recalculateBudgetSpentAmountsFromCategoryMapping(budget);
+                                 return mapEntityToDto(budget);
+                             });
     }
     
     public Optional<BudgetDto> getPreviousMonthBudget(User user) {
@@ -94,6 +100,7 @@ public class BudgetService {
     }
     
     public List<BudgetDto> getUserBudgets(User user) {
+        System.out.println("=== getUserBudgets called for user: " + user.getEmail() + " ===");
         return budgetRepository.findByUserOrderByBudgetYearDescBudgetMonthDesc(user)
                               .stream()
                               .map(this::mapEntityToDto)
@@ -102,13 +109,27 @@ public class BudgetService {
     
     public Optional<BudgetDto> getBudget(User user, Integer month, Integer year) {
         return budgetRepository.findByUserAndBudgetMonthAndBudgetYear(user, month, year)
-                              .map(this::mapEntityToDto);
+                              .map(budget -> {
+                                  // Recalculate spent amounts before returning
+                                  recalculateBudgetSpentAmountsFromCategoryMapping(budget);
+                                  return mapEntityToDto(budget);
+                              });
     }
     
     public Optional<BudgetDto> getBudgetById(User user, Long budgetId) {
+        System.out.println("=== getBudgetById called for user: " + user.getEmail() + ", budgetId: " + budgetId + " ===");
         return budgetRepository.findById(budgetId)
-                              .filter(budget -> budget.getUser().getId().equals(user.getId()))
-                              .map(this::mapEntityToDto);
+                              .filter(budget -> {
+                                  System.out.println("Found budget: " + budget.getBudgetMonth() + "/" + budget.getBudgetYear());
+                                  return budget.getUser().getId().equals(user.getId());
+                              })
+                              .map(budget -> {
+                                  System.out.println("About to recalculate budget spent amounts...");
+                                  // Recalculate spent amounts before returning
+                                  recalculateBudgetSpentAmountsFromCategoryMapping(budget);
+                                  System.out.println("Recalculation completed, converting to DTO");
+                                  return mapEntityToDto(budget);
+                              });
     }
     
     public BudgetDto updateBudget(User user, Long budgetId, BudgetDto budgetDto) {
@@ -134,12 +155,10 @@ public class BudgetService {
         if (existingBudget.isEmpty() || !existingBudget.get().getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Budget not found or access denied");
         }
-        
-        Budget budget = existingBudget.get();
-        
+
         // First, unassign all transactions that are assigned to this budget's categories
         // Use bulk update for better performance
-        transactionRepository.unassignTransactionsFromBudget(budgetId);
+        transactionRepository.unassignTransactionsFromBudget(budgetId, user);
         
         // Now safe to delete the budget (cascades will handle budget categories)
         budgetRepository.deleteById(budgetId);
@@ -384,20 +403,25 @@ public class BudgetService {
     }
     
     /**
-     * Calculate spent amount for a budget category from assigned transactions
+     * Calculate spent amount for a budget category using modern category mapping system
      */
     private BigDecimal calculateSpentAmountForCategory(BudgetCategory category) {
-        // Use direct database query to avoid lazy loading issues
-        // Sum up all EXPENSE transactions assigned to this budget category for the budget's month
+        // Use modern category mapping system with inner join
         Budget budget = category.getBudget();
+        BudgetCategoryKey categoryKey = category.getCategoryKey();
+        
+        // If no category key mapping, return zero
+        if (categoryKey == null) {
+            return BigDecimal.ZERO;
+        }
         
         // Calculate date range for the budget month
         LocalDate startDate = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
         
-        // Query transactions directly from repository
-        List<Transaction> assignedTransactions = transactionRepository.findByBudgetCategoryAndDateRange(
-            category, startDate, endDate);
+        // Query transactions via category mapping with inner join
+        List<Transaction> assignedTransactions = transactionRepository.findTransactionsByBudgetCategoryKeyAndDateRange(
+            budget.getUser(), categoryKey, startDate, endDate);
         
         return assignedTransactions.stream()
             .filter(transaction -> Transaction.TransactionType.EXPENSE.equals(transaction.getTransactionType()))
@@ -539,18 +563,30 @@ public class BudgetService {
     }
     
     /**
-     * Get transactions for a specific budget category
+     * Get transactions for a specific budget category using the category mapping system
      */
     public List<Transaction> getBudgetCategoryTransactions(User user, Long budgetId, Long categoryId) {
         Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
                 .orElseThrow(() -> new RuntimeException("Budget not found"));
         
-        // Find the category by ID and verify it belongs to the user's budget
-        BudgetCategory category = budgetCategoryRepository.findById(categoryId)
+        // Find the budget category by ID and verify it belongs to the user's budget
+        BudgetCategory budgetCategory = budgetCategoryRepository.findById(categoryId)
                 .filter(c -> c.getBudget().getId().equals(budgetId) && c.getBudget().getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new RuntimeException("Budget category not found"));
         
-        return transactionRepository.findByBudgetCategory(category);
+        // Get the budget category key
+        BudgetCategoryKey categoryKey = budgetCategory.getCategoryKey();
+        if (categoryKey == null) {
+            return new ArrayList<>(); // No transactions if no category key mapping exists
+        }
+        
+        // Calculate date range for the budget period
+        LocalDate startDate = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        
+        // Find transactions via category mapping system using optimized SQL query
+        return transactionRepository.findTransactionsByBudgetCategoryKeyAndDateRange(
+                user, categoryKey, startDate, endDate);
     }
     
     /**
@@ -596,5 +632,91 @@ public class BudgetService {
             System.err.println("Failed to create income categories from history: " + e.getMessage());
             incomeService.createDefaultIncomeCategories(budget);
         }
+    }
+    
+    /**
+     * Update all budget category spent amounts using SQL join with category mapping
+     * This method calculates expenses by joining transactions -> categories -> budget category mapping
+     */
+    public void recalculateBudgetSpentAmountsFromCategoryMapping(Budget budget) {
+        
+        // Calculate date range for the budget month
+        LocalDate startDate = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        
+        // Get spent amounts grouped by budget category key via SQL join
+        List<Object[]> spentByCategory = transactionRepository.calculateSpentAmountsByBudgetCategory(
+            budget.getUser(), startDate, endDate);
+        
+        // Convert results to map for easy lookup
+        Map<BudgetCategoryKey, BigDecimal> spentAmounts;
+        try {
+            spentAmounts = spentByCategory.stream()
+                .collect(Collectors.toMap(
+                    row -> (BudgetCategoryKey) row[0],
+                    row -> (BigDecimal) row[1],
+                    BigDecimal::add  // In case of duplicates, sum them
+                ));
+        } catch (Exception e) {
+            System.err.println("ERROR creating spent amounts map: " + e.getMessage());
+            e.printStackTrace();
+            return; // Exit early if there's an error
+        }
+        
+        // Update each budget category with the calculated spent amount
+        for (BudgetCategory budgetCategory : budget.getBudgetCategories()) {
+            if (budgetCategory.getCategoryKey() != null) {
+                BigDecimal spentAmount = spentAmounts.getOrDefault(budgetCategory.getCategoryKey(), BigDecimal.ZERO);
+                BigDecimal oldAmount = budgetCategory.getSpentAmount();
+                budgetCategory.setSpentAmount(spentAmount);
+                budgetCategoryRepository.save(budgetCategory);
+            } else {
+            }
+        }
+        
+        // Recalculate budget total
+        recalculateBudgetTotalSpentAmount(budget);
+    }
+    
+    /**
+     * Debug method to check why budget calculation is not working
+     */
+    public void debugBudgetCalculation(Budget budget) {
+        System.out.println("=== DEBUG BUDGET CALCULATION ===");
+        System.out.println("Budget: " + budget.getBudgetMonth() + "/" + budget.getBudgetYear() + " for user: " + budget.getUser().getEmail());
+        
+        // Calculate date range for the budget month
+        LocalDate startDate = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        
+        System.out.println("Date range: " + startDate + " to " + endDate);
+        
+        // Debug transaction categories
+        List<Object[]> debugData = transactionRepository.debugTransactionCategories(
+            budget.getUser(), startDate, endDate);
+        
+        System.out.println("Found " + debugData.size() + " transactions:");
+        int count = 0;
+        for (Object[] row : debugData) {
+            System.out.println("TX ID: " + row[0] + ", Amount: " + row[1] + ", Type: " + row[2] + 
+                             ", Date: " + row[3] + ", Category: " + row[4] + 
+                             ", BudgetKey: " + row[5] + ", Status: " + row[6]);
+            count++;
+            if (count >= 10) { // Limit to first 10 for readability
+                System.out.println("... (" + (debugData.size() - 10) + " more transactions)");
+                break;
+            }
+        }
+        
+        // Test the actual calculation query
+        List<Object[]> spentByCategory = transactionRepository.calculateSpentAmountsByBudgetCategory(
+            budget.getUser(), startDate, endDate);
+        
+        System.out.println("Calculation results: " + spentByCategory.size() + " budget categories");
+        for (Object[] row : spentByCategory) {
+            System.out.println("BudgetKey: " + row[0] + ", Amount: " + row[1]);
+        }
+        
+        System.out.println("=== END DEBUG ===");
     }
 }

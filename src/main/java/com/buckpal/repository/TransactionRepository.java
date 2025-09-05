@@ -2,6 +2,7 @@ package com.buckpal.repository;
 
 import com.buckpal.entity.Account;
 import com.buckpal.entity.BudgetCategory;
+import com.buckpal.entity.BudgetCategoryKey;
 import com.buckpal.entity.Category;
 import com.buckpal.entity.IncomeCategory;
 import com.buckpal.entity.ProjectCategory;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -146,21 +149,42 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT t FROM Transaction t WHERE t.id = :id AND t.account.user = :user")
     Optional<Transaction> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
     
-    // Budget category assignment queries
-    @Query("SELECT t FROM Transaction t WHERE t.budgetCategory = :budgetCategory")
-    List<Transaction> findByBudgetCategory(@Param("budgetCategory") BudgetCategory budgetCategory);
+    // Budget category assignment queries - Modern approach using category mapping
+    @Query("""
+        SELECT t FROM Transaction t 
+        INNER JOIN t.category c 
+        WHERE c.budgetCategoryKey = :budgetCategoryKey
+        AND t.account.user = :user
+        """)
+    List<Transaction> findByBudgetCategory(
+        @Param("budgetCategoryKey") BudgetCategoryKey budgetCategoryKey, 
+        @Param("user") User user);
     
-    @Query("SELECT t FROM Transaction t WHERE t.budgetCategory = :budgetCategory AND t.transactionDate BETWEEN :startDate AND :endDate")
-    List<Transaction> findByBudgetCategoryAndDateRange(
-        @Param("budgetCategory") BudgetCategory budgetCategory,
-        @Param("startDate") LocalDate startDate, 
-        @Param("endDate") LocalDate endDate);
     
     // Bulk unassign transactions from budget categories before budget deletion
+    // Simplified approach: If transaction is assigned to this budget's categories, unassign it
     @Modifying
-    @Query("UPDATE Transaction t SET t.budgetCategory = NULL, t.assignmentStatus = 'UNASSIGNED' " +
-           "WHERE t.budgetCategory IN (SELECT bc FROM BudgetCategory bc WHERE bc.budget.id = :budgetId)")
-    void unassignTransactionsFromBudget(@Param("budgetId") Long budgetId);
+    @Query("""
+    UPDATE Transaction t SET t.category = NULL, t.assignmentStatus = 'UNASSIGNED' 
+        WHERE t.account.user = :user
+        AND t.category IS NOT NULL
+        AND t.category.budgetCategoryKey IN (
+            SELECT bc.categoryKey FROM BudgetCategory bc 
+            WHERE bc.budget.id = :budgetId AND bc.budget.user = :user
+        )
+        """)
+    void unassignTransactionsFromBudget(
+        @Param("budgetId") Long budgetId,
+        @Param("user") User user);
+        
+    // Legacy compatibility methods - convert old method calls to new approach
+    default List<Transaction> findByBudgetCategory(BudgetCategory budgetCategory) {
+        if (budgetCategory.getCategoryKey() == null) {
+            return new ArrayList<>();
+        }
+        return findByBudgetCategory(budgetCategory.getCategoryKey(), budgetCategory.getBudget().getUser());
+    }
+    
     
     // Find income transactions not yet linked to income categories
     @Query("""
@@ -241,4 +265,62 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     @Query("SELECT COUNT(t) FROM Transaction t WHERE t.account.user = :user AND t.needsReview = true")
     long countByUserAndNeedsReviewTrue(@Param("user") User user);
+    
+    /**
+     * Calculate spent amounts by budget category via category mapping
+     * This joins transactions -> categories -> budget category mapping to get totals
+     */
+    @Query("""
+        SELECT c.budgetCategoryKey, SUM(ABS(t.amount))
+        FROM Transaction t 
+        JOIN t.category c 
+        WHERE t.account.user = :user 
+        AND t.transactionType = 'EXPENSE'
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        AND c.budgetCategoryKey IS NOT NULL
+        GROUP BY c.budgetCategoryKey
+        """)
+    List<Object[]> calculateSpentAmountsByBudgetCategory(
+        @Param("user") User user,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+    
+    /**
+     * Debug query to check transactions and their category assignments
+     */
+    @Query("""
+        SELECT t.id, t.amount, t.transactionType, t.transactionDate, 
+               c.name, c.budgetCategoryKey,
+               CASE WHEN t.category IS NULL THEN 'NO_CATEGORY' ELSE 'HAS_CATEGORY' END
+        FROM Transaction t 
+        LEFT JOIN t.category c 
+        WHERE t.account.user = :user 
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Object[]> debugTransactionCategories(
+        @Param("user") User user,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+    
+    /**
+     * Optimized query to find transactions by budget category key and date range
+     * Uses SQL join instead of loading all transactions into memory
+     */
+    @Query("""
+        SELECT t FROM Transaction t 
+        JOIN t.category c 
+        WHERE t.account.user = :user 
+        AND c.budgetCategoryKey = :budgetCategoryKey
+        AND t.transactionDate BETWEEN :startDate AND :endDate
+        ORDER BY t.transactionDate DESC
+        """)
+    List<Transaction> findTransactionsByBudgetCategoryKeyAndDateRange(
+        @Param("user") User user,
+        @Param("budgetCategoryKey") BudgetCategoryKey budgetCategoryKey,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
 }

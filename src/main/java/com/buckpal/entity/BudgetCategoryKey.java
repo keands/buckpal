@@ -10,7 +10,7 @@ public enum BudgetCategoryKey {
     NEEDS("budgetCategories.needs"),
     WANTS("budgetCategories.wants"), 
     SAVINGS("budgetCategories.savings"),
-    PROJECTS("budgetCategories.projects"),
+    PROJECTS("budgetCategories.personalProjects"),
     
     // Legacy/Alternative categories
     DEBT("budgetCategories.debt"),

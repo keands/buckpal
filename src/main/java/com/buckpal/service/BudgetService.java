@@ -354,53 +354,11 @@ public class BudgetService {
         entity.setIsActive(dto.getIsActive());
     }
     
-    /**
-     * Recalculate spent amounts for a specific budget category based on assigned transactions
-     */
-    public void recalculateBudgetCategorySpentAmount(Long budgetCategoryId) {
-        BudgetCategory category = budgetCategoryRepository.findById(budgetCategoryId)
-            .orElseThrow(() -> new RuntimeException("Budget category not found"));
-        
-        // Calculate total spent amount from assigned transactions
-        BigDecimal totalSpent = calculateSpentAmountForCategory(category);
-        
-        // Update category spent amount
-        category.setSpentAmount(totalSpent);
-        budgetCategoryRepository.save(category);
-        
-        // Update the parent budget's total spent amount
-        recalculateBudgetTotalSpentAmount(category.getBudget());
-    }
+    // recalculateBudgetCategorySpentAmount() removed - use recalculateBudgetSpentAmountsFromCategoryMapping() instead
     
-    /**
-     * Recalculate total spent amount for an entire budget
-     */
-    public void recalculateBudgetTotalSpentAmount(Budget budget) {
-        BigDecimal totalSpent = budget.getBudgetCategories().stream()
-            .map(BudgetCategory::getSpentAmount)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        budget.setTotalSpentAmount(totalSpent);
-        budgetRepository.save(budget);
-    }
+    // recalculateBudgetTotalSpentAmount() removed - integrated into recalculateBudgetSpentAmountsFromCategoryMapping()
     
-    /**
-     * Recalculate all budget categories for a specific budget
-     */
-    public void recalculateAllBudgetCategories(Long budgetId) {
-        Budget budget = budgetRepository.findById(budgetId)
-            .orElseThrow(() -> new RuntimeException("Budget not found"));
-        
-        // Recalculate each category
-        for (BudgetCategory category : budget.getBudgetCategories()) {
-            BigDecimal totalSpent = calculateSpentAmountForCategory(category);
-            category.setSpentAmount(totalSpent);
-            budgetCategoryRepository.save(category);
-        }
-        
-        // Recalculate budget total
-        recalculateBudgetTotalSpentAmount(budget);
-    }
+    // recalculateAllBudgetCategories() removed - use recalculateBudgetSpentAmountsFromCategoryMapping() instead
     
     /**
      * Calculate spent amount for a budget category using modern category mapping system
@@ -429,12 +387,7 @@ public class BudgetService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     
-    /**
-     * Update budget category spent amount when a transaction is assigned/unassigned
-     */
-    public void updateBudgetAfterTransactionAssignment(Long budgetCategoryId) {
-        recalculateBudgetCategorySpentAmount(budgetCategoryId);
-    }
+    // updateBudgetAfterTransactionAssignment() removed - use recalculateBudgetSpentAmountsFromCategoryMapping() instead
     
     /**
      * Create budget categories from predefined templates
@@ -674,8 +627,13 @@ public class BudgetService {
             }
         }
         
-        // Recalculate budget total
-        recalculateBudgetTotalSpentAmount(budget);
+        // Recalculate budget total (integrated here instead of separate method)
+        BigDecimal totalSpent = budget.getBudgetCategories().stream()
+            .map(BudgetCategory::getSpentAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        budget.setTotalSpentAmount(totalSpent);
+        budgetRepository.save(budget);
     }
     
     /**

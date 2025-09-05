@@ -39,25 +39,7 @@ public class TransactionAssignmentController {
         this.revisionService = revisionService;
         this.transactionRepository = transactionRepository;
     }
-    
-    /**
-     * Auto-assign unassigned transactions to budget categories (basic version)
-     */
-    @PostMapping("/auto-assign/{budgetId}")
-    public ResponseEntity<Map<String, Object>> autoAssignTransactions(
-            @PathVariable Long budgetId,
-            Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        
-        transactionAssignmentService.autoAssignTransactions(user, budgetId);
-        
-        return ResponseEntity.ok(Map.of(
-            "message", "Auto-assignment completed",
-            "status", "success"
-        ));
-    }
-    
-    
+
     /**
      * Manually assign a transaction to a budget category
      */

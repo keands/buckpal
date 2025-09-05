@@ -131,11 +131,12 @@ public class TransactionRevisionService {
     
     /**
      * Detect low confidence indicators in transaction assignment
+     * Modern implementation using detailed categories and budget category mapping
      */
     private boolean hasLowConfidenceIndicators(Transaction transaction) {
         // Check for generic category assignments that might be wrong
-        if (transaction.getBudgetCategory() != null) {
-            String categoryName = transaction.getBudgetCategory().getName().toLowerCase();
+        if (transaction.getCategory() != null) {
+            String categoryName = transaction.getCategory().getName().toLowerCase();
             
             // Generic categories often indicate uncertain assignments
             if (categoryName.contains("divers") || 
@@ -153,12 +154,17 @@ public class TransactionRevisionService {
         String merchantName = (transaction.getMerchantName() != null ? 
             transaction.getMerchantName() : "").toLowerCase();
         
-        // Example: Restaurant pattern but assigned to Transport
+        // Example: Restaurant pattern but assigned to Transport category
         if ((description.contains("restaurant") || merchantName.contains("restaurant") ||
              description.contains("café") || merchantName.contains("café")) &&
-            transaction.getBudgetCategory() != null &&
-            transaction.getBudgetCategory().getName().toLowerCase().contains("transport")) {
-            return true;
+            transaction.getCategory() != null) {
+                
+            // Check if the category maps to transportation budget category
+            if (transaction.getCategory().getBudgetCategoryKey() != null &&
+                (transaction.getCategory().getBudgetCategoryKey().getI18nKey().contains("transportation") ||
+                 transaction.getCategory().getBudgetCategoryKey().getI18nKey().contains("transport"))) {
+                return true;
+            }
         }
         
         return false;
@@ -166,11 +172,12 @@ public class TransactionRevisionService {
     
     /**
      * Detect very low confidence indicators for auto-marking
+     * Modern implementation using detailed categories
      */
     private boolean hasVeryLowConfidenceIndicators(Transaction transaction) {
         // More strict criteria for automatic revision
-        if (transaction.getBudgetCategory() != null) {
-            String categoryName = transaction.getBudgetCategory().getName().toLowerCase();
+        if (transaction.getCategory() != null) {
+            String categoryName = transaction.getCategory().getName().toLowerCase();
             
             // Only auto-mark truly generic categories
             return categoryName.equals("divers") || 
@@ -184,12 +191,13 @@ public class TransactionRevisionService {
     
     /**
      * Check for inconsistent categorization patterns
+     * Modern implementation using detailed categories
      */
     private boolean hasInconsistentCategorization(Transaction transaction) {
         // This would compare with similar transactions from the same merchant
         // For now, implement basic logic
         
-        if (transaction.getMerchantName() == null || transaction.getBudgetCategory() == null) {
+        if (transaction.getMerchantName() == null || transaction.getCategory() == null) {
             return false;
         }
         

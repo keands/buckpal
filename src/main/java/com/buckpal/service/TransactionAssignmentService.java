@@ -2,11 +2,13 @@ package com.buckpal.service;
 
 import com.buckpal.entity.Budget;
 import com.buckpal.entity.BudgetCategory;
+import com.buckpal.entity.BudgetCategoryKey;
 import com.buckpal.entity.Category;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.User;
 import com.buckpal.repository.BudgetCategoryRepository;
 import com.buckpal.repository.BudgetRepository;
+import com.buckpal.repository.CategoryRepository;
 import com.buckpal.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class TransactionAssignmentService {
     private final TransactionRepository transactionRepository;
     private final BudgetCategoryRepository budgetCategoryRepository;
     private final BudgetRepository budgetRepository;
+    private final CategoryRepository categoryRepository;
     private final BudgetService budgetService;
     
     @Autowired
@@ -30,142 +33,18 @@ public class TransactionAssignmentService {
             TransactionRepository transactionRepository,
             BudgetCategoryRepository budgetCategoryRepository,
             BudgetRepository budgetRepository,
+            CategoryRepository categoryRepository,
             BudgetService budgetService) {
         this.transactionRepository = transactionRepository;
         this.budgetCategoryRepository = budgetCategoryRepository;
         this.budgetRepository = budgetRepository;
+        this.categoryRepository = categoryRepository;
         this.budgetService = budgetService;
     }
-    
-    /**
-     * Hybrid approach: Auto-assign transactions to budget categories based on existing categories
-     * Only considers transactions from the same month/year as the budget
-     */
-    public void autoAssignTransactions(User user, Long budgetId) {
-        // Get the budget to know which month/year we're working with
-        Budget budget = budgetRepository.findById(budgetId)
-            .orElseThrow(() -> new RuntimeException("Budget not found"));
-        
-        // Get all unassigned transactions for the user
-        List<Transaction> allUnassignedTransactions = transactionRepository
-            .findByUserAndAssignmentStatus(user, Transaction.AssignmentStatus.UNASSIGNED);
-        
-        // Filter to only transactions from the budget's month/year
-        List<Transaction> monthlyUnassignedTransactions = allUnassignedTransactions.stream()
-            .filter(transaction -> {
-                int transactionMonth = transaction.getTransactionDate().getMonthValue();
-                int transactionYear = transaction.getTransactionDate().getYear();
-                return transactionMonth == budget.getBudgetMonth() && 
-                       transactionYear == budget.getBudgetYear();
-            })
-            .collect(Collectors.toList());
-        
-        for (Transaction transaction : monthlyUnassignedTransactions) {
-            Optional<BudgetCategory> matchingBudgetCategory = findMatchingBudgetCategory(transaction, budgetId);
-            
-            if (matchingBudgetCategory.isPresent()) {
-                BudgetCategory budgetCategory = matchingBudgetCategory.get();
-                transaction.setBudgetCategory(budgetCategory);
-                transaction.setAssignmentStatus(Transaction.AssignmentStatus.AUTO_ASSIGNED);
-                transactionRepository.save(transaction);
-                
-                // Update budget amounts in real-time
-                budgetService.updateBudgetAfterTransactionAssignment(budgetCategory.getId());
-            } else {
-                // Mark for manual review if no automatic match found
-                transaction.setAssignmentStatus(Transaction.AssignmentStatus.NEEDS_REVIEW);
-                transactionRepository.save(transaction);
-            }
-        }
-    }
-    
-    /**
-     * Find matching budget category based on transaction's existing category
-     */
-    private Optional<BudgetCategory> findMatchingBudgetCategory(Transaction transaction, Long budgetId) {
-        if (transaction.getCategory() == null) {
-            return Optional.empty();
-        }
-        
-        Category transactionCategory = transaction.getCategory();
-        String categoryKey = transactionCategory.getName();
-        
-        // Map transaction category keys to budget category keys
-        String budgetCategoryKey = mapTransactionCategoryToBudgetCategory(categoryKey);
-        if (budgetCategoryKey == null) {
-            return Optional.empty();
-        }
-        
-        // Find budget category with the mapped key
-        return budgetCategoryRepository.findByBudgetIdAndName(budgetId, budgetCategoryKey);
-    }
-    
-    /**
-     * Map transaction category translation keys to budget category translation keys
-     */
-    private String mapTransactionCategoryToBudgetCategory(String transactionCategoryKey) {
-        // Map from categories.* to budgetCategories.*
-        switch (transactionCategoryKey) {
-            // Income categories -> typically not assigned to budget categories in spending tracking
-            case "categories.salary":
-            case "categories.freelance":
-            case "categories.investmentIncome":
-            case "categories.otherIncome":
-                return null; // Income typically doesn't go into budget expense categories
-                
-            // Essential expenses
-            case "categories.housing":
-                return "budgetCategories.housing";
-            case "categories.utilities":
-                return "budgetCategories.utilities";
-            case "categories.groceries":
-                return "budgetCategories.groceries";
-            case "categories.transportation":
-                return "budgetCategories.transportation";
-            case "categories.insurance":
-                return "budgetCategories.insurance";
-            case "categories.healthcare":
-                return "budgetCategories.healthcare";
-            case "categories.debtPayments":
-                return "budgetCategories.debtPayments";
-                
-            // Lifestyle expenses
-            case "categories.diningOut":
-                return "budgetCategories.diningOut";
-            case "categories.entertainment":
-                return "budgetCategories.entertainment";
-            case "categories.shopping":
-                return "budgetCategories.shopping";
-            case "categories.personalCare":
-                return "budgetCategories.personalCare";
-            case "categories.hobbies":
-                return "budgetCategories.hobbies";
-            case "categories.travel":
-                return "budgetCategories.travel";
-                
-            // Financial
-            case "categories.savings":
-                return "budgetCategories.emergencyFund"; // Map to emergency fund as primary savings
-            case "categories.investments":
-                return "budgetCategories.investments";
-                
-            // Other
-            case "categories.education":
-                return "budgetCategories.education";
-            case "categories.giftsDonations":
-                return "budgetCategories.giftsDonations";
-            case "categories.businessExpenses":
-                return "budgetCategories.businessExpenses";
-            case "categories.miscellaneous":
-                return "budgetCategories.miscellaneous";
-                
-            default:
-                return null; // No mapping available
-        }
-    }
-    
+
     /**
      * Manually assign transaction to budget category
+     * Modern implementation using category mapping system
      */
     public void manuallyAssignTransaction(User user, Long transactionId, Long budgetCategoryId) {
         Transaction transaction = transactionRepository.findByIdAndUser(transactionId, user)
@@ -174,16 +53,107 @@ public class TransactionAssignmentService {
         BudgetCategory budgetCategory = budgetCategoryRepository.findById(budgetCategoryId)
             .orElseThrow(() -> new RuntimeException("Budget category not found"));
         
-        transaction.setBudgetCategory(budgetCategory);
+        // Find or create a detailed category that maps to this budget category
+        Category detailedCategory = findOrCreateDetailedCategoryForBudgetCategory(budgetCategory);
+        
+        // Use the modern assignment approach
+        transaction.setCategory(detailedCategory);
+        transaction.setDetailedCategoryId(detailedCategory.getId());
         transaction.setAssignmentStatus(Transaction.AssignmentStatus.MANUALLY_ASSIGNED);
+        
         transactionRepository.save(transaction);
         
-        // Update budget amounts in real-time
-        budgetService.updateBudgetAfterTransactionAssignment(budgetCategoryId);
+        // Update budget progress using modern category mapping approach
+        budgetService.recalculateBudgetSpentAmountsFromCategoryMapping(budgetCategory.getBudget());
     }
     
     /**
-     * Override automatic assignment
+     * Assign a transaction directly to a detailed category
+     */
+    public void assignTransactionToDetailedCategory(User user, Long transactionId, Long detailedCategoryId) {
+        Transaction transaction = transactionRepository.findByIdAndUser(transactionId, user)
+            .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        
+        Category detailedCategory = categoryRepository.findById(detailedCategoryId)
+            .orElseThrow(() -> new RuntimeException("Detailed category not found"));
+        
+        // Set the detailed category
+        transaction.setCategory(detailedCategory);
+        transaction.setDetailedCategoryId(detailedCategoryId);
+        transaction.setAssignmentStatus(Transaction.AssignmentStatus.MANUALLY_ASSIGNED);
+        
+        transactionRepository.save(transaction);
+        
+        // Update budget progress by recalculating spent amounts via category mapping
+        // Find user's current budget and trigger recalculation
+        updateBudgetProgressAfterCategoryAssignment(user, transaction.getTransactionDate());
+    }
+    
+    /**
+     * Update budget progress after a transaction is assigned to a detailed category
+     */
+    private void updateBudgetProgressAfterCategoryAssignment(User user, java.time.LocalDate transactionDate) {
+        // Find the budget for the transaction's month
+        // Recalculate all budget category spent amounts using the new mapping approach
+        budgetRepository.findByUserAndBudgetMonthAndBudgetYear(user, transactionDate.getMonthValue(), transactionDate.getYear())
+            .ifPresent(budgetService::recalculateBudgetSpentAmountsFromCategoryMapping);
+    }
+    
+    /**
+     * Find or create a detailed category that maps to the given budget category
+     * This ensures compatibility between manual assignment and the modern category mapping system
+     */
+    private Category findOrCreateDetailedCategoryForBudgetCategory(BudgetCategory budgetCategory) {
+        BudgetCategoryKey budgetCategoryKey = budgetCategory.getCategoryKey();
+        
+        if (budgetCategoryKey == null) {
+            // Legacy budget category without proper mapping - create a generic category
+            return findOrCreateGenericCategory(budgetCategory.getName());
+        }
+        
+        // Find existing detailed category that maps to this budget category key for this user
+        Optional<Category> existingCategory = categoryRepository.findByBudgetCategoryKeyAndUser(
+            budgetCategoryKey, 
+            budgetCategory.getBudget().getUser()
+        );
+            
+        if (existingCategory.isPresent()) {
+            return existingCategory.get();
+        }
+        
+        // Create a new detailed category that maps to this budget category
+        Category newCategory = new Category();
+        newCategory.setName(budgetCategoryKey.getI18nKey());
+        newCategory.setBudgetCategoryKey(budgetCategoryKey);
+        newCategory.setUser(budgetCategory.getBudget().getUser());
+        
+        return categoryRepository.save(newCategory);
+    }
+    
+    /**
+     * Create a generic category for legacy budget categories without proper mapping
+     */
+    private Category findOrCreateGenericCategory(String budgetCategoryName) {
+        // Create a generic category name based on the budget category
+        String genericCategoryName = "categories." + budgetCategoryName.toLowerCase().replaceAll(" ", "");
+        
+        // Try to find existing category with this name
+        Optional<Category> existingGeneric = categoryRepository.findByName(genericCategoryName);
+        if (existingGeneric.isPresent()) {
+            return existingGeneric.get();
+        }
+        
+        // Create new generic category - Note: This is a fallback for legacy data and should be rare
+        Category newCategory = new Category();
+        newCategory.setName(genericCategoryName);
+        // No budgetCategoryKey for legacy categories
+        
+        return categoryRepository.save(newCategory);
+    }
+    
+    /**
+     * Override existing assignment with a new budget category
+     * Modern implementation using category mapping system
      */
     public void overrideAssignment(User user, Long transactionId, Long newBudgetCategoryId) {
         Transaction transaction = transactionRepository.findByIdAndUser(transactionId, user)
@@ -192,18 +162,33 @@ public class TransactionAssignmentService {
         BudgetCategory newBudgetCategory = budgetCategoryRepository.findById(newBudgetCategoryId)
             .orElseThrow(() -> new RuntimeException("Budget category not found"));
         
-        // Store old budget category for updates
-        BudgetCategory oldBudgetCategory = transaction.getBudgetCategory();
+        // Find or create a detailed category that maps to the new budget category
+        Category newDetailedCategory = findOrCreateDetailedCategoryForBudgetCategory(newBudgetCategory);
         
-        transaction.setBudgetCategory(newBudgetCategory);
+        // Store old budget info for recalculation
+        Budget oldBudget = null;
+        if (transaction.getCategory() != null && transaction.getCategory().getBudgetCategoryKey() != null) {
+            // Find the budget that contained the old category assignment
+            oldBudget = budgetRepository.findByUserAndBudgetMonthAndBudgetYear(
+                user, 
+                transaction.getTransactionDate().getMonthValue(), 
+                transaction.getTransactionDate().getYear()
+            ).orElse(null);
+        }
+        
+        // Use the modern assignment approach
+        transaction.setCategory(newDetailedCategory);
+        transaction.setDetailedCategoryId(newDetailedCategory.getId());
         transaction.setAssignmentStatus(Transaction.AssignmentStatus.MANUALLY_ASSIGNED);
+        
         transactionRepository.save(transaction);
         
-        // Update both old and new budget categories
-        if (oldBudgetCategory != null) {
-            budgetService.updateBudgetAfterTransactionAssignment(oldBudgetCategory.getId());
+        // Update budget progress using modern category mapping approach
+        // Recalculate both old and new budgets if they're different
+        if (oldBudget != null && !oldBudget.equals(newBudgetCategory.getBudget())) {
+            budgetService.recalculateBudgetSpentAmountsFromCategoryMapping(oldBudget);
         }
-        budgetService.updateBudgetAfterTransactionAssignment(newBudgetCategoryId);
+        budgetService.recalculateBudgetSpentAmountsFromCategoryMapping(newBudgetCategory.getBudget());
     }
     
     /**

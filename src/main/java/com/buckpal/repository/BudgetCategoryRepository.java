@@ -2,6 +2,8 @@ package com.buckpal.repository;
 
 import com.buckpal.entity.Budget;
 import com.buckpal.entity.BudgetCategory;
+import com.buckpal.entity.BudgetCategoryKey;
+import com.buckpal.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

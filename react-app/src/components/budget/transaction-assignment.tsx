@@ -5,7 +5,7 @@ import type { Transaction, Budget } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { AlertTriangle, CheckCircle, Clock, Zap, TrendingUp, Target, Sparkles } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, TrendingUp, Target, Sparkles } from 'lucide-react'
 import { SmartFeedbackModal } from './smart-feedback-modal'
 import { SimpleCategorySelect } from './simple-category-select'
 
@@ -77,18 +77,7 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
     loadTransactions()
   }, [loadTransactions]) // Reload when loadTransactions changes (which happens when budget.id changes)
 
-  const handleAutoAssign = async () => {
-    setLoading(true)
-    try {
-      await apiClient.autoAssignTransactions(budget.id)
-      await loadTransactions()
-      onAssignmentComplete?.()
-    } catch (error) {
-      console.error('Auto-assignment failed:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // handleAutoAssign has been removed - use smart assignment instead
 
 
 
@@ -370,16 +359,8 @@ export function TransactionAssignment({ budget, onAssignmentComplete }: Transact
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                onClick={handleAutoAssign} 
-                disabled={loading || stats.unassigned === 0}
-                variant="outline"
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                {loading ? t('budget.assignment.processing') : t('budget.assignment.basicAutoAssign')}
-              </Button>
-              
+            <div className="grid grid-cols-1 gap-2">
+              {/* Basic Auto-Assign button removed - use smart assignment instead */}
               
               <Button 
                 onClick={handleSmartFeedbackAssignment} 

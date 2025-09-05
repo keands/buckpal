@@ -1,4 +1,4 @@
-import { TFunction } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 /**
  * Utility functions for budget category translation and mapping

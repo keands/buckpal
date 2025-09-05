@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/utils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,9 +15,16 @@ import {
   ArrowUpRight,
   ArrowDownLeft
 } from 'lucide-react'
+import { 
+  OnboardingCard, 
+  OnboardingProgressBar, 
+  OnboardingTipsComponent, 
+  useOnboarding 
+} from '@/components/onboarding'
 import type { Account, Transaction } from '@/types/api'
 
 export default function DashboardPage() {
+  const navigate = useNavigate()
   const [accounts, setAccounts] = useState<Account[]>([])
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([])
   const [stats, setStats] = useState({
@@ -25,6 +33,16 @@ export default function DashboardPage() {
     monthlyExpenses: 0,
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [showTips, setShowTips] = useState(true)
+
+  // Onboarding hook
+  const { 
+    status, 
+    progress, 
+    loading: onboardingLoading, 
+    refreshStatus, 
+    acknowledgeAi 
+  } = useOnboarding()
 
   useEffect(() => {
     loadDashboardData()
@@ -76,7 +94,32 @@ export default function DashboardPage() {
     }
   }
 
-  if (isLoading) {
+  // Onboarding action handlers
+  const handleOnboardingAction = (action: string) => {
+    switch (action) {
+      case 'csv-import':
+        navigate('/csv-import')
+        break
+      case 'bank-connect':
+        // TODO: Implement bank connection
+        navigate('/accounts')
+        break
+      default:
+        break
+    }
+  }
+
+  const handleAiAccept = async () => {
+    await acknowledgeAi(true)
+    await refreshStatus()
+  }
+
+  const handleAiDecline = async () => {
+    await acknowledgeAi(false)
+    await refreshStatus()
+  }
+
+  if (isLoading || onboardingLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
         <div className="text-lg">Chargement du tableau de bord...</div>
@@ -93,23 +136,53 @@ export default function DashboardPage() {
           <p className="text-gray-600">Aperçu de vos finances</p>
         </div>
         
-        <div className="flex space-x-3">
-          <Link to="/csv-import">
-            <Button>
-              <Upload className="w-4 h-4 mr-2" />
-              Importer CSV
-            </Button>
-          </Link>
-          <Link to="/accounts">
-            <Button variant="outline">
-              <Plus className="w-4 h-4 mr-2" />
-              Nouveau compte
-            </Button>
-          </Link>
-        </div>
+        {/* Show actions only for mature users or when no onboarding needed */}
+        {status?.phase === 'MATURE' && (
+          <div className="flex space-x-3">
+            <Link to="/csv-import">
+              <Button>
+                <Upload className="w-4 h-4 mr-2" />
+                Importer CSV
+              </Button>
+            </Link>
+            <Link to="/accounts">
+              <Button variant="outline">
+                <Plus className="w-4 h-4 mr-2" />
+                Nouveau compte
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* Stats Cards */}
+      {/* Onboarding Section */}
+      {status && progress && status.phase !== 'MATURE' && (
+        <div className="space-y-4">
+          <OnboardingCard
+            status={status}
+            progress={progress}
+            onActionClick={handleOnboardingAction}
+            onAiAccept={handleAiAccept}
+            onAiDecline={handleAiDecline}
+          />
+          
+          {status.phase === 'LEARNING' && (
+            <OnboardingProgressBar
+              status={status}
+              progress={progress}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Tips Section */}
+      {status && showTips && status.phase !== 'MATURE' && (
+        <OnboardingTipsComponent
+          onDismiss={() => setShowTips(false)}
+        />
+      )}
+
+      {/* Stats Cards - Show for all users but adjust based on onboarding */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

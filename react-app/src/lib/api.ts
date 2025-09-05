@@ -314,10 +314,7 @@ class ApiClient {
   }
 
   // Transaction Assignment
-  async autoAssignTransactions(budgetId: number): Promise<{ message: string; status: string }> {
-    const response: AxiosResponse<{ message: string; status: string }> = await this.client.post(`/transaction-assignments/auto-assign/${budgetId}`)
-    return response.data
-  }
+  // autoAssignTransactions has been removed - use smart assignment instead
 
 
   async manuallyAssignTransaction(transactionId: number, budgetCategoryId: number): Promise<{ message: string; status: string }> {

@@ -1,9 +1,12 @@
 package com.buckpal.service;
 
 import com.buckpal.entity.Account;
+import com.buckpal.entity.Budget;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.Transaction.TransactionType;
+import com.buckpal.entity.User;
 import com.buckpal.repository.AccountRepository;
+import com.buckpal.repository.BudgetRepository;
 import com.buckpal.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,12 @@ public class CsvImportService {
     
     @Autowired
     private AccountRepository accountRepository;
+    
+    @Autowired
+    private BudgetRepository budgetRepository;
+    
+    @Autowired
+    private BudgetService budgetService;
     
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
         DateTimeFormatter.ofPattern("yyyy-MM-dd"),
@@ -59,7 +68,12 @@ public class CsvImportService {
             }
         }
         
-        return transactionRepository.saveAll(transactions);
+        List<Transaction> savedTransactions = transactionRepository.saveAll(transactions);
+        
+        // Recalculate budget progress for all affected budgets
+        recalculateBudgetProgressAfterImport(account.getUser(), savedTransactions);
+        
+        return savedTransactions;
     }
     
     private Transaction parseCsvLine(String line, Account account) {
@@ -233,5 +247,25 @@ public class CsvImportService {
         return "Date,Description,Amount,Merchant\n" +
                "2023-12-01,Sample Transaction,-50.00,Sample Store\n" +
                "2023-12-02,Salary,2500.00,Company Inc\n";
+    }
+    
+    /**
+     * Recalculate budget progress for all months affected by the imported transactions
+     */
+    private void recalculateBudgetProgressAfterImport(User user, List<Transaction> importedTransactions) {
+        // Group transactions by month/year to find affected budgets
+        importedTransactions.stream()
+            .map(Transaction::getTransactionDate)
+            .distinct()
+            .forEach(transactionDate -> {
+                budgetRepository.findByUserAndBudgetMonthAndBudgetYear(
+                    user, 
+                    transactionDate.getMonthValue(), 
+                    transactionDate.getYear()
+                ).ifPresent(budget -> {
+                    // Recalculate spent amounts for this budget
+                    budgetService.recalculateBudgetSpentAmountsFromCategoryMapping(budget);
+                });
+            });
     }
 }

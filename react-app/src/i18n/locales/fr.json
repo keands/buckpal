@@ -398,5 +398,101 @@
     "currency": "{{amount, currency}}",
     "date": "{{date, datetime}}",
     "dateShort": "{{date, date}}"
+  },
+  "onboarding": {
+    "phases": {
+      "welcome": "Bienvenue sur BuckPal !",
+      "firstSteps": "Premiers pas",
+      "learning": "Apprentissage en cours",
+      "aiAvailable": "IA disponible !",
+      "mature": "Utilisateur expert"
+    },
+    "messages": {
+      "welcome": "Bienvenue sur BuckPal ! Commencez par importer vos transactions ou connecter votre banque pour découvrir la puissance de la gestion budgétaire intelligente.",
+      "firstSteps": "Parfait ! Vous avez importé {{count}} transaction(s). Commencez à les catégoriser pour que BuckPal comprenne vos habitudes de dépenses.",
+      "learning": "Excellent progrès ! {{current}}/{{threshold}} transactions importées. Plus vous catégorisez, plus BuckPal devient intelligent. Encore {{remaining}} transactions pour débloquer l'attribution intelligente.",
+      "aiAvailable": "🎉 Félicitations ! BuckPal peut maintenant proposer des catégories intelligentes basées sur vos habitudes. Voulez-vous activer cette fonctionnalité ?",
+      "mature": "Utilisateur expérimenté ! {{assignmentRate}}% de vos transactions sont catégorisées. L'attribution intelligente fonctionne de manière optimale."
+    },
+    "progress": {
+      "towardsAi": "Progression vers l'IA",
+      "aiUnlocked": "IA débloquée !",
+      "description": {
+        "start": "Commencez par importer vos transactions",
+        "firstSteps": "Continuez ! {{remaining}} transactions pour activer les conseils",
+        "learning": "Encore {{remaining}} transactions pour débloquer l'IA",
+        "aiAvailable": "Attribution intelligente débloquée !",
+        "mature": "Utilisateur expérimenté - Toutes les fonctionnalités disponibles"
+      }
+    },
+    "actions": {
+      "importCsv": "Importer un CSV",
+      "connectBank": "Connecter ma banque",
+      "activateAi": "Activer l'IA",
+      "later": "Plus tard"
+    },
+    "aiUnlock": {
+      "title": "Attribution intelligente débloquée !",
+      "benefits": {
+        "suggestions": "Suggestions basées sur vos habitudes",
+        "timeSaving": "Gain de temps sur la catégorisation",
+        "improves": "S'améliore avec vos corrections"
+      }
+    },
+    "tips": {
+      "title": "Conseils",
+      "welcome": [
+        "Importez vos transactions via un fichier CSV pour commencer",
+        "Connectez votre banque pour une synchronisation automatique",
+        "Explorez les différentes sections : Dashboard, Comptes, Budget"
+      ],
+      "firstSteps": [
+        "Catégorisez vos premières transactions manuellement",
+        "Découvrez les catégories prédéfinies",
+        "Créez vos propres catégories personnalisées si nécessaire"
+      ],
+      "learning": [
+        "Continuez à catégoriser pour enseigner à BuckPal vos habitudes",
+        "Plus vous catégorisez, plus l'IA sera précise",
+        "Vérifiez votre progression vers le déverrouillage de l'IA"
+      ],
+      "aiAvailable": [
+        "L'attribution intelligente est maintenant disponible !",
+        "Activez-la pour gagner du temps sur la catégorisation",
+        "Vous pourrez toujours corriger les suggestions de l'IA"
+      ],
+      "mature": [
+        "Utilisez les statistiques avancées pour analyser vos dépenses",
+        "Configurez des budgets et objectifs d'épargne",
+        "Explorez les tendances et patterns de vos dépenses"
+      ],
+      "nextSteps": {
+        "welcome": [
+          "Importer vos premières transactions",
+          "Découvrir l'interface"
+        ],
+        "firstSteps": [
+          "Catégoriser vos transactions",
+          "Explorer les fonctionnalités de base"
+        ],
+        "learning": [
+          "Continuer la catégorisation pour débloquer l'IA",
+          "Atteindre 20 transactions catégorisées"
+        ],
+        "aiAvailable": [
+          "Activer l'attribution intelligente",
+          "Tester les suggestions automatiques"
+        ],
+        "mature": [
+          "Optimiser vos budgets",
+          "Analyser vos tendances de dépenses"
+        ]
+      }
+    },
+    "stats": {
+      "transactions": "Transactions",
+      "categorized": "Catégorisées"
+    },
+    "learningTip": "Plus vous catégorisez précisément vos transactions, plus BuckPal comprendra vos habitudes et deviendra efficace !"
   }
 }

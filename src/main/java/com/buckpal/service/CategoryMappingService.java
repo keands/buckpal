@@ -2,6 +2,8 @@ package com.buckpal.service;
 
 import com.buckpal.entity.BudgetCategoryKey;
 import com.buckpal.entity.Category;
+import com.buckpal.entity.User;
+import com.buckpal.repository.BudgetRepository;
 import com.buckpal.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,12 @@ public class CategoryMappingService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private BudgetRepository budgetRepository;
+    
+    @Autowired
+    private BudgetService budgetService;
 
     /**
      * Get the budget category key for a detailed category.
@@ -72,6 +80,9 @@ public class CategoryMappingService {
         category.setIsAutoMapped(false); // Mark as user-defined mapping
         
         categoryRepository.save(category);
+        
+        // Recalculate affected budgets since mapping changed
+        recalculateAffectedBudgets();
     }
 
     /**
@@ -89,7 +100,12 @@ public class CategoryMappingService {
         category.setIsDefault(false);
         category.setIsAutoMapped(false); // User-created category
         
-        return categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+        
+        // Recalculate affected budgets since new mapping was created
+        recalculateAffectedBudgets();
+        
+        return savedCategory;
     }
 
     /**
@@ -129,7 +145,12 @@ public class CategoryMappingService {
         category.setIconName(iconName);
         category.setColorCode(colorCode);
         
-        return categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+        
+        // Recalculate affected budgets since mapping was updated
+        recalculateAffectedBudgets();
+        
+        return savedCategory;
     }
 
     /**
@@ -157,6 +178,9 @@ public class CategoryMappingService {
                 categoryRepository.save(category);
             }
         }
+        
+        // Recalculate affected budgets since mappings were initialized
+        recalculateAffectedBudgets();
     }
 
     /**
@@ -290,5 +314,15 @@ public class CategoryMappingService {
         public double getMappingPercentage() { 
             return totalCategories > 0 ? (mappedCategories * 100.0) / totalCategories : 0.0; 
         }
+    }
+    
+    /**
+     * Recalculate budget progress for all existing budgets after category mapping changes
+     */
+    private void recalculateAffectedBudgets() {
+        // Get all budgets and recalculate their spent amounts
+        budgetRepository.findAll().forEach(budget -> {
+            budgetService.recalculateBudgetSpentAmountsFromCategoryMapping(budget);
+        });
     }
 }

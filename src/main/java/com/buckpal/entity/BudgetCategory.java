@@ -75,9 +75,7 @@ public class BudgetCategory {
     @JsonIgnore
     private Set<BudgetCategory> subCategories = new HashSet<>();
     
-    @OneToMany(mappedBy = "budgetCategory", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<Transaction> transactions = new HashSet<>();
+    // Direct transaction mapping removed - transactions now linked via Category.budgetCategoryKey mapping
     
     @PrePersist
     protected void onCreate() {
@@ -106,116 +104,15 @@ public class BudgetCategory {
         return spentAmount.compareTo(allocatedAmount) > 0;
     }
     
-    /**
-     * Get detailed category distribution for this budget category
-     * Groups transactions by their detailed Category and calculates amounts/percentages
-     */
-    @JsonIgnore
-    public Map<Category, DetailedCategoryInfo> getDetailedCategoryDistribution() {
-        if (transactions.isEmpty()) {
-            return new HashMap<>();
-        }
-        
-        // Group transactions by detailed category
-        Map<Category, List<Transaction>> groupedTransactions = transactions.stream()
-                .filter(t -> t.getCategory() != null)
-                .collect(Collectors.groupingBy(Transaction::getCategory));
-        
-        Map<Category, DetailedCategoryInfo> distribution = new HashMap<>();
-        
-        for (Map.Entry<Category, List<Transaction>> entry : groupedTransactions.entrySet()) {
-            Category category = entry.getKey();
-            List<Transaction> categoryTransactions = entry.getValue();
-            
-            BigDecimal totalAmount = categoryTransactions.stream()
-                    .map(Transaction::getAmount)
-                    .map(BigDecimal::abs) // Ensure positive amounts for display
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            
-            BigDecimal percentage = spentAmount.compareTo(BigDecimal.ZERO) > 0
-                    ? totalAmount.divide(spentAmount, 4, RoundingMode.HALF_UP)
-                              .multiply(new BigDecimal("100"))
-                    : BigDecimal.ZERO;
-            
-            distribution.put(category, new DetailedCategoryInfo(
-                    category.getName(),
-                    totalAmount,
-                    percentage,
-                    categoryTransactions.size(),
-                    category.getColorCode(),
-                    category.getIconName()
-            ));
-        }
-        
-        return distribution;
-    }
+    // getDetailedCategoryDistribution() removed - use BudgetService methods with SQL queries instead
     
-    /**
-     * Get transactions that don't have a detailed category assigned
-     */
-    @JsonIgnore
-    public List<Transaction> getUncategorizedTransactions() {
-        return transactions.stream()
-                .filter(t -> t.getCategory() == null)
-                .collect(Collectors.toList());
-    }
+    // getUncategorizedTransactions() removed - use TransactionRepository queries instead
     
-    /**
-     * Get count of uncategorized transactions
-     */
-    public int getUncategorizedCount() {
-        return (int) transactions.stream()
-                .filter(t -> t.getCategory() == null)
-                .count();
-    }
+    // getUncategorizedCount() removed - use TransactionRepository count queries instead
     
-    /**
-     * Get percentage of transactions that are categorized
-     */
-    public BigDecimal getCategorizedPercentage() {
-        if (transactions.isEmpty()) {
-            return BigDecimal.ZERO;
-        }
-        
-        long categorizedCount = transactions.stream()
-                .filter(t -> t.getCategory() != null)
-                .count();
-        
-        return BigDecimal.valueOf(categorizedCount)
-                .divide(BigDecimal.valueOf(transactions.size()), 4, RoundingMode.HALF_UP)
-                .multiply(new BigDecimal("100"));
-    }
+    // getCategorizedPercentage() removed - use TransactionRepository queries instead
     
-    /**
-     * Inner class to hold detailed category information
-     */
-    public static class DetailedCategoryInfo {
-        private String categoryName;
-        private BigDecimal amount;
-        private BigDecimal percentage;
-        private int transactionCount;
-        private String colorCode;
-        private String iconName;
-        
-        public DetailedCategoryInfo(String categoryName, BigDecimal amount, 
-                                  BigDecimal percentage, int transactionCount,
-                                  String colorCode, String iconName) {
-            this.categoryName = categoryName;
-            this.amount = amount;
-            this.percentage = percentage;
-            this.transactionCount = transactionCount;
-            this.colorCode = colorCode;
-            this.iconName = iconName;
-        }
-        
-        // Getters
-        public String getCategoryName() { return categoryName; }
-        public BigDecimal getAmount() { return amount; }
-        public BigDecimal getPercentage() { return percentage; }
-        public int getTransactionCount() { return transactionCount; }
-        public String getColorCode() { return colorCode; }
-        public String getIconName() { return iconName; }
-    }
+    // DetailedCategoryInfo class removed - data now obtained via service layer SQL queries
     
     // Constructors
     public BudgetCategory() {}
@@ -314,8 +211,7 @@ public class BudgetCategory {
     public Set<BudgetCategory> getSubCategories() { return subCategories; }
     public void setSubCategories(Set<BudgetCategory> subCategories) { this.subCategories = subCategories; }
     
-    public Set<Transaction> getTransactions() { return transactions; }
-    public void setTransactions(Set<Transaction> transactions) { this.transactions = transactions; }
+    // getTransactions() and setTransactions() removed - transactions now accessed via SQL queries
     
     public enum BudgetCategoryType {
         INCOME,     // Revenue categories

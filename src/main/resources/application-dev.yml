@@ -11,7 +11,7 @@ spring:
       
   jpa:
     hibernate:
-      ddl-auto: none # Plus de validation automatique en dev
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:

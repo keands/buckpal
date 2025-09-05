@@ -398,5 +398,101 @@
     "currency": "{{amount, currency}}",
     "date": "{{date, datetime}}",
     "dateShort": "{{date, date}}"
+  },
+  "onboarding": {
+    "phases": {
+      "welcome": "Welcome to BuckPal!",
+      "firstSteps": "First Steps",
+      "learning": "Learning in Progress",
+      "aiAvailable": "AI Available!",
+      "mature": "Expert User"
+    },
+    "messages": {
+      "welcome": "Welcome to BuckPal! Start by importing your transactions or connecting your bank to discover the power of intelligent budget management.",
+      "firstSteps": "Perfect! You've imported {{count}} transaction(s). Start categorizing them so BuckPal can understand your spending habits.",
+      "learning": "Excellent progress! {{current}}/{{threshold}} transactions imported. The more you categorize, the smarter BuckPal becomes. {{remaining}} more transactions to unlock intelligent assignment.",
+      "aiAvailable": "🎉 Congratulations! BuckPal can now suggest intelligent categories based on your habits. Would you like to activate this feature?",
+      "mature": "Experienced user! {{assignmentRate}}% of your transactions are categorized. Intelligent assignment works optimally."
+    },
+    "progress": {
+      "towardsAi": "Progress towards AI",
+      "aiUnlocked": "AI unlocked!",
+      "description": {
+        "start": "Start by importing your transactions",
+        "firstSteps": "Keep going! {{remaining}} transactions to activate tips",
+        "learning": "{{remaining}} more transactions to unlock AI",
+        "aiAvailable": "Intelligent assignment unlocked!",
+        "mature": "Expert user - All features available"
+      }
+    },
+    "actions": {
+      "importCsv": "Import CSV",
+      "connectBank": "Connect Bank",
+      "activateAi": "Activate AI",
+      "later": "Later"
+    },
+    "aiUnlock": {
+      "title": "Intelligent Assignment Unlocked!",
+      "benefits": {
+        "suggestions": "Suggestions based on your habits",
+        "timeSaving": "Time-saving categorization",
+        "improves": "Improves with your corrections"
+      }
+    },
+    "tips": {
+      "title": "Tips",
+      "welcome": [
+        "Import your transactions via CSV file to get started",
+        "Connect your bank for automatic synchronization",
+        "Explore different sections: Dashboard, Accounts, Budget"
+      ],
+      "firstSteps": [
+        "Categorize your first transactions manually",
+        "Discover predefined categories",
+        "Create your own custom categories if needed"
+      ],
+      "learning": [
+        "Keep categorizing to teach BuckPal your habits",
+        "The more you categorize, the more accurate AI becomes",
+        "Check your progress towards AI unlock"
+      ],
+      "aiAvailable": [
+        "Intelligent assignment is now available!",
+        "Activate it to save time on categorization",
+        "You can always correct AI suggestions"
+      ],
+      "mature": [
+        "Use advanced statistics to analyze your spending",
+        "Set up budgets and savings goals",
+        "Explore trends and patterns in your expenses"
+      ],
+      "nextSteps": {
+        "welcome": [
+          "Import your first transactions",
+          "Discover the interface"
+        ],
+        "firstSteps": [
+          "Categorize your transactions",
+          "Explore basic features"
+        ],
+        "learning": [
+          "Continue categorization to unlock AI",
+          "Reach 20 categorized transactions"
+        ],
+        "aiAvailable": [
+          "Activate intelligent assignment",
+          "Test automatic suggestions"
+        ],
+        "mature": [
+          "Optimize your budgets",
+          "Analyze your spending trends"
+        ]
+      }
+    },
+    "stats": {
+      "transactions": "Transactions",
+      "categorized": "Categorized"
+    },
+    "learningTip": "The more precisely you categorize your transactions, the better BuckPal will understand your habits and become effective!"
   }
 }

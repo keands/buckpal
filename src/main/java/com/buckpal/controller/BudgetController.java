@@ -49,6 +49,7 @@ public class BudgetController {
     
     @GetMapping
     public ResponseEntity<List<BudgetDto>> getUserBudgets(Authentication authentication) {
+        System.out.println(">>> ENDPOINT: GET /budgets called");
         User user = (User) authentication.getPrincipal();
         List<BudgetDto> budgets = budgetService.getUserBudgets(user);
         return ResponseEntity.ok(budgets);
@@ -56,6 +57,7 @@ public class BudgetController {
     
     @GetMapping("/current")
     public ResponseEntity<BudgetDto> getCurrentMonthBudget(Authentication authentication) {
+        System.out.println(">>> ENDPOINT: GET /budgets/current called");
         User user = (User) authentication.getPrincipal();
         Optional<BudgetDto> budget = budgetService.getCurrentMonthBudget(user);
         return budget.map(ResponseEntity::ok)
@@ -74,6 +76,7 @@ public class BudgetController {
     public ResponseEntity<BudgetDto> getBudgetById(
             @PathVariable Long id,
             Authentication authentication) {
+        System.out.println(">>> ENDPOINT: GET /budgets/" + id + " called");
         User user = (User) authentication.getPrincipal();
         Optional<BudgetDto> budget = budgetService.getBudgetById(user, id);
         return budget.map(ResponseEntity::ok)
@@ -85,6 +88,7 @@ public class BudgetController {
             @PathVariable Integer year,
             @PathVariable Integer month,
             Authentication authentication) {
+        System.out.println(">>> ENDPOINT: GET /budgets/" + year + "/" + month + " called");
         User user = (User) authentication.getPrincipal();
         Optional<BudgetDto> budget = budgetService.getBudget(user, month, year);
         return budget.map(ResponseEntity::ok)

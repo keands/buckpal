@@ -50,6 +50,45 @@ export interface Category {
   subCategories?: Category[]
 }
 
+// Onboarding types
+export type OnboardingPhase = 'WELCOME' | 'FIRST_STEPS' | 'LEARNING' | 'AI_AVAILABLE' | 'MATURE'
+
+export interface OnboardingStatus {
+  phase: OnboardingPhase
+  transactionCount: number
+  assignedCount: number
+  aiAvailable: boolean
+  message: string
+}
+
+export interface OnboardingProgress {
+  transactionCount: number
+  assignedCount: number
+  progressPercentage: number
+  nextMilestone: number
+  description: string
+}
+
+export interface OnboardingConfig {
+  aiUnlockThreshold: number
+  matureUserThreshold: number
+  learningStartThreshold: number
+  phases: Record<OnboardingPhase, string>
+}
+
+export interface AiAvailabilityResponse {
+  aiAvailable: boolean
+  phase: string
+  transactionCount: number
+  message: string
+}
+
+export interface OnboardingTips {
+  phase: string
+  tips: string[]
+  nextSteps: string[]
+}
+
 export interface Transaction {
   id: number
   amount: number

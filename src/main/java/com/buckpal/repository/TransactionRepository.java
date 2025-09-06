@@ -1,11 +1,9 @@
 package com.buckpal.repository;
 
 import com.buckpal.entity.Account;
-import com.buckpal.entity.BudgetCategory;
 import com.buckpal.entity.BudgetCategoryKey;
 import com.buckpal.entity.Category;
 import com.buckpal.entity.IncomeCategory;
-import com.buckpal.entity.ProjectCategory;
 import com.buckpal.entity.Transaction;
 import com.buckpal.entity.Transaction.TransactionType;
 import com.buckpal.entity.User;
@@ -50,9 +48,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         """)
     BigDecimal calculateBalanceByAccount(@Param("account") Account account);
     
-    List<Transaction> findByAccountAndCategory(Account account, Category category);
-    
-    List<Transaction> findByAccountAndTransactionType(Account account, TransactionType transactionType);
     
     @Query("SELECT t FROM Transaction t WHERE t.account.user = :user AND t.transactionType = :transactionType ORDER BY t.transactionDate DESC")
     List<Transaction> findByUserAndTransactionType(@Param("user") User user, @Param("transactionType") TransactionType transactionType);
@@ -63,23 +58,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Page<Transaction> findByAccountsOrderByTransactionDateDesc(
         @Param("accounts") List<Account> accounts, Pageable pageable);
     
-    @Query("SELECT t FROM Transaction t JOIN FETCH t.account LEFT JOIN FETCH t.category WHERE t.account IN :accounts AND t.transactionDate BETWEEN :startDate AND :endDate")
-    List<Transaction> findByAccountsAndDateRange(
-        @Param("accounts") List<Account> accounts, 
-        @Param("startDate") LocalDate startDate, 
-        @Param("endDate") LocalDate endDate);
     
     @Query("SELECT t FROM Transaction t JOIN FETCH t.account LEFT JOIN FETCH t.category WHERE t.account IN :accounts AND t.transactionDate = :date ORDER BY t.transactionDate DESC, t.id DESC")
     List<Transaction> findByAccountInAndTransactionDateOrderByTransactionDateDesc(
         @Param("accounts") List<Account> accounts, 
         @Param("date") LocalDate date);
     
-    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.account IN :accounts AND t.transactionType = :type AND t.transactionDate BETWEEN :startDate AND :endDate")
-    Double sumAmountByAccountsAndTypeAndDateRange(
-        @Param("accounts") List<Account> accounts,
-        @Param("type") TransactionType type,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate);
     
     @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.transactionDate = :date AND t.amount = :amount AND t.description = :description")
     Optional<Transaction> findByAccountIdAndTransactionDateAndAmountAndDescription(
@@ -105,37 +89,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
     
-    List<Transaction> findByProjectCategoriesContaining(ProjectCategory projectCategory);
-    
-    @Query("SELECT t FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory")
-    List<Transaction> findByProjectCategory(@Param("projectCategory") ProjectCategory projectCategory);
-    
-    @Query("SELECT t FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory AND t.transactionDate BETWEEN :startDate AND :endDate")
-    List<Transaction> findByProjectCategoryAndDateRange(
-        @Param("projectCategory") ProjectCategory projectCategory,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate);
-    
-    @Query("SELECT SUM(t.amount) FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory AND t.transactionType = :type")
-    Double sumAmountByProjectCategoryAndType(
-        @Param("projectCategory") ProjectCategory projectCategory,
-        @Param("type") TransactionType type);
-    
-    @Query("SELECT SUM(t.amount) FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory AND t.transactionType = :type AND t.transactionDate BETWEEN :startDate AND :endDate")
-    Double sumAmountByProjectCategoryAndTypeAndDateRange(
-        @Param("projectCategory") ProjectCategory projectCategory,
-        @Param("type") TransactionType type,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate);
-    
-    @Query("SELECT COUNT(t) FROM Transaction t JOIN t.projectCategories pc WHERE pc = :projectCategory")
-    Long countByProjectCategory(@Param("projectCategory") ProjectCategory projectCategory);
-    
-    @Query("SELECT t FROM Transaction t JOIN t.projectCategories pc WHERE pc IN :projectCategories AND t.transactionDate BETWEEN :startDate AND :endDate")
-    List<Transaction> findByProjectCategoriesInAndDateRange(
-        @Param("projectCategories") List<ProjectCategory> projectCategories,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate);
     
     // Transaction Assignment queries
     @Query("SELECT t FROM Transaction t WHERE t.account.user = :user")
@@ -177,13 +130,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("budgetId") Long budgetId,
         @Param("user") User user);
         
-    // Legacy compatibility methods - convert old method calls to new approach
-    default List<Transaction> findByBudgetCategory(BudgetCategory budgetCategory) {
-        if (budgetCategory.getCategoryKey() == null) {
-            return new ArrayList<>();
-        }
-        return findByBudgetCategory(budgetCategory.getCategoryKey(), budgetCategory.getBudget().getUser());
-    }
     
     
     // Find income transactions not yet linked to income categories

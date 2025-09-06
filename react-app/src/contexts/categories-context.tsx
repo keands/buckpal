@@ -56,14 +56,7 @@ export function CategoriesProvider({ children }: CategoriesProviderProps) {
       
       setDetailedCategories(allCategories)
       setCategoryMapping(mapping)
-      
-      console.log('🏪 CategoriesContext - Loaded shared category data:', {
-        detailedCategoriesCount: allCategories.length,
-        mappingKeysCount: Object.keys(mapping).length,
-        predefinedCategories: allCategories.filter(c => c.name.startsWith('categories.')).length,
-        customCategories: allCategories.filter(c => !c.name.startsWith('categories.')).length,
-        budgetGroups: Object.keys(groupedCategories)
-      })
+
     } catch (err) {
       console.error('Failed to load category data:', err)
       setError(err instanceof Error ? err.message : 'Failed to load categories')

@@ -57,14 +57,6 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     private Category category;
     
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "transaction_project_categories",
-        joinColumns = @JoinColumn(name = "transaction_id"),
-        inverseJoinColumns = @JoinColumn(name = "project_category_id")
-    )
-    @JsonIgnore
-    private Set<ProjectCategory> projectCategories = new HashSet<>();
     
     
     // Income category assignment (for income tracking)
@@ -154,8 +146,6 @@ public class Transaction {
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
     
-    public Set<ProjectCategory> getProjectCategories() { return projectCategories; }
-    public void setProjectCategories(Set<ProjectCategory> projectCategories) { this.projectCategories = projectCategories; }
     
     
     public IncomeCategory getIncomeCategory() { return incomeCategory; }

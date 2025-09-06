@@ -5,7 +5,7 @@ import type { Transaction, Budget } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { AlertTriangle, CheckCircle, Clock, TrendingUp, Target, Sparkles } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, Zap, Sparkles } from 'lucide-react'
 import { SmartFeedbackModal } from './smart-feedback-modal'
 import { SimpleCategorySelect } from './simple-category-select'
 

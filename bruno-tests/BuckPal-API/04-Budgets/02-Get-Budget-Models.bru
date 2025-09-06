@@ -1,0 +1,26 @@
+meta {
+  name: Get Budget Models
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiPath}}/budgets/models
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response should contain budget models", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('models');
+    expect(data).to.have.property('descriptions');
+    expect(data.models).to.be.an('array');
+    expect(data.models).to.include('RULE_50_30_20');
+    expect(data.descriptions).to.have.property('RULE_50_30_20');
+  });
+}

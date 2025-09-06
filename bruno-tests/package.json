@@ -1,0 +1,25 @@
+{
+  "name": "buckpal-bruno-tests",
+  "version": "1.0.0",
+  "description": "Bruno API Integration Tests for BuckPal Application",
+  "scripts": {
+    "install-bruno": "npm install -g @usebruno/cli",
+    "test:local": "cd BuckPal-API && bru run --env Local",
+    "test:ci": "cd BuckPal-API && bru run --env CI --output junit.xml --format junit",
+    "test:verbose": "cd BuckPal-API && bru run --env Local --verbose",
+    "test:html": "cd BuckPal-API && bru run --env Local --reporter-html-template"
+  },
+  "keywords": [
+    "api-testing",
+    "integration-tests",
+    "bruno",
+    "buckpal",
+    "gitlab-ci"
+  ],
+  "devDependencies": {
+    "@usebruno/cli": "^1.8.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

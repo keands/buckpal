@@ -1,0 +1,42 @@
+meta {
+  name: Create Budget
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPath}}/budgets
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "budgetMonth": 9,
+    "budgetYear": 2024,
+    "budgetModel": "RULE_50_30_20",
+    "totalIncome": 5000.00
+  }
+}
+
+tests {
+  test("Status should be 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  
+  test("Response should contain budget data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data.budgetMonth).to.equal(9);
+    expect(data.budgetYear).to.equal(2024);
+    expect(data.budgetModel).to.equal('RULE_50_30_20');
+    expect(data.totalIncome).to.equal(5000.00);
+    
+    // Store budget ID for other tests
+    bru.setEnvVar('testBudgetId', data.id.toString());
+  });
+}

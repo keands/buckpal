@@ -1,0 +1,42 @@
+meta {
+  name: Create Account
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPath}}/accounts
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "name": "Test Checking Account",
+    "accountType": "CHECKING",
+    "balance": 1000.00,
+    "bankName": "Test Bank"
+  }
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response should contain account data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data.name).to.equal('Test Checking Account');
+    expect(data.accountType).to.equal('CHECKING');
+    expect(data.balance).to.equal(1000.00);
+    expect(data.isActive).to.be.true;
+    
+    // Store account ID for other tests
+    bru.setEnvVar('testAccountId', data.id.toString());
+  });
+}

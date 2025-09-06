@@ -1,0 +1,32 @@
+meta {
+  name: Get CSV Template
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiPath}}/csv-import/template
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response should contain CSV template", function() {
+    const contentType = res.getHeader('Content-Type');
+    expect(contentType).to.include('text/csv');
+    
+    const body = res.getBody();
+    expect(body).to.be.a('string');
+    expect(body).to.include('date');
+    expect(body).to.include('amount');
+    expect(body).to.include('description');
+  });
+}

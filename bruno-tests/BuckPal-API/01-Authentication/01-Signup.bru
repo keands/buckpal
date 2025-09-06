@@ -1,0 +1,34 @@
+meta {
+  name: User Signup
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPath}}/auth/signup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "firstName": "Test",
+    "lastName": "User", 
+    "email": "{{testEmail}}",
+    "password": "{{testPassword}}"
+  }
+}
+
+tests {
+  test("Status should be 201 or 409 (user exists)", function() {
+    expect([201, 409]).to.include(res.getStatus());
+  });
+  
+  if (res.getStatus() === 201) {
+    test("Response should contain user data", function() {
+      const data = res.getBody();
+      expect(data).to.have.property('id');
+      expect(data.email).to.equal(bru.getEnvVar('testEmail'));
+    });
+  }
+}

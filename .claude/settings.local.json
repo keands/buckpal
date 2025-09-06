@@ -37,7 +37,8 @@
       "Read(/C:\\coding\\ucut\\buckpal\\react-app\\src/**)",
       "Read(/C:\\coding\\ucut\\buckpal\\react-app\\src\\types/**)",
       "Bash(java:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

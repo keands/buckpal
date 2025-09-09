@@ -30,6 +30,7 @@ public class BudgetService {
     private final CategoryInitializationService categoryInitializationService;
     private final IncomeManagementService incomeService;
     private final IntelligentBudgetService intelligentBudgetService;
+    private final RecurringPaymentService recurringPaymentService;
     
     @Autowired
     public BudgetService(BudgetRepository budgetRepository, 
@@ -37,19 +38,24 @@ public class BudgetService {
                         TransactionRepository transactionRepository,
                         CategoryInitializationService categoryInitializationService,
                         IncomeManagementService incomeService,
-                        IntelligentBudgetService intelligentBudgetService) {
+                        IntelligentBudgetService intelligentBudgetService,
+                        RecurringPaymentService recurringPaymentService) {
         this.budgetRepository = budgetRepository;
         this.budgetCategoryRepository = budgetCategoryRepository;
         this.transactionRepository = transactionRepository;
         this.categoryInitializationService = categoryInitializationService;
         this.incomeService = incomeService;
         this.intelligentBudgetService = intelligentBudgetService;
+        this.recurringPaymentService = recurringPaymentService;
     }
     
     public BudgetDto createBudget(User user, BudgetDto budgetDto) {
         Budget budget = new Budget();
         mapDtoToEntity(budgetDto, budget);
         budget.setUser(user);
+        
+        // Apply recurring payments to projected income if available
+        applyRecurringPaymentsToProjectedIncome(user, budget);
         
         // Apply budget model percentages if not custom
         if (budgetDto.getBudgetModel() != Budget.BudgetModel.CUSTOM) {
@@ -60,6 +66,9 @@ public class BudgetService {
         
         // Auto-create income categories based on historical patterns
         createIncomeCategoriesFromHistory(user, savedBudget);
+        
+        // Apply recurring expenses to budget categories
+        applyRecurringExpensesToBudgetCategories(user, savedBudget);
         
         return mapEntityToDto(savedBudget);
     }
@@ -672,5 +681,257 @@ public class BudgetService {
         }
         
         System.out.println("=== END DEBUG ===");
+    }
+    
+    // ====== RECURRING PAYMENTS INTEGRATION METHODS ======
+    
+    /**
+     * Apply recurring income payments to the budget's projected income
+     */
+    private void applyRecurringPaymentsToProjectedIncome(User user, Budget budget) {
+        try {
+            // Calculate the first day of the budget month
+            LocalDate budgetMonthStart = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+            LocalDate budgetMonthEnd = budgetMonthStart.withDayOfMonth(budgetMonthStart.lengthOfMonth());
+            
+            // Get active recurring income payments for the budget period
+            List<RecurringPayment> incomePayments = recurringPaymentService.getActivePaymentsForPeriod(
+                user, budgetMonthStart, budgetMonthEnd)
+                .stream()
+                .filter(payment -> payment.getPaymentType() == RecurringPayment.PaymentType.INCOME)
+                .collect(Collectors.toList());
+            
+            // Calculate total projected income from recurring payments
+            BigDecimal recurringIncome = BigDecimal.ZERO;
+            for (RecurringPayment payment : incomePayments) {
+                List<LocalDate> paymentDates = payment.getPaymentDatesInPeriod(budgetMonthStart, budgetMonthEnd);
+                for (LocalDate date : paymentDates) {
+                    recurringIncome = recurringIncome.add(payment.getAmountForDate(date));
+                }
+            }
+            
+            // Add recurring income to existing projected income
+            if (recurringIncome.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal existingIncome = budget.getProjectedIncome() != null ? budget.getProjectedIncome() : BigDecimal.ZERO;
+                budget.setProjectedIncome(existingIncome.add(recurringIncome));
+            }
+            
+        } catch (Exception e) {
+            // Log error but don't fail budget creation
+            System.err.println("Failed to apply recurring income to budget: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Apply recurring expense payments to budget categories after budget creation
+     */
+    private void applyRecurringExpensesToBudgetCategories(User user, Budget budget) {
+        try {
+            // Calculate the first day of the budget month
+            LocalDate budgetMonthStart = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+            LocalDate budgetMonthEnd = budgetMonthStart.withDayOfMonth(budgetMonthStart.lengthOfMonth());
+            
+            // Get active recurring expense and credit payments for the budget period
+            List<RecurringPayment> expensePayments = recurringPaymentService.getActivePaymentsForPeriod(
+                user, budgetMonthStart, budgetMonthEnd)
+                .stream()
+                .filter(payment -> payment.getPaymentType() == RecurringPayment.PaymentType.EXPENSE ||
+                                 payment.getPaymentType() == RecurringPayment.PaymentType.CREDIT ||
+                                 payment.getPaymentType() == RecurringPayment.PaymentType.SUBSCRIPTION)
+                .collect(Collectors.toList());
+            
+            if (expensePayments.isEmpty()) {
+                return;
+            }
+            
+            // Group recurring payments by category type
+            Map<String, BigDecimal> recurringExpensesByCategory = new java.util.HashMap<>();
+            
+            for (RecurringPayment payment : expensePayments) {
+                List<LocalDate> paymentDates = payment.getPaymentDatesInPeriod(budgetMonthStart, budgetMonthEnd);
+                BigDecimal monthlyAmount = BigDecimal.ZERO;
+                
+                for (LocalDate date : paymentDates) {
+                    monthlyAmount = monthlyAmount.add(payment.getAmountForDate(date));
+                }
+                
+                if (monthlyAmount.compareTo(BigDecimal.ZERO) > 0) {
+                    // Map recurring payment type to budget category
+                    String categoryName = mapRecurringPaymentToBudgetCategory(payment);
+                    recurringExpensesByCategory.merge(categoryName, monthlyAmount, BigDecimal::add);
+                }
+            }
+            
+            // Apply recurring expenses to existing budget categories or create new ones
+            for (Map.Entry<String, BigDecimal> entry : recurringExpensesByCategory.entrySet()) {
+                String categoryName = entry.getKey();
+                BigDecimal recurringAmount = entry.getValue();
+                
+                // Find existing budget category or create a new one
+                Optional<BudgetCategory> existingCategory = budget.getBudgetCategories().stream()
+                    .filter(bc -> bc.getName().equalsIgnoreCase(categoryName))
+                    .findFirst();
+                
+                if (existingCategory.isPresent()) {
+                    // Add to existing category
+                    BudgetCategory category = existingCategory.get();
+                    BigDecimal newAmount = category.getAllocatedAmount().add(recurringAmount);
+                    category.setAllocatedAmount(newAmount);
+                    budgetCategoryRepository.save(category);
+                } else {
+                    // Create new category for recurring payments
+                    createRecurringPaymentBudgetCategory(budget, categoryName, recurringAmount);
+                }
+            }
+            
+            // Recalculate total allocated amount
+            BigDecimal totalAllocated = budget.getBudgetCategories().stream()
+                .map(BudgetCategory::getAllocatedAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            budget.setTotalAllocatedAmount(totalAllocated);
+            budgetRepository.save(budget);
+            
+        } catch (Exception e) {
+            // Log error but don't fail budget creation
+            System.err.println("Failed to apply recurring expenses to budget categories: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Map recurring payment type to appropriate budget category name
+     */
+    private String mapRecurringPaymentToBudgetCategory(RecurringPayment payment) {
+        return switch (payment.getPaymentType()) {
+            case CREDIT -> "Crédits et emprunts";
+            case SUBSCRIPTION -> "Abonnements";
+            case EXPENSE -> {
+                // Use payment name or default to "Dépenses récurrentes"
+                String name = payment.getName();
+                if (name != null && !name.trim().isEmpty()) {
+                    yield name.length() > 50 ? name.substring(0, 47) + "..." : name;
+                }
+                yield "Dépenses récurrentes";
+            }
+            default -> "Autres paiements récurrents";
+        };
+    }
+    
+    /**
+     * Create a new budget category for recurring payments
+     */
+    private void createRecurringPaymentBudgetCategory(Budget budget, String categoryName, BigDecimal amount) {
+        BudgetCategory category = new BudgetCategory();
+        category.setName(categoryName);
+        category.setDescription("Catégorie créée automatiquement pour les paiements récurrents");
+        category.setBudget(budget);
+        category.setAllocatedAmount(amount);
+        category.setSpentAmount(BigDecimal.ZERO);
+        category.setCategoryType(BudgetCategory.BudgetCategoryType.EXPENSE);
+        category.setColorCode("#ef4444"); // Red color for recurring expenses
+        category.setIconName("repeat"); // Repeat icon for recurring payments
+        category.setSortOrder(999); // Put at the end
+        category.setIsActive(true);
+        
+        budgetCategoryRepository.save(category);
+        budget.getBudgetCategories().add(category);
+    }
+    
+    /**
+     * Get multi-month budget projection including recurring payments
+     */
+    public Map<String, Object> getMultiMonthBudgetProjection(User user, LocalDate startDate, int monthsAhead) {
+        try {
+            // Get recurring payments projection
+            Map<String, Object> recurringProjection = recurringPaymentService.getBudgetProjection(
+                user, startDate, monthsAhead);
+            
+            // Get existing budgets for the projection period
+            List<Budget> existingBudgets = new ArrayList<>();
+            for (int month = 0; month < monthsAhead; month++) {
+                LocalDate projectionMonth = startDate.plusMonths(month);
+                Optional<Budget> budget = budgetRepository.findByUserAndBudgetMonthAndBudgetYear(
+                    user, projectionMonth.getMonthValue(), projectionMonth.getYear());
+                budget.ifPresent(existingBudgets::add);
+            }
+            
+            // Combine existing budget data with recurring payments projection
+            Map<String, Object> combinedProjection = new java.util.HashMap<>(recurringProjection);
+            combinedProjection.put("existingBudgets", existingBudgets.stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList()));
+            
+            return combinedProjection;
+            
+        } catch (Exception e) {
+            System.err.println("Failed to generate multi-month budget projection: " + e.getMessage());
+            return Map.of("error", "Failed to generate projection: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Get recurring payments summary for a specific budget
+     */
+    public Map<String, Object> getRecurringPaymentsSummaryForBudget(User user, Long budgetId) {
+        try {
+            Budget budget = budgetRepository.findByIdAndUser(budgetId, user)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+            
+            LocalDate budgetMonthStart = LocalDate.of(budget.getBudgetYear(), budget.getBudgetMonth(), 1);
+            LocalDate budgetMonthEnd = budgetMonthStart.withDayOfMonth(budgetMonthStart.lengthOfMonth());
+            
+            // Get all active recurring payments for the budget period
+            List<RecurringPayment> activePayments = recurringPaymentService.getActivePaymentsForPeriod(
+                user, budgetMonthStart, budgetMonthEnd);
+            
+            // Calculate totals by payment type
+            BigDecimal totalIncome = BigDecimal.ZERO;
+            BigDecimal totalExpenses = BigDecimal.ZERO;
+            BigDecimal totalCredits = BigDecimal.ZERO;
+            
+            List<Map<String, Object>> paymentDetails = new ArrayList<>();
+            
+            for (RecurringPayment payment : activePayments) {
+                List<LocalDate> paymentDates = payment.getPaymentDatesInPeriod(budgetMonthStart, budgetMonthEnd);
+                BigDecimal monthlyAmount = BigDecimal.ZERO;
+                
+                for (LocalDate date : paymentDates) {
+                    monthlyAmount = monthlyAmount.add(payment.getAmountForDate(date));
+                }
+                
+                if (monthlyAmount.compareTo(BigDecimal.ZERO) > 0) {
+                    Map<String, Object> paymentDetail = new java.util.HashMap<>();
+                    paymentDetail.put("id", payment.getId());
+                    paymentDetail.put("name", payment.getName());
+                    paymentDetail.put("paymentType", payment.getPaymentType());
+                    paymentDetail.put("frequency", payment.getFrequency());
+                    paymentDetail.put("monthlyAmount", monthlyAmount);
+                    paymentDetail.put("paymentDates", paymentDates);
+                    paymentDetails.add(paymentDetail);
+                    
+                    // Add to totals
+                    switch (payment.getPaymentType()) {
+                        case INCOME -> totalIncome = totalIncome.add(monthlyAmount);
+                        case CREDIT -> totalCredits = totalCredits.add(monthlyAmount);
+                        default -> totalExpenses = totalExpenses.add(monthlyAmount);
+                    }
+                }
+            }
+            
+            Map<String, Object> summary = new java.util.HashMap<>();
+            summary.put("budgetMonth", budget.getBudgetMonth());
+            summary.put("budgetYear", budget.getBudgetYear());
+            summary.put("totalRecurringIncome", totalIncome);
+            summary.put("totalRecurringExpenses", totalExpenses);
+            summary.put("totalRecurringCredits", totalCredits);
+            summary.put("netRecurringAmount", totalIncome.subtract(totalExpenses).subtract(totalCredits));
+            summary.put("paymentDetails", paymentDetails);
+            summary.put("paymentCount", paymentDetails.size());
+            
+            return summary;
+            
+        } catch (Exception e) {
+            System.err.println("Failed to generate recurring payments summary: " + e.getMessage());
+            return Map.of("error", "Failed to generate summary: " + e.getMessage());
+        }
     }
 }

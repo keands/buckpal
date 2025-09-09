@@ -754,6 +754,47 @@ class ApiClient {
     const response: AxiosResponse<OnboardingTips> = await this.client.get('/onboarding/tips')
     return response.data
   }
+
+  // ====== RECURRING PAYMENTS ======
+
+  async getRecurringPayments(): Promise<any[]> {
+    const response = await this.client.get('/recurring-payments')
+    return response.data
+  }
+
+  async getRecurringPaymentTypes(): Promise<Record<string, any>> {
+    const response = await this.client.get('/recurring-payments/payment-types')
+    return response.data
+  }
+
+  async getRecurringPaymentFrequencies(): Promise<Record<string, any>> {
+    const response = await this.client.get('/recurring-payments/frequencies')
+    return response.data
+  }
+
+  async getRecurringPaymentStatistics(): Promise<any> {
+    const response = await this.client.get('/recurring-payments/statistics')
+    return response.data
+  }
+
+  async createRecurringPayment(paymentData: any): Promise<any> {
+    const response = await this.client.post('/recurring-payments', paymentData)
+    return response.data
+  }
+
+  async updateRecurringPayment(id: number, paymentData: any): Promise<any> {
+    const response = await this.client.put(`/recurring-payments/${id}`, paymentData)
+    return response.data
+  }
+
+  async deleteRecurringPayment(id: number): Promise<void> {
+    await this.client.delete(`/recurring-payments/${id}`)
+  }
+
+  async getBudgetMultiMonthProjection(startDate: string, monthsAhead: number): Promise<any> {
+    const response = await this.client.get(`/budgets/multi-month-projection?startDate=${startDate}&monthsAhead=${monthsAhead}`)
+    return response.data
+  }
 }
 
 // Export a singleton instance

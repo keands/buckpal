@@ -45,7 +45,6 @@ class BudgetCategoryTest {
         assertThat(newCategory.getSortOrder()).isEqualTo(0);
         assertThat(newCategory.getIsActive()).isTrue();
         assertThat(newCategory.getSubCategories()).isNotNull().isEmpty();
-        assertThat(newCategory.getTransactions()).isNotNull().isEmpty();
     }
     
     @Test

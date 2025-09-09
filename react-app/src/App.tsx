@@ -10,9 +10,10 @@ import AccountsPage from '@/pages/accounts'
 import CsvImportPage from '@/pages/csv-import'
 import CalendarPage from '@/pages/calendar'
 import BudgetPage from '@/pages/budget'
+import SettingsPage from '@/pages/settings'
+import RecurringPaymentsPage from '@/pages/RecurringPayments'
 import DebugAuthPage from '@/pages/debug-auth'
 import ResetAuthPage from '@/pages/reset-auth'
-import { CategoryManagement } from '@/components/budget/category-management'
 
 function App() {
   return (
@@ -82,28 +83,31 @@ function App() {
             />
             
             <Route
-              path="/categories"
+              path="/settings"
               element={
                 <ProtectedRoute>
                   <ProtectedLayout>
-                    <CategoryManagement />
+                    <SettingsPage />
                   </ProtectedLayout>
                 </ProtectedRoute>
               }
             />
             
             <Route
-              path="/settings"
+              path="/recurring-payments"
               element={
                 <ProtectedRoute>
                   <ProtectedLayout>
-                    <div className="text-center py-12">
-                      <h1 className="text-2xl font-bold">Paramètres</h1>
-                      <p className="text-gray-600 mt-2">Cette page sera implémentée prochainement</p>
-                    </div>
+                    <RecurringPaymentsPage />
                   </ProtectedLayout>
                 </ProtectedRoute>
               }
+            />
+            
+            {/* Redirect old categories route to settings */}
+            <Route
+              path="/categories"
+              element={<Navigate to="/settings?tab=categories" replace />}
             />
             
             <Route

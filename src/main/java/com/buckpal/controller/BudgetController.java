@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @RestController
 @RequestMapping("/api/budgets")
@@ -465,6 +466,81 @@ public class BudgetController {
                 "status", "error"
             );
             return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // ====== RECURRING PAYMENTS INTEGRATION ENDPOINTS ======
+    
+    /**
+     * Get multi-month budget projection including recurring payments
+     */
+    @GetMapping("/multi-month-projection")
+    public ResponseEntity<Map<String, Object>> getMultiMonthBudgetProjection(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(defaultValue = "12") int monthsAhead,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            Map<String, Object> projection = budgetService.getMultiMonthBudgetProjection(
+                user, startDate, monthsAhead);
+            
+            return ResponseEntity.ok(projection);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Get recurring payments summary for a specific budget
+     */
+    @GetMapping("/{budgetId}/recurring-payments-summary")
+    public ResponseEntity<Map<String, Object>> getRecurringPaymentsSummaryForBudget(
+            @PathVariable Long budgetId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            Map<String, Object> summary = budgetService.getRecurringPaymentsSummaryForBudget(
+                user, budgetId);
+            
+            return ResponseEntity.ok(summary);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Get current month budget with recurring payments integration
+     */
+    @GetMapping("/current-with-recurring")
+    public ResponseEntity<Map<String, Object>> getCurrentBudgetWithRecurring(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        try {
+            Optional<BudgetDto> currentBudget = budgetService.getCurrentMonthBudget(user);
+            
+            if (currentBudget.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Get recurring payments summary for current budget
+            Map<String, Object> recurringPayments = budgetService.getRecurringPaymentsSummaryForBudget(
+                user, currentBudget.get().getId());
+            
+            Map<String, Object> response = Map.of(
+                "budget", currentBudget.get(),
+                "recurringPayments", recurringPayments
+            );
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

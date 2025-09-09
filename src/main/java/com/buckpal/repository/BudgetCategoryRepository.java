@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BudgetCategoryRepository extends JpaRepository<BudgetCategory, Long> {
     // All query methods removed - only basic JpaRepository methods (findById, save, findAll, etc.) remain
-    // Will add back only methods that are actually needed based on compilation errors
 }

@@ -68,7 +68,7 @@ class BudgetControllerTest {
         testBudgetDto.setBudgetMonth(9);
         testBudgetDto.setBudgetYear(2024);
         testBudgetDto.setBudgetModel(Budget.BudgetModel.RULE_50_30_20);
-        testBudgetDto.setTotalIncome(new BigDecimal("5000.00"));
+        testBudgetDto.setProjectedIncome(new BigDecimal("5000.00"));
     }
 
     @Nested
@@ -238,11 +238,11 @@ class BudgetControllerTest {
         void shouldUpdateBudgetSuccessfully() throws Exception {
             // Given
             BudgetDto updateDto = new BudgetDto();
-            updateDto.setTotalIncome(new BigDecimal("6000.00"));
+            updateDto.setProjectedIncome(new BigDecimal("6000.00"));
             
             BudgetDto updatedBudget = new BudgetDto();
             updatedBudget.setId(1L);
-            updatedBudget.setTotalIncome(new BigDecimal("6000.00"));
+            updatedBudget.setProjectedIncome(new BigDecimal("6000.00"));
             
             when(authentication.getPrincipal()).thenReturn(testUser);
             when(budgetService.updateBudget(eq(testUser), eq(1L), any(BudgetDto.class)))
@@ -254,7 +254,7 @@ class BudgetControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(updateDto)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.totalIncome").value(6000.00));
+                    .andExpect(jsonPath("$.projectedIncome").value(6000.00));
             
             verify(budgetService).updateBudget(eq(testUser), eq(1L), any(BudgetDto.class));
         }

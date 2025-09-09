@@ -13,7 +13,7 @@ import {
   User,
   Calendar,
   PieChart,
-  Tags
+  RefreshCw
 } from 'lucide-react'
 
 export default function Navbar() {
@@ -26,7 +26,7 @@ export default function Navbar() {
     { name: t('navigation.accounts'), href: '/accounts', icon: CreditCard },
     { name: t('navigation.calendar'), href: '/calendar', icon: Calendar },
     { name: t('navigation.budget'), href: '/budget', icon: PieChart },
-    { name: 'Catégories', href: '/categories', icon: Tags },
+    { name: 'Paiements récurrents', href: '/recurring-payments', icon: RefreshCw },
     { name: t('navigation.csvImport'), href: '/csv-import', icon: Upload },
     { name: t('navigation.settings'), href: '/settings', icon: Settings },
   ]

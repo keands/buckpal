@@ -18,6 +18,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional
@@ -120,7 +122,24 @@ public class RecurringPaymentService {
     
     // Business Logic
     public List<RecurringPayment> getActivePaymentsForPeriod(User user, LocalDate startDate, LocalDate endDate) {
-        return recurringPaymentRepository.findActivePaymentsInPeriod(user, startDate, endDate);
+        logger.debug("=== DEBUG getActivePaymentsForPeriod ===");
+        logger.debug("User: {} (ID: {})", user.getUsername(), user.getId());
+        logger.debug("Period: {} to {}", startDate, endDate);
+        
+        // D'abord, vérifions tous les paiements de l'utilisateur
+        List<RecurringPayment> allUserPayments = recurringPaymentRepository.findByUserOrderByCreatedAtDesc(user);
+        logger.debug("All user payments: {}", allUserPayments.size());
+        for (RecurringPayment payment : allUserPayments) {
+            logger.debug("  - {} (active: {}, start: {}, end: {})", 
+                payment.getName(), payment.getIsActive(), payment.getStartDate(), payment.getEndDate());
+        }
+        
+        // Ensuite la requête filtrée
+        List<RecurringPayment> activePayments = recurringPaymentRepository.findActivePaymentsInPeriod(user, startDate, endDate);
+        logger.debug("Filtered active payments: {}", activePayments.size());
+        logger.debug("=====================================");
+        
+        return activePayments;
     }
     
     public List<RecurringPayment> getPaymentsEndingSoon(User user) {
@@ -169,11 +188,21 @@ public class RecurringPaymentService {
         LocalDate endDate = startDate.plusMonths(monthsAhead);
         List<RecurringPayment> activePayments = getActivePaymentsForPeriod(user, startDate, endDate);
         
+        logger.debug("=== DEBUG PROJECTION ===");
+        logger.debug("User: {}", user.getUsername());
+        logger.debug("Start date: {}", startDate);
+        logger.debug("End date: {}", endDate);
+        logger.debug("Active payments found: {}", activePayments.size());
+        for (RecurringPayment payment : activePayments) {
+            logger.debug("  - {} ({}) {}", payment.getName(), payment.getPaymentType(), payment.getAmount());
+        }
+        logger.debug("========================");
+        
         Map<String, Object> projection = new HashMap<>();
         List<Map<String, Object>> monthlyProjections = new ArrayList<>();
         
         for (int month = 0; month < monthsAhead; month++) {
-            LocalDate monthStart = startDate.plusMonths(month);
+            LocalDate monthStart = startDate.plusMonths(month).withDayOfMonth(1);
             LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
             
             Map<String, Object> monthlyData = calculateMonthlyProjection(activePayments, monthStart, monthEnd);
@@ -197,6 +226,8 @@ public class RecurringPaymentService {
     
     private Map<String, Object> calculateMonthlyProjection(List<RecurringPayment> payments, 
                                                          LocalDate monthStart, LocalDate monthEnd) {
+        logger.debug("--- Calculating month: {} to {} ---", monthStart, monthEnd);
+        
         Map<String, Object> monthlyData = new HashMap<>();
         BigDecimal totalIncome = BigDecimal.ZERO;
         BigDecimal totalExpenses = BigDecimal.ZERO;
@@ -205,6 +236,7 @@ public class RecurringPaymentService {
         
         for (RecurringPayment payment : payments) {
             List<LocalDate> paymentDates = payment.getPaymentDatesInPeriod(monthStart, monthEnd);
+            logger.debug("Payment {} has {} dates in period", payment.getName(), paymentDates.size());
             
             if (!paymentDates.isEmpty()) {
                 BigDecimal monthlyAmount = BigDecimal.ZERO;
@@ -212,7 +244,10 @@ public class RecurringPaymentService {
                 for (LocalDate date : paymentDates) {
                     BigDecimal amount = payment.getAmountForDate(date);
                     monthlyAmount = monthlyAmount.add(amount);
+                    logger.debug("  Date {}: {}", date, amount);
                 }
+                
+                logger.debug("  Total for {}: {}", payment.getName(), monthlyAmount);
                 
                 if (payment.getPaymentType() == RecurringPayment.PaymentType.INCOME) {
                     totalIncome = totalIncome.add(monthlyAmount);
@@ -231,6 +266,8 @@ public class RecurringPaymentService {
                 paymentDetails.add(paymentDetail);
             }
         }
+        
+        logger.debug("Month totals - Income: {}, Expenses: {}", totalIncome, totalExpenses);
         
         monthlyData.put("totalIncome", totalIncome);
         monthlyData.put("totalExpenses", totalExpenses);

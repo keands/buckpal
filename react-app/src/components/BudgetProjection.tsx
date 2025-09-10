@@ -5,7 +5,7 @@ import { fr } from 'date-fns/locale';
 import { apiClient } from '@/lib/api';
 
 interface MonthlyProjection {
-  month: string;
+  month: string | Date;
   monthName: string;
   year: number;
   totalIncome: number;

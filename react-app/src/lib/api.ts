@@ -792,7 +792,7 @@ class ApiClient {
   }
 
   async getBudgetMultiMonthProjection(startDate: string, monthsAhead: number): Promise<any> {
-    const response = await this.client.get(`/budgets/multi-month-projection?startDate=${startDate}&monthsAhead=${monthsAhead}`)
+    const response = await this.client.get(`/recurring-payments/budget-projection?startDate=${startDate}&monthsAhead=${monthsAhead}`)
     return response.data
   }
 }

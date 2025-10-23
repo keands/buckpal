@@ -84,7 +84,7 @@ class RecurringPaymentTest {
         recurringPayment.setRemainingPayments(12);
         recurringPayment.setEscalationRate(BigDecimal.ZERO);
         
-        BigDecimal totalRemaining = recurringPayment.getTotalRemainingAmount();
+        BigDecimal totalRemaining = recurringPayment.getTotalRemainingAmount(LocalDate.now());
         
         // 12 payments of 100 = 1200
         assertEquals(new BigDecimal("1200.00"), totalRemaining);

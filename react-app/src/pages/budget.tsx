@@ -8,6 +8,7 @@ import { PieChart, Plus } from 'lucide-react'
 import BudgetSetupWizard from '@/components/budget/budget-setup-wizard'
 import BudgetProgressDashboard from '@/components/budget/budget-progress-dashboard'
 import CategoryTransactionsModal from '@/components/budget/category-transactions-modal'
+import EnhancedCategoryModal from '@/components/budget/enhanced-category-modal'
 import { TransactionAssignment } from '@/components/budget/transaction-assignment'
 import { SubcategoryDistribution } from '@/components/budget/subcategory-distribution'
 
@@ -19,7 +20,9 @@ export default function BudgetPage() {
   const [selectedBudgetId, setSelectedBudgetId] = useState<number | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<any>(null)
   const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [showEnhancedModal, setShowEnhancedModal] = useState(false)
   const [categoryTransactions, setCategoryTransactions] = useState<any[]>([])
+  const [categorySubcategories, setCategorySubcategories] = useState<any[]>([])
   const [loadingCategoryTransactions, setLoadingCategoryTransactions] = useState(false)
   const [budgets, setBudgets] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -31,7 +34,7 @@ export default function BudgetPage() {
   // Load transactions for a specific category
   const loadCategoryTransactions = async (category: any) => {
     if (!selectedBudgetId) return
-    
+
     try {
       setLoadingCategoryTransactions(true)
       const transactions = await apiClient.getTransactionsByCategory(selectedBudgetId, category.id)
@@ -41,6 +44,36 @@ export default function BudgetPage() {
       setCategoryTransactions([])
     } finally {
       setLoadingCategoryTransactions(false)
+    }
+  }
+
+  // Load subcategories for enhanced modal
+  const loadCategorySubcategories = async (category: any) => {
+    if (!selectedBudgetId) {
+      console.log('❌ No selected budget ID')
+      return
+    }
+
+    try {
+      console.log('🔄 Loading subcategories for category:', category.id, 'in budget:', selectedBudgetId)
+      const distribution = await apiClient.getBudgetCategoryDetailedDistribution(selectedBudgetId, category.id)
+      console.log('📊 Distribution response:', distribution)
+
+      const subcategories = Object.entries(distribution.detailedDistribution).map(([name, info]: [string, any]) => ({
+        id: Math.random(), // Temporary ID since backend doesn't provide subcategory IDs
+        name,
+        amount: info.amount,
+        percentage: info.percentage,
+        transactionCount: info.transactionCount,
+        colorCode: info.colorCode,
+        iconName: info.iconName
+      }))
+
+      console.log('✅ Processed subcategories:', subcategories)
+      setCategorySubcategories(subcategories)
+    } catch (error: any) {
+      console.error('❌ Error loading category subcategories:', error)
+      setCategorySubcategories([])
     }
   }
 
@@ -359,9 +392,19 @@ export default function BudgetPage() {
           budget={selectedBudget}
           availableBudgets={availableBudgets}
           onCategoryClick={async (category) => {
+            console.log('🎯 Category clicked:', category)
             setSelectedCategory(category)
-            setShowCategoryModal(true)
-            await loadCategoryTransactions(category)
+            setShowEnhancedModal(true)
+            console.log('🔄 Loading transactions and subcategories for category:', category.name)
+            try {
+              await Promise.all([
+                loadCategoryTransactions(category),
+                loadCategorySubcategories(category)
+              ])
+              console.log('✅ Data loaded successfully')
+            } catch (error) {
+              console.error('❌ Error loading category data:', error)
+            }
           }}
           onBudgetChange={(budgetId) => {
             setSelectedBudgetId(budgetId)
@@ -410,7 +453,40 @@ export default function BudgetPage() {
         />
       )}
 
-      {/* Category Transactions Modal */}
+      {/* Enhanced Category Modal */}
+      {showEnhancedModal && selectedCategory && (
+        <EnhancedCategoryModal
+          category={selectedCategory}
+          transactions={categoryTransactions}
+          subcategories={categorySubcategories}
+          isOpen={showEnhancedModal}
+          isLoading={loadingCategoryTransactions}
+          onClose={() => {
+            setShowEnhancedModal(false)
+            setSelectedCategory(null)
+            setCategoryTransactions([])
+            setCategorySubcategories([])
+          }}
+          onEditTransaction={(transaction) => {
+            console.log('Edit transaction:', transaction)
+            // TODO: Open transaction edit modal
+          }}
+          onDeleteTransaction={(transactionId) => {
+            console.log('Delete transaction:', transactionId)
+            // TODO: Implement transaction deletion
+          }}
+          onAddTransaction={() => {
+            console.log('Add new transaction to category:', selectedCategory?.name)
+            // TODO: Open add transaction modal
+          }}
+          onEditCategoryBudget={(category) => {
+            console.log('Edit category budget:', category.name)
+            // TODO: Open budget edit modal
+          }}
+        />
+      )}
+
+      {/* Original Category Transactions Modal (kept for fallback) */}
       {showCategoryModal && selectedCategory && (
         <CategoryTransactionsModal
           category={selectedCategory}

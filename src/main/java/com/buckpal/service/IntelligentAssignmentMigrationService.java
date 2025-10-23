@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,88 @@ public class IntelligentAssignmentMigrationService {
         }
         
         return false;
+    }
+    
+    /**
+     * Initialise des patterns de base pour les marchands courants si aucun pattern n'existe
+     */
+    @Transactional
+    public void initializeDefaultPatternsIfEmpty() {
+        long existingPatterns = merchantPatternRepository.count();
+        
+        if (existingPatterns > 0) {
+            System.out.println("Patterns already exist (" + existingPatterns + "), skipping initialization");
+            return;
+        }
+        
+        System.out.println("No merchant patterns found, initializing default patterns...");
+        
+        // Patterns de base pour démarrer le système
+        Map<String, String> defaultPatterns = new HashMap<>();
+        
+        // Alimentation
+        defaultPatterns.put("CARREFOUR", "categories.groceries");
+        defaultPatterns.put("AUCHAN", "categories.groceries");
+        defaultPatterns.put("LECLERC", "categories.groceries");
+        defaultPatterns.put("MONOPRIX", "categories.groceries");
+        defaultPatterns.put("FRANPRIX", "categories.groceries");
+        defaultPatterns.put("CASINO", "categories.groceries");
+        defaultPatterns.put("LIDL", "categories.groceries");
+        
+        // Transport
+        defaultPatterns.put("TOTAL", "categories.transportation");
+        defaultPatterns.put("SHELL", "categories.transportation");
+        defaultPatterns.put("BP", "categories.transportation");
+        defaultPatterns.put("ESSO", "categories.transportation");
+        defaultPatterns.put("SNCF", "categories.transportation");
+        defaultPatterns.put("RATP", "categories.transportation");
+        defaultPatterns.put("UBER", "categories.transportation");
+        
+        // Restaurants
+        defaultPatterns.put("MCDONALDS", "categories.diningOut");
+        defaultPatterns.put("KFC", "categories.diningOut");
+        defaultPatterns.put("BURGER KING", "categories.diningOut");
+        defaultPatterns.put("STARBUCKS", "categories.diningOut");
+        defaultPatterns.put("PIZZA", "categories.diningOut");
+        
+        // Services/Utilities
+        defaultPatterns.put("EDF", "categories.utilities");
+        defaultPatterns.put("ENGIE", "categories.utilities");
+        defaultPatterns.put("ORANGE", "categories.utilities");
+        defaultPatterns.put("SFR", "categories.utilities");
+        defaultPatterns.put("BOUYGUES", "categories.utilities");
+        
+        // Shopping
+        defaultPatterns.put("AMAZON", "categories.shopping");
+        defaultPatterns.put("ZARA", "categories.shopping");
+        defaultPatterns.put("H&M", "categories.shopping");
+        defaultPatterns.put("IKEA", "categories.shopping");
+        
+        // Santé
+        defaultPatterns.put("PHARMACIE", "categories.healthcare");
+        defaultPatterns.put("HOPITAL", "categories.healthcare");
+        defaultPatterns.put("CLINIQUE", "categories.healthcare");
+        
+        int created = 0;
+        for (Map.Entry<String, String> entry : defaultPatterns.entrySet()) {
+            String pattern = entry.getKey();
+            String categoryKey = entry.getValue();
+            
+            Optional<Category> category = categoryRepository.findByName(categoryKey);
+            if (category.isPresent()) {
+                MerchantPattern merchantPattern = new MerchantPattern();
+                merchantPattern.setPattern(pattern);
+                merchantPattern.setCategoryId(category.get().getId());
+                merchantPattern.setSpecificityScore(5); // Score moyen
+                merchantPattern.setConfidenceScore(new BigDecimal("0.75")); // Confiance modérée
+                merchantPatternRepository.save(merchantPattern);
+                created++;
+            } else {
+                System.out.println("Category not found for key: " + categoryKey);
+            }
+        }
+        
+        System.out.println("Created " + created + " default merchant patterns");
     }
     
     /**

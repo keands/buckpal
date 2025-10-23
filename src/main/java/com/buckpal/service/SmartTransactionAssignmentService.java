@@ -26,52 +26,32 @@ public class SmartTransactionAssignmentService {
     private final UserAssignmentFeedbackRepository feedbackRepository;
     private final IntelligentAssignmentMigrationService migrationService;
     private final CategoryRepository categoryRepository;
+    private final HybridPatternResolver hybridPatternResolver;
     
     @Autowired
     public SmartTransactionAssignmentService(MerchantPatternRepository merchantPatternRepository,
                                            UserAssignmentFeedbackRepository feedbackRepository,
                                            IntelligentAssignmentMigrationService migrationService,
-                                           CategoryRepository categoryRepository) {
+                                           CategoryRepository categoryRepository,
+                                           HybridPatternResolver hybridPatternResolver) {
         this.merchantPatternRepository = merchantPatternRepository;
         this.feedbackRepository = feedbackRepository;
         this.migrationService = migrationService;
         this.categoryRepository = categoryRepository;
+        this.hybridPatternResolver = hybridPatternResolver;
     }
     
     public SmartAssignmentResult assignCategoryToTransaction(Transaction transaction, User user) {
         String merchantText = buildMerchantText(transaction);
         
+        // Initialize default patterns if none exist
+        migrationService.initializeDefaultPatternsIfEmpty();
+        
         // Migrate any legacy patterns first
         migrationService.migrateAllPatterns();
         
-        // Find matching patterns using specificity and confidence scoring
-        List<MerchantPattern> matchingPatterns = findMatchingPatterns(merchantText);
-        
-        if (matchingPatterns.isEmpty()) {
-            return new SmartAssignmentResult((Long) null, BigDecimal.ZERO, "NO_PATTERN_MATCH", Collections.emptyList());
-        }
-        
-        // Apply conflict resolution
-        PatternMatchResult bestMatch = resolvePatternConflicts(matchingPatterns, transaction, user);
-        
-        if (bestMatch == null) {
-            return new SmartAssignmentResult((Long) null, BigDecimal.ZERO, "CONFLICT_RESOLUTION_FAILED", 
-                getAlternativeCategoryIds(matchingPatterns));
-        }
-        
-        // Return categoryId instead of categoryName
-        Long categoryId = bestMatch.pattern.getCategoryId();
-        if (categoryId == null) {
-            // Fallback: try to convert categoryName to categoryId
-            categoryId = migrationService.findCategoryIdByName(bestMatch.pattern.getCategoryName()).orElse(null);
-        }
-        
-        return new SmartAssignmentResult(
-            categoryId,
-            bestMatch.finalConfidence,
-            bestMatch.strategy,
-            getAlternativeCategoryIds(matchingPatterns)
-        );
+        // Use the new hybrid resolver (personal patterns > global patterns)
+        return hybridPatternResolver.resolvePattern(merchantText, user);
     }
     
     private List<Long> getAlternativeCategoryIds(List<MerchantPattern> patterns) {
